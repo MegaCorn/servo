@@ -2381,23 +2381,6 @@ pub(crate) fn init_class_ops<D: DomTypes>() {{
 }}
 
 static Class: ThreadUnsafeOnceLock<DOMJSClass> = ThreadUnsafeOnceLock::new();
-
-pub(crate) fn init_domjs_class<D: DomTypes>() {{
-    init_class_ops::<D>();
-    Class.set(DOMJSClass {{
-        base: JSClass {{
-            name: {args['name']},
-            flags: JSCLASS_IS_DOMJSCLASS | {args['flags']} |
-                   ((({args['slots']}) & JSCLASS_RESERVED_SLOTS_MASK) << JSCLASS_RESERVED_SLOTS_SHIFT)
-                   /* JSCLASS_HAS_RESERVED_SLOTS({args['slots']}) */,
-            cOps: unsafe {{ CLASS_OPS.get() }},
-            spec: ptr::null(),
-            ext: ptr::null(),
-            oOps: ptr::null(),
-        }},
-        dom_class: {args['domClass']},
-    }});
-}}
 """
 
 
@@ -2491,9 +2474,6 @@ class CGInterfaceObjectJSClass(CGThing):
             else:
                 classString = "Object"
             return f"""
-static NAMESPACE_OBJECT_CLASS: NamespaceObjectClass = unsafe {{
-    NamespaceObjectClass::new({str_to_cstr(classString)})
-}};
 """
         if self.descriptor.interface.ctor():
             constructorBehavior = f"InterfaceConstructorBehavior::call({CONSTRUCT_HOOK_NAME})"
@@ -2502,23 +2482,6 @@ static NAMESPACE_OBJECT_CLASS: NamespaceObjectClass = unsafe {{
         name = self.descriptor.interface.identifier.name
         representation = f'b"function {name}() {{\\n    [native code]\\n}}"'
         return f"""
-static INTERFACE_OBJECT_CLASS: ThreadUnsafeOnceLock<NonCallbackInterfaceObjectClass> = ThreadUnsafeOnceLock::new();
-
-pub(crate) fn init_interface_object() {{
-    INTERFACE_OBJECT_CLASS.set(NonCallbackInterfaceObjectClass::new(
-        {{
-            // Intermediate `const` because as of nightly-2018-10-05,
-            // rustc is conservative in promotion to `'static` of the return values of `const fn`s:
-            // https://github.com/rust-lang/rust/issues/54846
-            // https://github.com/rust-lang/rust/pull/53851
-            const BEHAVIOR: InterfaceConstructorBehavior = {constructorBehavior};
-            &BEHAVIOR
-        }},
-        {representation},
-        PrototypeList::ID::{name},
-        {self.descriptor.prototypeDepth},
-    ));
-}}
 """
 
 
@@ -6662,8 +6625,6 @@ class CGInitStatics(CGThing):
 
         self.code = f"""
         pub(crate) fn init_statics<D: DomTypes>() {{
-            {interface}
-            {nonproxy}
             {methods}
             {getters}
             {setters}
