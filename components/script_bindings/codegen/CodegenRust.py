@@ -3086,23 +3086,7 @@ JS_SetReservedSlot(obj.get(), DOM_WEAK_SLOT, &val);
 """
 
         return CGGeneric(f"""
-let raw = Root::new(MaybeUnreflectedDom::from_box(object));
-
-let scope = scope.reflector().get_jsobject();
-assert!(!scope.get().is_null());
-assert!(((*get_object_class(scope.get())).flags & JSCLASS_IS_GLOBAL) != 0);
-let _ac = JSAutoRealm::new(*cx, scope.get());
-
-rooted!(in(*cx) let mut canonical_proto = ptr::null_mut::<JSObject>());
-GetProtoObject(cx, scope, canonical_proto.handle_mut());
-assert!(!canonical_proto.is_null());
-
-{create}
-let root = raw.reflect_with(obj.get());
-
-{unforgeable}
-
-DomRoot::from_ref(&*root)\
+DomRoot::from_ref(&object)\
 """)
 
 
@@ -3133,34 +3117,7 @@ class CGWrapGlobalMethod(CGAbstractMethod):
         membersStr = "\n".join(members)
 
         return CGGeneric(f"""
-let raw = Root::new(MaybeUnreflectedDom::from_box(object));
-let origin = (*raw.as_ptr()).upcast::<GlobalScope>().origin();
-
-rooted!(in(*cx) let mut obj = ptr::null_mut::<JSObject>());
-create_global_object(
-    cx,
-    &Class.get().base,
-    raw.as_ptr() as *const libc::c_void,
-    {TRACE_HOOK_NAME}::<D>,
-    obj.handle_mut(),
-    origin);
-assert!(!obj.is_null());
-
-let root = raw.reflect_with(obj.get());
-
-let _ac = JSAutoRealm::new(*cx, obj.get());
-rooted!(in(*cx) let mut canonical_proto = ptr::null_mut::<JSObject>());
-GetProtoObject(cx, obj.handle(), canonical_proto.handle_mut());
-assert!(JS_SetPrototype(*cx, obj.handle(), canonical_proto.handle()));
-let mut immutable = false;
-assert!(JS_SetImmutablePrototype(*cx, obj.handle(), &mut immutable));
-assert!(immutable);
-
-{membersStr}
-
-{CopyLegacyUnforgeablePropertiesToInstance(self.descriptor)}
-
-DomRoot::from_ref(&*root)\
+DomRoot::from_ref(&object)\
 """)
 
 
@@ -3629,7 +3586,7 @@ assert!(!unforgeable_holder.is_null());
 let val = ObjectValue(unforgeable_holder.get());
 JS_SetReservedSlot(prototype.get(), DOM_PROTO_UNFORGEABLE_HOLDER_SLOT, &val)"""))
 
-        return CGList(code, "\n")
+        return CGList([], "\n")
 
 
 class CGGetPerInterfaceObject(CGAbstractMethod):
