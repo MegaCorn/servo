@@ -1627,20 +1627,16 @@ class PropertyDefiner:
             )
 
         joinedSpecs = ',\n'.join(specs)
-        specsArray = f"static {name}_specs: ThreadUnsafeOnceLock<&[&[{specType}]]> = ThreadUnsafeOnceLock::new();\n"
+        specsArray = f"\n"
 
         initSpecs = f"""
-pub(crate) fn init_{name}_specs<D: DomTypes>() {{
-    {name}_specs.set(Box::leak(Box::new([{joinedSpecs}])));
-}}"""
+"""
 
         joinedPrefableSpecs = ',\n'.join(prefableSpecs)
-        prefArray = f"static {name}: ThreadUnsafeOnceLock<&[Guard<&[{specType}]>]> = ThreadUnsafeOnceLock::new();\n"
+        prefArray = f"\n"
 
         initPrefs = f"""
-pub(crate) fn init_{name}_prefs<D: DomTypes>() {{
-    {name}.set(Box::leak(Box::new([{joinedPrefableSpecs}])));
-}}"""
+"""
 
         return f"{specsArray}{initSpecs}{prefArray}{initPrefs}"
 
@@ -1665,11 +1661,9 @@ pub(crate) fn init_{name}_prefs<D: DomTypes>() {{
         specsArray.append(specTerminator)
 
         joinedSpecs = ',\n'.join(specsArray)
-        initialSpecs = f"static {name}: ThreadUnsafeOnceLock<&[{specType}]> = ThreadUnsafeOnceLock::new();\n"
+        initialSpecs = f"\n"
         initSpecs = f"""
-pub(crate) fn init_{name}<D: DomTypes>() {{
-    {name}.set(Box::leak(Box::new([{joinedSpecs}])));
-}}"""
+"""
         return dedent(f"{initialSpecs}{initSpecs}")
 
 
@@ -3348,30 +3342,11 @@ class CGCreateInterfaceObjectsMethod(CGAbstractMethod):
                 constants = "&[]"
             id = MakeNativeName(name)
             return CGGeneric(f"""
-rooted!(in(*cx) let proto = {proto});
-assert!(!proto.is_null());
-rooted!(in(*cx) let mut namespace = ptr::null_mut::<JSObject>());
-create_namespace_object(cx, global, proto.handle(), &NAMESPACE_OBJECT_CLASS,
-                        {methods}, {constants}, {str_to_cstr(name)}, namespace.handle_mut());
-assert!(!namespace.is_null());
-assert!((*cache)[PrototypeList::Constructor::{id} as usize].is_null());
-(*cache)[PrototypeList::Constructor::{id} as usize] = namespace.get();
-<*mut JSObject>::post_barrier((*cache).as_mut_ptr().offset(PrototypeList::Constructor::{id} as isize),
-                              ptr::null_mut(),
-                              namespace.get());
 """)
         if self.descriptor.interface.isCallback():
             assert not self.descriptor.interface.ctor() and self.descriptor.interface.hasConstants()
             cName = str_to_cstr(name)
             return CGGeneric(f"""
-rooted!(in(*cx) let mut interface = ptr::null_mut::<JSObject>());
-create_callback_interface_object(cx, global, sConstants.get(), {cName}, interface.handle_mut());
-assert!(!interface.is_null());
-assert!((*cache)[PrototypeList::Constructor::{name} as usize].is_null());
-(*cache)[PrototypeList::Constructor::{name} as usize] = interface.get();
-<*mut JSObject>::post_barrier((*cache).as_mut_ptr().offset(PrototypeList::Constructor::{name} as isize),
-                              ptr::null_mut(),
-                              interface.get());
 """)
 
         parentName = self.descriptor.getParentName()
@@ -6692,7 +6667,6 @@ class CGInitStatics(CGThing):
             {methods}
             {getters}
             {setters}
-            {specs}
         }}
         """
 
