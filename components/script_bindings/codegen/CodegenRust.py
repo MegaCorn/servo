@@ -3262,16 +3262,9 @@ class CGCrossOriginProperties(CGThing):
                                       unforgeable=False, crossorigin=True)
 
     def define(self):
-        return f"{self.methods}{self.attributes}" + dedent(
+        return f"" + dedent(
             """
             static CROSS_ORIGIN_PROPERTIES: ThreadUnsafeOnceLock<CrossOriginProperties> = ThreadUnsafeOnceLock::new();
-
-            pub(crate) fn init_cross_origin_properties<D: DomTypes>() {
-                CROSS_ORIGIN_PROPERTIES.set(CrossOriginProperties {
-                    attributes: unsafe { sCrossOriginAttributes.get() },
-                    methods: unsafe { sCrossOriginMethods.get() },
-                });
-            }
             """
         )
 
@@ -6699,7 +6692,6 @@ class CGInitStatics(CGThing):
             {methods}
             {getters}
             {setters}
-            {crossorigin_joined}
             {specs}
         }}
         """
