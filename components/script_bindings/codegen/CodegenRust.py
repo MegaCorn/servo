@@ -2447,16 +2447,6 @@ class CGPrototypeJSClass(CGThing):
             slotCount += 1
         slotCountStr = f"{slotCount} & JSCLASS_RESERVED_SLOTS_MASK" if slotCount > 0 else "0"
         return f"""
-static PrototypeClass: JSClass = JSClass {{
-    name: {name},
-    flags:
-        // JSCLASS_HAS_RESERVED_SLOTS()
-        ({slotCountStr} ) << JSCLASS_RESERVED_SLOTS_SHIFT,
-    cOps: ptr::null(),
-    spec: ptr::null(),
-    ext: ptr::null(),
-    oOps: ptr::null(),
-}};
 """
 
 
@@ -6773,8 +6763,8 @@ class CGDescriptor(CGThing):
 
         if not descriptor.interface.getExtendedAttribute("Inline"):
             if not descriptor.interface.isCallback() and not descriptor.interface.isNamespace():
-                cgThings.append(CGGetProtoObjectMethod(descriptor))
-                reexports.append('GetProtoObject')
+                # cgThings.append(CGGetProtoObjectMethod(descriptor))
+                # reexports.append('GetProtoObject')
                 cgThings.append(CGPrototypeJSClass(descriptor))
             if descriptor.interface.hasInterfaceObject():
                 if descriptor.interface.ctor():
