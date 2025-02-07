@@ -1627,16 +1627,14 @@ class PropertyDefiner:
             )
 
         joinedSpecs = ',\n'.join(specs)
-        specsArray = f"\n"
+        specsArray = f""
 
-        initSpecs = f"""
-"""
+        initSpecs = f""
 
         joinedPrefableSpecs = ',\n'.join(prefableSpecs)
-        prefArray = f"\n"
+        prefArray = f""
 
-        initPrefs = f"""
-"""
+        initPrefs = f""
 
         return f"{specsArray}{initSpecs}{prefArray}{initPrefs}"
 
@@ -1661,9 +1659,8 @@ class PropertyDefiner:
         specsArray.append(specTerminator)
 
         joinedSpecs = ',\n'.join(specsArray)
-        initialSpecs = f"\n"
-        initSpecs = f"""
-"""
+        initialSpecs = f""
+        initSpecs = f""
         return dedent(f"{initialSpecs}{initSpecs}")
 
 
@@ -4411,8 +4408,7 @@ pub(crate) fn init_{infoName}<D: DomTypes>() {{
                                              False, False, "0",
                                              [BuiltinTypes[IDLBuiltinType.Types.undefined]],
                                              None)
-            return f"""
-"""
+            return f""
         if self.member.isMethod():
             methodinfo = f"{self.member.identifier.name}_methodinfo"
             method = f"{self.member.identifier.name}"
@@ -4456,8 +4452,7 @@ pub(crate) fn init_{infoName}<D: DomTypes>() {{
                                         methodInfal, movable, aliasSet,
                                         False, False, "0",
                                         [s[0] for s in sigs], args)
-            return f"""
-"""
+            return f""
         raise TypeError("Illegal member type to CGPropertyJITInfo")
 
     def mayBeMovable(self):
