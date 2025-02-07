@@ -2363,24 +2363,6 @@ class CGDOMJSClass(CGThing):
         elif self.descriptor.weakReferenceable:
             args["slots"] = "2"
         return f"""
-static CLASS_OPS: ThreadUnsafeOnceLock<JSClassOps> = ThreadUnsafeOnceLock::new();
-
-pub(crate) fn init_class_ops<D: DomTypes>() {{
-    CLASS_OPS.set(JSClassOps {{
-        addProperty: None,
-        delProperty: None,
-        enumerate: None,
-        newEnumerate: {args['enumerateHook']},
-        resolve: {args['resolveHook']},
-        mayResolve: None,
-        finalize: Some({args['finalizeHook']}),
-        call: None,
-        construct: None,
-        trace: Some({args['traceHook']}),
-    }});
-}}
-
-static Class: ThreadUnsafeOnceLock<DOMJSClass> = ThreadUnsafeOnceLock::new();
 """
 
 
@@ -6659,9 +6641,9 @@ class CGDescriptor(CGThing):
         #     cgThings.append(CGDefaultToJSONMethod(descriptor, defaultToJSONMethod))
         #     cgThings.append(CGMemberJITInfo(descriptor, defaultToJSONMethod))
 
-        if descriptor.concrete:
-            cgThings.append(CGClassFinalizeHook(descriptor))
-            cgThings.append(CGClassTraceHook(descriptor))
+        # if descriptor.concrete:
+        #     cgThings.append(CGClassFinalizeHook(descriptor))
+        #     cgThings.append(CGClassTraceHook(descriptor))
 
         # If there are no constant members, don't make a module for constants
         constMembers = [CGConstant(m) for m in descriptor.interface.members if m.isConst()]
@@ -6767,10 +6749,10 @@ class CGDescriptor(CGThing):
                 # reexports.append('GetProtoObject')
                 cgThings.append(CGPrototypeJSClass(descriptor))
             if descriptor.interface.hasInterfaceObject():
-                if descriptor.interface.ctor():
-                    cgThings.append(CGClassConstructHook(descriptor))
-                for ctor in descriptor.interface.legacyFactoryFunctions:
-                    cgThings.append(CGClassConstructHook(descriptor, ctor))
+                # if descriptor.interface.ctor():
+                #     cgThings.append(CGClassConstructHook(descriptor))
+                # for ctor in descriptor.interface.legacyFactoryFunctions:
+                #     cgThings.append(CGClassConstructHook(descriptor, ctor))
                 if not descriptor.interface.isCallback():
                     cgThings.append(CGInterfaceObjectJSClass(descriptor))
                 if descriptor.shouldHaveGetConstructorObjectMethod():
