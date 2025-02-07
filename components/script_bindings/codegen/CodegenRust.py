@@ -4481,7 +4481,8 @@ pub(crate) fn init_{infoName}<D: DomTypes>() {{
                                              False, False, "0",
                                              [BuiltinTypes[IDLBuiltinType.Types.undefined]],
                                              None)
-            return result
+            return f"""
+"""
         if self.member.isMethod():
             methodinfo = f"{self.member.identifier.name}_methodinfo"
             method = f"{self.member.identifier.name}"
@@ -4525,7 +4526,8 @@ pub(crate) fn init_{infoName}<D: DomTypes>() {{
                                         methodInfal, movable, aliasSet,
                                         False, False, "0",
                                         [s[0] for s in sigs], args)
-            return result
+            return f"""
+"""
         raise TypeError("Illegal member type to CGPropertyJITInfo")
 
     def mayBeMovable(self):
@@ -6625,9 +6627,6 @@ class CGInitStatics(CGThing):
 
         self.code = f"""
         pub(crate) fn init_statics<D: DomTypes>() {{
-            {methods}
-            {getters}
-            {setters}
         }}
         """
 
