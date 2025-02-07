@@ -6583,11 +6583,11 @@ class CGDescriptor(CGThing):
                     unscopableNames.append(m.identifier.name)
                 if m.isDefaultToJSON():
                     defaultToJSONMethod = m
-                elif m.isStatic():
-                    assert descriptor.interface.hasInterfaceObject()
-                    cgThings.append(CGStaticMethod(descriptor, m))
-                    if m.returnsPromise():
-                        cgThings.append(CGStaticMethodJitinfo(m))
+                # elif m.isStatic():
+                #     assert descriptor.interface.hasInterfaceObject()
+                #     cgThings.append(CGStaticMethod(descriptor, m))
+                #     if m.returnsPromise():
+                #         cgThings.append(CGStaticMethodJitinfo(m))
                 elif not descriptor.interface.isCallback():
                     # cgThings.append(CGSpecializedMethod(descriptor, m))
                     # if m.returnsPromise():
@@ -7502,11 +7502,11 @@ class CGCallback(CGClass):
         return [ClassMethod(f'{method.name}_', method.returnType, args,
                             bodyInHeader=True,
                             templateArgs=["T: ThisReflector"],
-                            body=bodyWithThis,
+                            body="Err(crate::dom::bindings::error::Error::JSFailed)",
                             visibility='pub'),
                 ClassMethod(f'{method.name}__', method.returnType, argsWithoutThis,
                             bodyInHeader=True,
-                            body=bodyWithoutThis,
+                            body="Err(crate::dom::bindings::error::Error::JSFailed)",
                             visibility='pub'),
                 method]
 
@@ -7641,7 +7641,7 @@ class CallbackMember(CGNativeMember):
             f"{self.getCall()}"
             f"{self.getResultConversion()}"
         )
-        return f"{pre}\n{body}"
+        return f"Err(crate::dom::bindings::error::Error::JSFailed)\n"
 
     def getResultConversion(self):
         replacements = {
