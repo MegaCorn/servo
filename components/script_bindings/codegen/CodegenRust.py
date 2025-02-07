@@ -910,7 +910,7 @@ def getJSToNativeConversionInfo(type, descriptorProvider, failureCode=None,
         if isMember == "Union":
             templateBody = f"RootedTraceableBox::new({templateBody})"
 
-        declType = CGGeneric(f"typedarray::{typeName}")
+        declType = CGGeneric(f"{typeName}")
         if type.nullable():
             templateBody = f"Some({templateBody})"
             declType = CGWrapper(declType, pre="Option<", post=">")

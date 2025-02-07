@@ -9,7 +9,7 @@ pub(crate) mod base {
 
     pub(crate) use js::error::throw_type_error;
     pub(crate) use js::jsapi::{
-        CurrentGlobalOrNull, HandleValue as RawHandleValue, HandleValueArray, Heap, IsCallable,
+        HandleValue as RawHandleValue, HandleValueArray, Heap, IsCallable,
         JSContext, JSObject, JS_NewObject,
     };
     pub(crate) use js::jsval::{JSVal, NullValue, ObjectOrNullValue, ObjectValue, UndefinedValue};
@@ -52,49 +52,14 @@ pub(crate) mod module {
     pub(crate) use std::ffi::CString;
     pub(crate) use std::ptr::NonNull;
 
-    pub(crate) use js::glue::{
-        CreateProxyHandler, GetProxyReservedSlot, JS_GetReservedSlot, ProxyTraps,
-        SetProxyReservedSlot,
-    };
     pub(crate) use js::jsapi::{
-        JSJitInfo_OpType, JSJitInfo__bindgen_ty_1, JSJitInfo__bindgen_ty_2,
-        JSJitInfo__bindgen_ty_3, JSJitMethodCallArgs, JSJitSetterCallArgs, JSNativeWrapper,
-        JSPropertySpec, JSPropertySpec_Accessor, JSPropertySpec_AccessorsOrValue,
-        JSPropertySpec_AccessorsOrValue_Accessors, JSPropertySpec_Kind, JSPropertySpec_Name,
-        JSPropertySpec_ValueWrapper, JSPropertySpec_ValueWrapper_Type,
-        JSPropertySpec_ValueWrapper__bindgen_ty_1, JSTracer, JSTypedMethodJitInfo, JSValueType,
-        JS_AtomizeAndPinString, JS_ForwardGetPropertyTo, JS_GetPropertyDescriptorById,
-        JS_HasPropertyById, JS_NewPlainObject, JS_SetReservedSlot,
-        MutableHandle as RawMutableHandle, MutableHandleIdVector as RawMutableHandleIdVector,
-        MutableHandleObject as RawMutableHandleObject, MutableHandleValue as RawMutableHandleValue,
-        ObjectOpResult, PropertyDescriptor, SymbolCode, UndefinedHandleValue,
-        __BindgenBitfieldUnit, jsid, CallArgs, GCContext, GetRealmErrorPrototype,
-        GetRealmFunctionPrototype, GetRealmIteratorPrototype, GetRealmObjectPrototype,
-        GetWellKnownSymbol, Handle as RawHandle, HandleId as RawHandleId,
-        HandleObject as RawHandleObject, JSAutoRealm, JSClass, JSClassOps, JSFunctionSpec,
-        JSJitGetterCallArgs, JSJitInfo, JSJitInfo_AliasSet, JSJitInfo_ArgType,
-        JSCLASS_FOREGROUND_FINALIZE, JSCLASS_RESERVED_SLOTS_SHIFT, JSITER_HIDDEN, JSITER_OWNONLY,
-        JSITER_SYMBOLS, JSPROP_ENUMERATE, JSPROP_PERMANENT, JSPROP_READONLY,
-    };
-    pub(crate) use js::jsval::PrivateValue;
-    pub(crate) use js::panic::wrap_panic;
-    pub(crate) use js::rust::wrappers::{
-        int_to_jsid, AppendToIdVector, Call, GetPropertyKeys, JS_CopyOwnPropertiesAndPrivateFields,
-        JS_DefineProperty, JS_DefinePropertyById2, JS_GetProperty,
-        JS_InitializePropertiesFromCompatibleNativeObject, JS_NewObjectWithGivenProto,
-        JS_NewObjectWithoutMetadata, JS_SetImmutablePrototype, JS_SetProperty, JS_SetPrototype,
-        JS_WrapObject, NewProxyObject, RUST_INTERNED_STRING_TO_JSID, RUST_SYMBOL_TO_JSID,
+        HandleObject as RawHandleObject,
     };
     pub(crate) use js::rust::{
-        get_context_realm, get_object_class, get_object_realm, CustomAutoRooterGuard, GCMethods,
-        Handle, MutableHandle,
+        CustomAutoRooterGuard,
     };
     pub(crate) use js::typedarray::{
-        ArrayBuffer, ArrayBufferView, Float32Array, Float64Array, Uint8Array, Uint8ClampedArray,
-    };
-    pub(crate) use js::{
-        jsapi, typedarray, JSCLASS_GLOBAL_SLOT_COUNT, JSCLASS_IS_DOMJSCLASS, JSCLASS_IS_GLOBAL,
-        JSCLASS_RESERVED_SLOTS_MASK, JS_CALLEE,
+        ArrayBuffer, ArrayBufferView, Float32Array, Float64Array, Uint8Array, Uint8ClampedArray, Int8Array,
     };
     pub(crate) use servo_config::pref;
 
