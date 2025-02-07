@@ -6667,43 +6667,44 @@ class CGDescriptor(CGThing):
                     if m.returnsPromise():
                         cgThings.append(CGStaticMethodJitinfo(m))
                 elif not descriptor.interface.isCallback():
-                    cgThings.append(CGSpecializedMethod(descriptor, m))
-                    if m.returnsPromise():
-                        cgThings.append(
-                            CGMethodPromiseWrapper(descriptor, m)
-                        )
+                    # cgThings.append(CGSpecializedMethod(descriptor, m))
+                    # if m.returnsPromise():
+                    #     cgThings.append(
+                    #         CGMethodPromiseWrapper(descriptor, m)
+                    #     )
                     cgThings.append(CGMemberJITInfo(descriptor, m))
             elif m.isAttr():
                 if m.getExtendedAttribute("Unscopable"):
                     assert not m.isStatic()
                     unscopableNames.append(m.identifier.name)
-                if m.isStatic():
-                    assert descriptor.interface.hasInterfaceObject()
-                    cgThings.append(CGStaticGetter(descriptor, m))
-                elif not descriptor.interface.isCallback():
-                    cgThings.append(CGSpecializedGetter(descriptor, m))
-                    if m.type.isPromise():
-                        cgThings.append(
-                            CGGetterPromiseWrapper(descriptor, m)
-                        )
+                # if m.isStatic():
+                #     assert descriptor.interface.hasInterfaceObject()
+                #     cgThings.append(CGStaticGetter(descriptor, m))
+                # elif not descriptor.interface.isCallback():
+                #     cgThings.append(CGSpecializedGetter(descriptor, m))
+                #     if m.type.isPromise():
+                #         cgThings.append(
+                #             CGGetterPromiseWrapper(descriptor, m)
+                #         )
 
-                if not m.readonly:
-                    if m.isStatic():
-                        assert descriptor.interface.hasInterfaceObject()
-                        cgThings.append(CGStaticSetter(descriptor, m))
-                    elif not descriptor.interface.isCallback():
-                        cgThings.append(CGSpecializedSetter(descriptor, m))
-                elif m.getExtendedAttribute("PutForwards"):
-                    cgThings.append(CGSpecializedForwardingSetter(descriptor, m))
-                elif m.getExtendedAttribute("Replaceable"):
-                    cgThings.append(CGSpecializedReplaceableSetter(descriptor, m))
+                # if not m.readonly:
+                    # if m.isStatic():
+                    #     assert descriptor.interface.hasInterfaceObject()
+                    #     cgThings.append(CGStaticSetter(descriptor, m))
+                    # elif not descriptor.interface.isCallback():
+                    #     cgThings.append(CGSpecializedSetter(descriptor, m))
+                # elif m.getExtendedAttribute("PutForwards"):
+                #     cgThings.append(CGSpecializedForwardingSetter(descriptor, m))
+                # elif m.getExtendedAttribute("Replaceable"):
+                #     cgThings.append(CGSpecializedReplaceableSetter(descriptor, m))
 
                 if (not m.isStatic() and not descriptor.interface.isCallback()):
                     cgThings.append(CGMemberJITInfo(descriptor, m))
 
-        if defaultToJSONMethod:
-            cgThings.append(CGDefaultToJSONMethod(descriptor, defaultToJSONMethod))
-            cgThings.append(CGMemberJITInfo(descriptor, defaultToJSONMethod))
+        # PerformanceResourceTimingBinding.rs
+        # if defaultToJSONMethod:
+        #     cgThings.append(CGDefaultToJSONMethod(descriptor, defaultToJSONMethod))
+        #     cgThings.append(CGMemberJITInfo(descriptor, defaultToJSONMethod))
 
         if descriptor.concrete:
             cgThings.append(CGClassFinalizeHook(descriptor))
@@ -6725,8 +6726,9 @@ class CGDescriptor(CGThing):
 
         properties = PropertyArrays(descriptor)
 
-        if defaultToJSONMethod:
-            cgThings.append(CGCollectJSONAttributesMethod(descriptor, defaultToJSONMethod))
+        # PerformanceResourceTimingBinding.rs
+        # if defaultToJSONMethod:
+        #     cgThings.append(CGCollectJSONAttributesMethod(descriptor, defaultToJSONMethod))
 
         if descriptor.concrete:
             if descriptor.proxy:
