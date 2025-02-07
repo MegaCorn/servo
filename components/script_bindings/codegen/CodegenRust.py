@@ -3624,41 +3624,7 @@ class CGDefineProxyHandler(CGAbstractMethod):
             getOwnEnumerablePropertyKeys = "getOwnEnumerablePropertyKeys::<D>"
 
         return CGGeneric(f"""
-let traps = ProxyTraps {{
-    enter: None,
-    getOwnPropertyDescriptor: Some(getOwnPropertyDescriptor::<D>),
-    defineProperty: Some({customDefineProperty}),
-    ownPropertyKeys: Some(own_property_keys::<D>),
-    delete_: Some({customDelete}),
-    enumerate: None,
-    getPrototypeIfOrdinary: {customGetPrototypeIfOrdinary},
-    getPrototype: {customGetPrototype},
-    setPrototype: {customSetPrototype},
-    setImmutablePrototype: None,
-    preventExtensions: Some(proxyhandler::prevent_extensions),
-    isExtensible: Some(proxyhandler::is_extensible),
-    has: None,
-    get: Some(get::<D>),
-    set: {customSet},
-    call: None,
-    construct: None,
-    hasOwn: Some(hasOwn::<D>),
-    getOwnEnumerablePropertyKeys: Some({getOwnEnumerablePropertyKeys}),
-    nativeCall: None,
-    objectClassIs: None,
-    className: Some(className),
-    fun_toString: None,
-    boxedValue_unbox: None,
-    defaultValue: None,
-    trace: Some({TRACE_HOOK_NAME}::<D>),
-    finalize: Some({FINALIZE_HOOK_NAME}::<D>),
-    objectMoved: None,
-    isCallable: None,
-    isConstructor: None,
-}};
-
-CreateProxyHandler(&traps, Class.as_void_ptr())\
-""")
+std::ptr::null()""")
 
 
 class CGDefineDOMInterfaceMethod(CGAbstractMethod):
@@ -5666,10 +5632,7 @@ class CGProxyUnwrap(CGAbstractMethod):
 
     def definition_body(self):
         return CGGeneric(f"""
-        let mut slot = UndefinedValue();
-        GetProxyReservedSlot(obj.get(), 0, &mut slot);
-        let box_ = slot.to_private() as *const D::{self.descriptor.concreteType};
-return box_;""")
+std::ptr::null()""")
 
 
 class CGDOMJSProxyHandler_getOwnPropertyDescriptor(CGAbstractExternMethod):
