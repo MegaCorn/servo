@@ -2398,14 +2398,6 @@ class CGAssertInheritance(CGThing):
         }
 
         return f"""
-impl {args['selfName']} {{
-    fn __assert_parent_type(&self) {{
-        use crate::dom::bindings::inheritance::HasParent;
-        // If this type assertion fails, make sure the first field of your
-        // DOM struct is of the correct type -- it must be the parent class.
-        let _: &{args['parentName']} = self.as_parent();
-    }}
-}}
 """
 
 
