@@ -3107,7 +3107,7 @@ class CGIDLInterface(CGThing):
 impl IDLInterface for {name} {{
     #[inline]
     fn derives(class: &'static DOMClass) -> bool {{
-        {check}
+        true
     }}
 }}
 """
@@ -6331,7 +6331,7 @@ class CGDOMJSProxyHandlerDOMClass(CGThing):
         self.descriptor = descriptor
 
     def define(self):
-        return f"static Class: DOMClass = {DOMClass(self.descriptor)};\n"
+        return f"\n"
 
 
 class CGInterfaceTrait(CGThing):
@@ -6698,27 +6698,27 @@ class CGDescriptor(CGThing):
                 # cgThings.append(CGProxyIsProxy(descriptor))
                 cgThings.append(CGProxyUnwrap(descriptor))
                 cgThings.append(CGDOMJSProxyHandlerDOMClass(descriptor))
-                cgThings.append(CGDOMJSProxyHandler_ownPropertyKeys(descriptor))
-                if descriptor.interface.getExtendedAttribute("LegacyUnenumerableNamedProperties") or \
-                   descriptor.isMaybeCrossOriginObject():
-                    cgThings.append(CGDOMJSProxyHandler_getOwnEnumerablePropertyKeys(descriptor))
-                cgThings.append(CGDOMJSProxyHandler_getOwnPropertyDescriptor(descriptor))
-                cgThings.append(CGDOMJSProxyHandler_className(descriptor))
-                cgThings.append(CGDOMJSProxyHandler_get(descriptor))
-                cgThings.append(CGDOMJSProxyHandler_hasOwn(descriptor))
+                # cgThings.append(CGDOMJSProxyHandler_ownPropertyKeys(descriptor))
+                # if descriptor.interface.getExtendedAttribute("LegacyUnenumerableNamedProperties") or \
+                #    descriptor.isMaybeCrossOriginObject():
+                #     cgThings.append(CGDOMJSProxyHandler_getOwnEnumerablePropertyKeys(descriptor))
+                # cgThings.append(CGDOMJSProxyHandler_getOwnPropertyDescriptor(descriptor))
+                # cgThings.append(CGDOMJSProxyHandler_className(descriptor))
+                # cgThings.append(CGDOMJSProxyHandler_get(descriptor))
+                # cgThings.append(CGDOMJSProxyHandler_hasOwn(descriptor))
 
-                if descriptor.isMaybeCrossOriginObject() or descriptor.operations['IndexedSetter'] or \
-                   descriptor.operations['NamedSetter']:
-                    cgThings.append(CGDOMJSProxyHandler_defineProperty(descriptor))
+                # if descriptor.isMaybeCrossOriginObject() or descriptor.operations['IndexedSetter'] or \
+                #    descriptor.operations['NamedSetter']:
+                #     cgThings.append(CGDOMJSProxyHandler_defineProperty(descriptor))
 
                 # We want to prevent indexed deleters from compiling at all.
                 assert not descriptor.operations['IndexedDeleter']
 
-                if descriptor.isMaybeCrossOriginObject() or descriptor.operations['NamedDeleter']:
-                    cgThings.append(CGDOMJSProxyHandler_delete(descriptor))
+                # if descriptor.isMaybeCrossOriginObject() or descriptor.operations['NamedDeleter']:
+                #     cgThings.append(CGDOMJSProxyHandler_delete(descriptor))
 
-                if descriptor.isMaybeCrossOriginObject():
-                    cgThings.append(CGDOMJSProxyHandler_getPrototype(descriptor))
+                # if descriptor.isMaybeCrossOriginObject():
+                #     cgThings.append(CGDOMJSProxyHandler_getPrototype(descriptor))
 
                 # cgThings.append(CGDOMJSProxyHandler(descriptor))
                 # cgThings.append(CGIsMethod(descriptor))
