@@ -8,8 +8,7 @@ use dom_struct::dom_struct;
 use js::gc::CustomAutoRooterGuard;
 use js::jsapi::JSObject;
 use js::rust::HandleObject;
-use js::typedarray;
-use js::typedarray::Uint8Array;
+use my_array::Uint8Array;
 
 use crate::dom::bindings::buffer_source::create_buffer_source;
 use crate::dom::bindings::codegen::Bindings::TextEncoderBinding::{
@@ -77,7 +76,7 @@ impl TextEncoderMethods<crate::DomTypeHolder> for TextEncoder {
     fn EncodeInto(
         &self,
         source: USVString,
-        mut destination: CustomAutoRooterGuard<typedarray::Uint8Array>,
+        mut destination: CustomAutoRooterGuard<my_array::Uint8Array>,
     ) -> TextEncoderEncodeIntoResult {
         let available = destination.len();
 

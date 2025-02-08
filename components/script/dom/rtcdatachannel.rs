@@ -10,7 +10,7 @@ use js::conversions::ToJSValConvertible;
 use js::jsapi::{JSAutoRealm, JSObject};
 use js::jsval::UndefinedValue;
 use js::rust::CustomAutoRooterGuard;
-use js::typedarray::{ArrayBuffer, ArrayBufferView, CreateWith};
+use my_array::{ArrayBuffer, ArrayBufferView, CreateWith};
 use script_traits::serializable::BlobImpl;
 use servo_media::webrtc::{
     DataChannelId, DataChannelInit, DataChannelMessage, DataChannelState, WebRtcError,

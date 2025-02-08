@@ -15,7 +15,7 @@ use ipc_channel::ipc::IpcReceiver;
 use ipc_channel::router::ROUTER;
 use js::jsapi::JSObject;
 use js::rust::MutableHandleValue;
-use js::typedarray::Float32Array;
+use my_array::Float32Array;
 use profile_traits::ipc;
 use servo_atoms::Atom;
 use webxr_api::{

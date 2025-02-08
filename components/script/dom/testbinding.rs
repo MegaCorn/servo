@@ -13,7 +13,7 @@ use dom_struct::dom_struct;
 use js::jsapi::{Heap, JSObject, JS_NewPlainObject};
 use js::jsval::JSVal;
 use js::rust::{CustomAutoRooterGuard, HandleObject, HandleValue, MutableHandleValue};
-use js::typedarray::{self, Uint8ClampedArray};
+use my_array::{self, Uint8ClampedArray};
 use script_traits::serializable::BlobImpl;
 use servo_config::prefs;
 
@@ -657,9 +657,9 @@ impl TestBindingMethods<crate::DomTypeHolder> for TestBinding {
     fn PassByteString(&self, _: ByteString) {}
     fn PassEnum(&self, _: TestEnum) {}
     fn PassInterface(&self, _: &Blob) {}
-    fn PassTypedArray(&self, _: CustomAutoRooterGuard<typedarray::Int8Array>) {}
-    fn PassTypedArray2(&self, _: CustomAutoRooterGuard<typedarray::ArrayBuffer>) {}
-    fn PassTypedArray3(&self, _: CustomAutoRooterGuard<typedarray::ArrayBufferView>) {}
+    fn PassTypedArray(&self, _: CustomAutoRooterGuard<my_array::Int8Array>) {}
+    fn PassTypedArray2(&self, _: CustomAutoRooterGuard<my_array::ArrayBuffer>) {}
+    fn PassTypedArray3(&self, _: CustomAutoRooterGuard<my_array::ArrayBufferView>) {}
     fn PassUnion(&self, _: HTMLElementOrLong) {}
     fn PassUnion2(&self, _: EventOrString) {}
     fn PassUnion3(&self, _: BlobOrString) {}
@@ -690,7 +690,7 @@ impl TestBindingMethods<crate::DomTypeHolder> for TestBinding {
     fn PassStringSequence(&self, _: Vec<DOMString>) {}
     fn PassInterfaceSequence(&self, _: Vec<DomRoot<Blob>>) {}
 
-    fn PassOverloaded(&self, _: CustomAutoRooterGuard<typedarray::ArrayBuffer>) {}
+    fn PassOverloaded(&self, _: CustomAutoRooterGuard<my_array::ArrayBuffer>) {}
     fn PassOverloaded_(&self, _: DOMString) {}
 
     fn PassOverloadedDict(&self, _: &Node) -> DOMString {
@@ -720,7 +720,7 @@ impl TestBindingMethods<crate::DomTypeHolder> for TestBinding {
     // fn PassNullableEnum(self, _: Option<TestEnum>) {}
     fn PassNullableInterface(&self, _: Option<&Blob>) {}
     fn PassNullableObject(&self, _: SafeJSContext, _: *mut JSObject) {}
-    fn PassNullableTypedArray(&self, _: CustomAutoRooterGuard<Option<typedarray::Int8Array>>) {}
+    fn PassNullableTypedArray(&self, _: CustomAutoRooterGuard<Option<my_array::Int8Array>>) {}
     fn PassNullableUnion(&self, _: Option<HTMLElementOrLong>) {}
     fn PassNullableUnion2(&self, _: Option<EventOrString>) {}
     fn PassNullableUnion3(&self, _: Option<StringOrLongSequence>) {}

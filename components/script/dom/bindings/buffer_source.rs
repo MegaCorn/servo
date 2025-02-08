@@ -17,7 +17,7 @@ use js::jsapi::{
 };
 use js::rust::wrappers::DetachArrayBuffer;
 use js::rust::{CustomAutoRooterGuard, Handle, MutableHandleObject};
-use js::typedarray::{
+use my_array::{
     ArrayBuffer, CreateWith, HeapArrayBuffer, TypedArray, TypedArrayElement,
     TypedArrayElementCreator,
 };
@@ -226,32 +226,32 @@ where
 {
     pub(crate) fn acquire_data(&self, cx: JSContext) -> Result<Vec<T::Element>, ()> {
         assert!(self.is_initialized());
+        Err(())
+        // typedarray!(in(*cx) let array: TypedArray = match &self.buffer_source {
+        //     BufferSource::ArrayBufferView(buffer) |
+        //     BufferSource::ArrayBuffer(buffer) |
+        //     BufferSource::Default(buffer) => {
+        //         buffer.get()
+        //     },
+        // });
+        // let data = if let Ok(array) =
+        //     array as Result<CustomAutoRooterGuard<'_, TypedArray<T, *mut JSObject>>, &mut ()>
+        // {
+        //     let data = array.to_vec();
+        //     let _ = self.detach_buffer(cx);
+        //     Ok(data)
+        // } else {
+        //     Err(())
+        // };
 
-        typedarray!(in(*cx) let array: TypedArray = match &self.buffer_source {
-            BufferSource::ArrayBufferView(buffer) |
-            BufferSource::ArrayBuffer(buffer) |
-            BufferSource::Default(buffer) => {
-                buffer.get()
-            },
-        });
-        let data = if let Ok(array) =
-            array as Result<CustomAutoRooterGuard<'_, TypedArray<T, *mut JSObject>>, &mut ()>
-        {
-            let data = array.to_vec();
-            let _ = self.detach_buffer(cx);
-            Ok(data)
-        } else {
-            Err(())
-        };
-
-        match &self.buffer_source {
-            BufferSource::ArrayBufferView(buffer) |
-            BufferSource::ArrayBuffer(buffer) |
-            BufferSource::Default(buffer) => {
-                buffer.set(ptr::null_mut());
-            },
-        }
-        data
+        // match &self.buffer_source {
+        //     BufferSource::ArrayBufferView(buffer) |
+        //     BufferSource::ArrayBuffer(buffer) |
+        //     BufferSource::Default(buffer) => {
+        //         buffer.set(ptr::null_mut());
+        //     },
+        // }
+        // data
     }
 
     pub(crate) fn copy_data_to(
@@ -262,23 +262,24 @@ where
         length: usize,
     ) -> Result<(), ()> {
         assert!(self.is_initialized());
-        typedarray!(in(*cx) let array: TypedArray = match &self.buffer_source {
-            BufferSource::ArrayBufferView(buffer) |
-            BufferSource::ArrayBuffer(buffer) |
-            BufferSource::Default(buffer) => {
-                buffer.get()
-            },
-        });
-        let Ok(array) =
-            array as Result<CustomAutoRooterGuard<'_, TypedArray<T, *mut JSObject>>, &mut ()>
-        else {
-            return Err(());
-        };
-        unsafe {
-            let slice = (*array).as_slice();
-            dest.copy_from_slice(&slice[source_start..length]);
-        }
-        Ok(())
+        Err(())
+        // typedarray!(in(*cx) let array: TypedArray = match &self.buffer_source {
+        //     BufferSource::ArrayBufferView(buffer) |
+        //     BufferSource::ArrayBuffer(buffer) |
+        //     BufferSource::Default(buffer) => {
+        //         buffer.get()
+        //     },
+        // });
+        // let Ok(array) =
+        //     array as Result<CustomAutoRooterGuard<'_, TypedArray<T, *mut JSObject>>, &mut ()>
+        // else {
+        //     return Err(());
+        // };
+        // unsafe {
+        //     let slice = (*array).as_slice();
+        //     dest.copy_from_slice(&slice[source_start..length]);
+        // }
+        // Ok(())
     }
 
     pub(crate) fn copy_data_from(
@@ -289,24 +290,25 @@ where
         length: usize,
     ) -> Result<(), ()> {
         assert!(self.is_initialized());
-        typedarray!(in(*cx) let mut array: TypedArray = match &self.buffer_source {
-            BufferSource::ArrayBufferView(buffer) |
-            BufferSource::ArrayBuffer(buffer) |
-            BufferSource::Default(buffer) => {
-                buffer.get()
-            },
-        });
-        let Ok(mut array) =
-            array as Result<CustomAutoRooterGuard<'_, TypedArray<T, *mut JSObject>>, &mut ()>
-        else {
-            return Err(());
-        };
-        unsafe {
-            let slice = (*array).as_mut_slice();
-            let (_, dest) = slice.split_at_mut(dest_start);
-            dest[0..length].copy_from_slice(&source.as_slice()[0..length])
-        }
-        Ok(())
+        Err(())
+        // typedarray!(in(*cx) let mut array: TypedArray = match &self.buffer_source {
+        //     BufferSource::ArrayBufferView(buffer) |
+        //     BufferSource::ArrayBuffer(buffer) |
+        //     BufferSource::Default(buffer) => {
+        //         buffer.get()
+        //     },
+        // });
+        // let Ok(mut array) =
+        //     array as Result<CustomAutoRooterGuard<'_, TypedArray<T, *mut JSObject>>, &mut ()>
+        // else {
+        //     return Err(());
+        // };
+        // unsafe {
+        //     let slice = (*array).as_mut_slice();
+        //     let (_, dest) = slice.split_at_mut(dest_start);
+        //     dest[0..length].copy_from_slice(&source.as_slice()[0..length])
+        // }
+        // Ok(())
     }
 
     pub(crate) fn set_data(&self, cx: JSContext, data: &[T::Element]) -> Result<(), ()> {

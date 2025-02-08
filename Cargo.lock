@@ -4710,6 +4710,7 @@ name = "my_array"
 version = "0.0.1"
 dependencies = [
  "log",
+ "mozjs",
 ]
 
 [[package]]

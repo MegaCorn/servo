@@ -11,7 +11,7 @@ use encoding_rs::{Encoding, UTF_8};
 use js::jsapi::{Heap, JSObject};
 use js::jsval::{self, JSVal};
 use js::rust::HandleObject;
-use js::typedarray::{ArrayBuffer, CreateWith};
+use my_array::{ArrayBuffer, CreateWith};
 use mime::{self, Mime};
 use servo_atoms::Atom;
 

@@ -5,7 +5,7 @@
 use dom_struct::dom_struct;
 use js::jsapi::{JSObject, Type};
 use js::rust::CustomAutoRooterGuard;
-use js::typedarray::{ArrayBufferView, ArrayBufferViewU8, TypedArray};
+use my_array::{ArrayBufferView, ArrayBufferViewU8, TypedArray};
 use servo_rand::{RngCore, ServoRng};
 use uuid::Uuid;
 

@@ -52,7 +52,7 @@ pub(crate) mod module {
 
     pub(crate) use js::jsapi::HandleObject as RawHandleObject;
     pub(crate) use js::rust::CustomAutoRooterGuard;
-    pub(crate) use js::typedarray::{
+    pub(crate) use my_array::{
         ArrayBuffer, ArrayBufferView, Float32Array, Float64Array, Uint8Array, Uint8ClampedArray, Int8Array,
     };
     pub(crate) use servo_config::pref;

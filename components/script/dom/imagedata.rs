@@ -11,7 +11,7 @@ use euclid::default::{Rect, Size2D};
 use ipc_channel::ipc::IpcSharedMemory;
 use js::jsapi::{Heap, JSObject};
 use js::rust::HandleObject;
-use js::typedarray::{ClampedU8, CreateWith, Uint8ClampedArray};
+use my_array::{ClampedU8, CreateWith, Uint8ClampedArray};
 
 use super::bindings::buffer_source::{
     new_initialized_heap_buffer_source, BufferSource, HeapBufferSource, HeapTypedArrayInit,

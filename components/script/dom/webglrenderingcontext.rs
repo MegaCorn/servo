@@ -24,7 +24,7 @@ use ipc_channel::ipc::{self, IpcSharedMemory};
 use js::jsapi::{JSContext, JSObject, Type};
 use js::jsval::{BooleanValue, DoubleValue, Int32Value, NullValue, ObjectValue, UInt32Value};
 use js::rust::{CustomAutoRooterGuard, MutableHandleValue};
-use js::typedarray::{
+use my_array::{
     ArrayBufferView, CreateWith, Float32, Float32Array, Int32, Int32Array, TypedArray,
     TypedArrayElementCreator, Uint32Array,
 };

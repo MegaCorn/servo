@@ -20,7 +20,7 @@ use js::conversions::ConversionResult;
 use js::jsapi::{JSObject, JS_NewObject};
 use js::jsval::ObjectValue;
 use js::rust::MutableHandleObject;
-use js::typedarray::ArrayBufferU8;
+use my_array::ArrayBufferU8;
 use servo_rand::{RngCore, ServoRng};
 
 use crate::dom::bindings::buffer_source::create_buffer_source;
