@@ -7,13 +7,11 @@ pub(crate) mod base {
     pub(crate) use std::ptr;
     pub(crate) use std::rc::Rc;
 
-    pub(crate) use js::error::throw_type_error;
     pub(crate) use js::jsapi::{
         HandleValue as RawHandleValue, HandleValueArray, Heap, IsCallable,
         JSContext, JSObject, JS_NewObject,
     };
     pub(crate) use js::jsval::{JSVal, NullValue, ObjectOrNullValue, ObjectValue, UndefinedValue};
-    pub(crate) use js::panic::maybe_resume_unwind;
     pub(crate) use js::rust::wrappers::{JS_CallFunctionValue, JS_WrapValue};
     pub(crate) use js::rust::{HandleObject, HandleValue, MutableHandleObject, MutableHandleValue};
 
@@ -52,12 +50,8 @@ pub(crate) mod module {
     pub(crate) use std::ffi::CString;
     pub(crate) use std::ptr::NonNull;
 
-    pub(crate) use js::jsapi::{
-        HandleObject as RawHandleObject,
-    };
-    pub(crate) use js::rust::{
-        CustomAutoRooterGuard,
-    };
+    pub(crate) use js::jsapi::HandleObject as RawHandleObject;
+    pub(crate) use js::rust::CustomAutoRooterGuard;
     pub(crate) use js::typedarray::{
         ArrayBuffer, ArrayBufferView, Float32Array, Float64Array, Uint8Array, Uint8ClampedArray, Int8Array,
     };
