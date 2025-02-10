@@ -15,12 +15,9 @@ use js::jsapi::{
     ExceptionStackBehavior, JSContext,
 };
 use my_js::jsapi::{
-    JS_ClearPendingException, JS_IsExceptionPending, JS_GetPendingException,
+    JS_ClearPendingException, JS_IsExceptionPending, JS_GetPendingException, JS_SetPendingException, JS_ErrorFromException,
 };
 use js::jsval::UndefinedValue;
-use my_js::jsapi::{
-    JS_SetPendingException, JS_ErrorFromException,
-};
 use js::rust::{HandleObject, HandleValue, MutableHandleValue};
 use libc::c_uint;
 
