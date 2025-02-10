@@ -8,7 +8,7 @@ use std::slice::from_raw_parts;
 
 #[cfg(feature = "js_backtrace")]
 use backtrace::Backtrace;
-use js::error::{throw_range_error, throw_type_error};
+use my_js::error::{throw_range_error, throw_type_error};
 #[cfg(feature = "js_backtrace")]
 use js::jsapi::StackFormat as JSStackFormat;
 use js::jsapi::{

@@ -8,7 +8,7 @@ use std::convert::TryFrom;
 use std::ffi::CStr;
 use std::ptr;
 
-use js::error::throw_type_error;
+use my_js::error::throw_type_error;
 use js::glue::UncheckedUnwrapObject;
 use js::jsapi::JS::CompartmentIterResult;
 use js::jsapi::{

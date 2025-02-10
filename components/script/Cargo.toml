@@ -82,7 +82,7 @@ media = { path = "../media" }
 metrics = { path = "../metrics" }
 mime = { workspace = true }
 mime_guess = { workspace = true }
-my_js = { path = "../my_js" }
+my_js = { workspace = true }
 net_traits = { workspace = true }
 num_cpus = { workspace = true }
 num-traits = { workspace = true }

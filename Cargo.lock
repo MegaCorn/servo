@@ -6341,6 +6341,7 @@ dependencies = [
  "log",
  "malloc_size_of_derive",
  "mozjs",
+ "my_js",
  "num-traits",
  "phf_codegen",
  "phf_shared",

@@ -93,6 +93,7 @@ memmap2 = "0.9.5"
 mime = "0.3.13"
 mime_guess = "2.0.5"
 mozangle = "0.5.3"
+my_js = { path = "components/my_js" }
 net_traits = { path = "components/shared/net" }
 nix = "0.29"
 num-traits = "0.2"

@@ -37,7 +37,7 @@ use std::{ffi, ptr};
 pub(crate) use js::conversions::{
     ConversionBehavior, ConversionResult, FromJSValConvertible, ToJSValConvertible,
 };
-use js::error::throw_type_error;
+use my_js::error::throw_type_error;
 use js::glue::{GetProxyReservedSlot, IsWrapper, JS_GetReservedSlot, UnwrapObjectDynamic};
 use js::jsapi::{Heap, IsWindowProxy, JSContext, JSObject, JS_IsExceptionPending};
 use js::jsval::UndefinedValue;

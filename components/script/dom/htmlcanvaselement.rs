@@ -18,7 +18,7 @@ use image::{ColorType, ImageEncoder};
 use ipc_channel::ipc::IpcSharedMemory;
 #[cfg(feature = "webgpu")]
 use ipc_channel::ipc::{self as ipcchan};
-use js::error::throw_type_error;
+use my_js::error::throw_type_error;
 use js::rust::{HandleObject, HandleValue};
 use profile_traits::ipc;
 use script_layout_interface::{HTMLCanvasData, HTMLCanvasDataSource};
