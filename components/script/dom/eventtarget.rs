@@ -16,7 +16,7 @@ use dom_struct::dom_struct;
 use fnv::FnvHasher;
 use my_js::jsapi::JS_GetFunctionObject;
 use js::jsval::JSVal;
-use js::rust::wrappers::CompileFunction;
+use my_js::jsapi_wrapped::CompileFunction;
 use js::rust::{
     transform_u16_to_source_text, CompileOptionsWrapper, HandleObject, RootedObjectVectorWrapper,
 };

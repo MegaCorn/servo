@@ -17,7 +17,7 @@ use my_js::jsapi::{
     AddRawValueRoot, RemoveRawValueRoot,
 };
 use js::jsval::{JSVal, ObjectValue, UndefinedValue};
-use js::rust::wrappers::{JS_GetProperty, JS_WrapObject};
+use my_js::jsapi_wrapped::{JS_GetProperty, JS_WrapObject};
 use js::rust::{MutableHandleObject, Runtime};
 
 use crate::dom::bindings::codegen::Bindings::WindowBinding::Window_Binding::WindowMethods;

@@ -14,7 +14,9 @@ use js::conversions::ToJSValConvertible;
 use js::glue::UnwrapObjectStatic;
 use js::jsapi::{HandleValueArray, Heap, IsCallable, IsConstructor, JSAutoRealm, JSObject};
 use js::jsval::{BooleanValue, JSVal, NullValue, ObjectValue, UndefinedValue};
-use js::rust::wrappers::{Construct1, JS_GetProperty, SameValue};
+use my_js::jsapi_wrapped::{
+    JS_GetProperty, Construct1, SameValue,
+};
 use js::rust::{HandleObject, HandleValue, MutableHandleValue};
 
 use super::bindings::trace::HashMapTracedValues;

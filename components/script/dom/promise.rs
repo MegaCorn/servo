@@ -27,9 +27,10 @@ use my_js::jsapi::{
 use js::jsval::{Int32Value, JSVal, ObjectValue, UndefinedValue};
 use js::rust::wrappers::{
     AddPromiseReactions, CallOriginalPromiseReject, CallOriginalPromiseResolve,
-    GetPromiseIsHandled, GetPromiseState, IsPromiseObject, NewPromiseObject, RejectPromise,
+    GetPromiseState, IsPromiseObject, NewPromiseObject, RejectPromise,
     ResolvePromise, SetAnyPromiseIsHandled, SetPromiseUserInputEventHandlingState,
 };
+use my_js::jsapi_wrapped::GetPromiseIsHandled;
 use js::rust::{HandleObject, HandleValue, MutableHandleObject, Runtime};
 
 use crate::dom::bindings::conversions::root_from_object;

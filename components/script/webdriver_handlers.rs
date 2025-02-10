@@ -12,12 +12,16 @@ use euclid::default::{Point2D, Rect, Size2D};
 use hyper_serde::Serde;
 use ipc_channel::ipc::{self, IpcSender};
 use js::jsapi::{
-    self, GetPropertyKeys, HandleValueArray, JSAutoRealm, JSContext, JSType,
-    JS_GetOwnPropertyDescriptorById, JS_GetPropertyById, PropertyDescriptor,
+    self, HandleValueArray, JSAutoRealm, JSContext, JSType,
+    JS_GetPropertyById, PropertyDescriptor,
 };
 use my_js::jsapi::JS_IsExceptionPending;
 use js::jsval::UndefinedValue;
-use js::rust::wrappers::{JS_CallFunctionName, JS_GetProperty, JS_HasOwnProperty, JS_TypeOfValue};
+use js::rust::wrappers::JS_TypeOfValue;
+use my_js::jsapi_wrapped::{
+    JS_CallFunctionName, JS_GetProperty, JS_HasOwnProperty, GetPropertyKeys,
+    JS_GetOwnPropertyDescriptorById,
+};
 use js::rust::{HandleObject, HandleValue, IdVector};
 use net_traits::CookieSource::{NonHTTP, HTTP};
 use net_traits::CoreResourceMsg::{DeleteCookies, GetCookiesDataForUrl, SetCookieForUrl};

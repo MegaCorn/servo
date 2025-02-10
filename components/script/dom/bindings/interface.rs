@@ -32,8 +32,8 @@ use my_js::jsapi_wrapped::{
     JS_DefineProperty3, JS_DefineProperty4, JS_DefineProperty,
     JS_DefineProperty5, JS_DefinePropertyById5, JS_FireOnNewGlobalObject,
     JS_LinkConstructorAndPrototype, JS_NewObjectWithGivenProto,
+    RUST_SYMBOL_TO_JSID,
 };
-use js::rust::wrappers::RUST_SYMBOL_TO_JSID;
 use js::rust::{
     HandleObject, HandleValue, MutableHandleObject, RealmOptions,
 };

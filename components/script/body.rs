@@ -13,7 +13,7 @@ use my_js::jsapi::{
     JS_ClearPendingException, JS_GetPendingException,
 };
 use js::jsval::{JSVal, UndefinedValue};
-use js::rust::wrappers::JS_ParseJSON;
+use my_js::jsapi_wrapped::JS_ParseJSON;
 use js::rust::HandleValue;
 use my_js::typedarray::{ArrayBufferU8, Uint8};
 use mime::{self, Mime};

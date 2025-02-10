@@ -42,7 +42,9 @@ use js::jsapi::{
 };
 use js::jsval::UndefinedValue;
 use my_js::panic::wrap_panic;
-use js::rust::wrappers::{GetPromiseIsHandled, JS_GetPromiseResult};
+use my_js::jsapi_wrapped::{
+    GetPromiseIsHandled, JS_GetPromiseResult,
+};
 pub(crate) use js::rust::ThreadSafeJSContext;
 use js::rust::{
     describe_scripted_caller, Handle, HandleObject as RustHandleObject, IntoHandle, JSEngine,

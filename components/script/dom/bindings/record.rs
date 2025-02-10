@@ -18,7 +18,9 @@ use js::jsapi::{
 };
 use my_js::jsapi::JS_NewPlainObject;
 use js::jsval::{ObjectValue, UndefinedValue};
-use js::rust::wrappers::{GetPropertyKeys, JS_DefineUCProperty2, JS_GetPropertyById, JS_IdToValue};
+use my_js::jsapi_wrapped::{
+    GetPropertyKeys, JS_GetPropertyById, JS_IdToValue, JS_DefineUCProperty2,
+};
 use js::rust::{HandleId, HandleValue, IdVector, MutableHandleValue};
 
 use crate::dom::bindings::conversions::jsid_to_string;

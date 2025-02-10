@@ -22,7 +22,7 @@ use js::jsapi::{
 };
 use my_js::jsapi::JS_ClearPendingException;
 use js::jsval::UndefinedValue;
-use js::rust::wrappers::{JS_ReadStructuredClone, JS_WriteStructuredClone};
+use my_js::jsapi_wrapped::{JS_ReadStructuredClone, JS_WriteStructuredClone};
 use js::rust::{CustomAutoRooterGuard, HandleValue, MutableHandleValue};
 use script_traits::serializable::BlobImpl;
 use script_traits::transferable::MessagePortImpl;

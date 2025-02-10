@@ -38,7 +38,7 @@ use my_js::jsapi::{
 };
 use js::jsval::{PrivateValue, UndefinedValue};
 use my_js::panic::maybe_resume_unwind;
-use js::rust::wrappers::{JS_ExecuteScript, JS_GetScriptPrivate};
+use my_js::jsapi_wrapped::{JS_ExecuteScript, JS_GetScriptPrivate};
 use js::rust::{
     describe_scripted_caller, transform_str_to_source_text,
     CompileOptionsWrapper, CustomAutoRooter, CustomAutoRooterGuard, HandleValue,

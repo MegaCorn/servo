@@ -21,7 +21,7 @@ use hyper_serde::Serde;
 use js::jsapi::Heap;
 use my_js::jsapi::JS_ClearPendingException;
 use js::jsval::{JSVal, NullValue};
-use js::rust::wrappers::JS_ParseJSON;
+use my_js::jsapi_wrapped::JS_ParseJSON;
 use js::rust::{HandleObject, MutableHandleValue};
 use my_js::typedarray::{ArrayBuffer, ArrayBufferU8};
 use mime::{self, Mime, Name};

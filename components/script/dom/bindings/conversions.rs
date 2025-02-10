@@ -42,7 +42,8 @@ use js::glue::{GetProxyReservedSlot, IsWrapper, JS_GetReservedSlot, UnwrapObject
 use js::jsapi::{Heap, IsWindowProxy, JSContext, JSObject};
 use my_js::jsapi::JS_IsExceptionPending;
 use js::jsval::UndefinedValue;
-use js::rust::wrappers::{IsArrayObject, JS_GetProperty, JS_HasProperty};
+use js::rust::wrappers::{IsArrayObject, JS_HasProperty};
+use my_js::jsapi_wrapped::JS_GetProperty;
 use js::rust::{is_dom_object, HandleId, HandleObject, HandleValue, MutableHandleValue};
 use num_traits::Float;
 pub(crate) use script_bindings::conversions::*;

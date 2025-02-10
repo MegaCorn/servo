@@ -15,7 +15,7 @@ use js::jsapi::{
     JS_GetArrayBufferViewBuffer, JS_GetArrayBufferViewByteLength, JS_IsArrayBufferViewObject,
     JS_IsTypedArrayObject, NewExternalArrayBuffer,
 };
-use js::rust::wrappers::DetachArrayBuffer;
+use my_js::jsapi_wrapped::DetachArrayBuffer;
 use js::rust::{CustomAutoRooterGuard, Handle, MutableHandleObject};
 use my_js::typedarray::{
     ArrayBuffer, CreateWith, HeapArrayBuffer, TypedArray, TypedArrayElement,

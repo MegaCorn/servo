@@ -11,9 +11,10 @@ use devtools_traits::{
 };
 use js::jsapi::{self, ESClass, PropertyDescriptor};
 use js::jsval::UndefinedValue;
-use js::rust::wrappers::{
-    GetBuiltinClass, GetPropertyKeys, JS_GetOwnPropertyDescriptorById, JS_GetPropertyById,
-    JS_IdToValue, JS_ValueToSource,
+use js::rust::wrappers::JS_GetOwnPropertyDescriptorById;
+use my_js::jsapi_wrapped::{
+    GetBuiltinClass, GetPropertyKeys, JS_GetPropertyById, JS_IdToValue,
+    JS_ValueToSource,
 };
 use js::rust::{describe_scripted_caller, CapturedJSStack, HandleValue, IdVector};
 

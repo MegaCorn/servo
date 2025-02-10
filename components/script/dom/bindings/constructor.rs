@@ -9,7 +9,8 @@ use html5ever::{local_name, namespace_url, ns, LocalName};
 use js::conversions::ToJSValConvertible;
 use js::glue::{UnwrapObjectDynamic, UnwrapObjectStatic};
 use js::jsapi::{CallArgs, CurrentGlobalOrNull, JSAutoRealm, JSObject};
-use js::rust::wrappers::{JS_SetPrototype, JS_WrapObject};
+use js::rust::wrappers::JS_SetPrototype;
+use my_js::jsapi_wrapped::JS_WrapObject;
 use js::rust::{HandleObject, MutableHandleObject, MutableHandleValue};
 
 use super::utils::ProtoOrIfaceArray;

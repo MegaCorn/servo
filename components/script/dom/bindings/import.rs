@@ -14,8 +14,10 @@ pub(crate) mod base {
     pub(crate) use my_js::jsapi::{
         JS_NewObject,
     };
+    pub(crate) use my_js::jsapi_wrapped::{
+        JS_CallFunctionValue, JS_WrapValue,
+    };
     pub(crate) use js::jsval::{JSVal, NullValue, ObjectOrNullValue, ObjectValue, UndefinedValue};
-    pub(crate) use js::rust::wrappers::{JS_CallFunctionValue, JS_WrapValue};
     pub(crate) use js::rust::{HandleObject, HandleValue, MutableHandleObject, MutableHandleValue};
 
     pub(crate) use crate::dom::bindings::callback::{
