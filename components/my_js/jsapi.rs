@@ -1,7 +1,9 @@
 use js::jsapi::{
     JSObject, Value, JSContext, JSFunction, JSNative, ExceptionStackBehavior,
     JSErrorReport, JSString, AutoRequireNoGC, Latin1Char,
-    JSLinearString, JSAtom,
+    JSLinearString, JSAtom, ReadOnlyCompileOptions, SourceText, Handle,
+    JSRuntime, ModuleDynamicImportHook, ModuleMetadataHook, ModuleResolveHook,
+    ScriptPrivateReferenceHook, ModuleErrorBehaviour,
 };
 use js::rust::{
     HandleValue, HandleObject, MutableHandleValue, HandleId,
@@ -137,7 +139,7 @@ pub fn JS_EnumerateStandardClasses(
 
 pub fn JS_FreezeObject(
     cx: *mut JSContext,
-    obj: js::jsapi::Handle<*mut JSObject>,
+    obj: Handle<*mut JSObject>,
 ) -> bool {
     true
 }
@@ -156,5 +158,101 @@ pub fn JS_ResolveStandardClass(
 }
 
 pub fn StringIsArrayIndex(str_: *mut JSLinearString, indexp: *mut u32) -> bool {
+    true
+}
+
+pub fn CompileModule1(
+    cx: *mut JSContext,
+    options: *const ReadOnlyCompileOptions,
+    srcBuf: *mut SourceText<js::jsapi::mozilla::Utf8Unit>,
+) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn FinishDynamicModuleImport(
+    cx: *mut JSContext,
+    evaluationPromise: Handle<*mut JSObject>,
+    referencingPrivate: Handle<Value>,
+    moduleRequest: Handle<*mut JSObject>,
+    promise: Handle<*mut JSObject>,
+) -> bool {
+    true
+}
+
+pub fn GetModuleRequestSpecifier(
+    cx: *mut JSContext,
+    moduleRequestArg: Handle<*mut JSObject>,
+) -> *mut JSString {
+    std::ptr::null_mut()
+}
+
+pub fn GetRequestedModuleSpecifier(
+    cx: *mut JSContext,
+    moduleRecord: Handle<*mut JSObject>,
+    index: u32,
+) -> *mut JSString {
+    std::ptr::null_mut()
+}
+
+pub fn GetRequestedModulesCount(
+    cx: *mut JSContext,
+    moduleRecord: Handle<*mut JSObject>,
+) -> u32 {
+    0
+}
+
+pub fn JS_DefineProperty4(
+    cx: *mut JSContext,
+    obj: Handle<*mut JSObject>,
+    name: *const ::std::os::raw::c_char,
+    value: Handle<*mut JSString>,
+    attrs: ::std::os::raw::c_uint,
+) -> bool {
+    true
+}
+
+pub fn ModuleEvaluate(
+    cx: *mut JSContext,
+    moduleRecord: Handle<*mut JSObject>,
+    rval: js::jsapi::MutableHandleValue,
+) -> bool {
+    true
+}
+
+pub fn ModuleLink(
+    cx: *mut JSContext,
+    moduleRecord: Handle<*mut JSObject>,
+) -> bool {
+    true
+}
+
+pub fn SetModuleDynamicImportHook(
+    rt: *mut JSRuntime,
+    func: ModuleDynamicImportHook,
+) {}
+
+pub fn SetModuleMetadataHook(
+    rt: *mut JSRuntime,
+    func: ModuleMetadataHook,
+) {}
+
+pub fn SetModulePrivate(module: *mut JSObject, value: *const Value) {}
+
+pub fn SetModuleResolveHook(
+    rt: *mut JSRuntime,
+    func: ModuleResolveHook,
+) {}
+
+pub fn SetScriptPrivateReferenceHooks(
+    rt: *mut JSRuntime,
+    addRefHook: ScriptPrivateReferenceHook,
+    releaseHook: ScriptPrivateReferenceHook,
+) {}
+
+pub fn ThrowOnModuleEvaluationFailure(
+    cx: *mut JSContext,
+    evaluationPromise: Handle<*mut JSObject>,
+    errorBehaviour: ModuleErrorBehaviour,
+) -> bool {
     true
 }

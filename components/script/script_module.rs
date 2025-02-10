@@ -17,18 +17,22 @@ use html5ever::local_name;
 use hyper_serde::Serde;
 use indexmap::IndexSet;
 use js::jsapi::{
-    CompileModule1, ExceptionStackBehavior, FinishDynamicModuleImport, GetModuleRequestSpecifier,
-    GetModuleResolveHook, GetRequestedModuleSpecifier, GetRequestedModulesCount,
+    ExceptionStackBehavior,
+    GetModuleResolveHook,
     Handle as RawHandle, HandleObject, HandleValue as RawHandleValue, Heap, JSAutoRealm, JSContext,
-    JSObject, JSRuntime, JSString, JS_DefineProperty4,
-    ModuleErrorBehaviour, ModuleEvaluate, ModuleLink,
-    MutableHandleValue, SetModuleDynamicImportHook, SetModuleMetadataHook, SetModulePrivate,
-    SetModuleResolveHook, SetScriptPrivateReferenceHooks, ThrowOnModuleEvaluationFailure, Value,
+    JSObject, JSRuntime, JSString,
+    ModuleErrorBehaviour,
+    MutableHandleValue,
+    Value,
     JSPROP_ENUMERATE,
 };
 use my_js::jsapi::{
     JS_ClearPendingException, JS_IsExceptionPending, JS_SetPendingException,
-    JS_NewStringCopyN,
+    JS_NewStringCopyN, ThrowOnModuleEvaluationFailure, SetScriptPrivateReferenceHooks,
+    SetModuleResolveHook, SetModulePrivate, SetModuleMetadataHook, SetModuleDynamicImportHook,
+    ModuleLink, ModuleEvaluate, JS_DefineProperty4, GetRequestedModulesCount,
+    GetRequestedModuleSpecifier, GetModuleRequestSpecifier, FinishDynamicModuleImport,
+    CompileModule1,
 };
 use my_js::jsapi_wrapped::JS_GetPendingException;
 use js::jsval::{JSVal, PrivateValue, UndefinedValue};
