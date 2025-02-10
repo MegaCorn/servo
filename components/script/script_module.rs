@@ -21,13 +21,14 @@ use js::jsapi::{
     GetModuleResolveHook, GetRequestedModuleSpecifier, GetRequestedModulesCount,
     Handle as RawHandle, HandleObject, HandleValue as RawHandleValue, Heap, JSAutoRealm, JSContext,
     JSObject, JSRuntime, JSString, JS_DefineProperty4,
-    JS_NewStringCopyN, ModuleErrorBehaviour, ModuleEvaluate, ModuleLink,
+    ModuleErrorBehaviour, ModuleEvaluate, ModuleLink,
     MutableHandleValue, SetModuleDynamicImportHook, SetModuleMetadataHook, SetModulePrivate,
     SetModuleResolveHook, SetScriptPrivateReferenceHooks, ThrowOnModuleEvaluationFailure, Value,
     JSPROP_ENUMERATE,
 };
 use my_js::jsapi::{
     JS_ClearPendingException, JS_IsExceptionPending, JS_SetPendingException,
+    JS_NewStringCopyN,
 };
 use my_js::jsapi_wrapped::JS_GetPendingException;
 use js::jsval::{JSVal, PrivateValue, UndefinedValue};

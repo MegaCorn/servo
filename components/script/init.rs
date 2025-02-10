@@ -63,7 +63,7 @@ unsafe extern "C" fn is_dom_object(obj: *mut JSObject) -> bool {
 pub fn init() -> JSEngineSetup {
     unsafe {
         if pref!(js_disable_jit) {
-            js::jsapi::DisableJitBackend();
+            my_js::jsapi::DisableJitBackend();
         }
         proxyhandler::init();
 

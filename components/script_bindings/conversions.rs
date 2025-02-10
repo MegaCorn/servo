@@ -10,8 +10,11 @@ use js::conversions::{
 use my_js::error::throw_type_error;
 use js::glue::{GetProxyHandlerExtra, IsProxyHandlerFamily};
 use js::jsapi::{
-    JSContext, JSObject, JSString, JS_DeprecatedStringHasLatin1Chars,
+    JSContext, JSObject, JSString,
+};
+use my_js::jsapi::{
     JS_GetLatin1StringCharsAndLength, JS_GetTwoByteStringCharsAndLength, JS_NewStringCopyN,
+    JS_DeprecatedStringHasLatin1Chars,
 };
 use js::jsval::{ObjectValue, StringValue};
 use js::rust::{

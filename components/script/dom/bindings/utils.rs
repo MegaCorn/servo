@@ -16,16 +16,18 @@ use js::glue::{
     UnwrapObjectDynamic, UnwrapObjectStatic, RUST_FUNCTION_VALUE_TO_JITINFO,
 };
 use js::jsapi::{
-    AtomToLinearString, CallArgs, DOMCallbacks, ExceptionStackBehavior, GetLinearStringCharAt,
-    GetLinearStringLength, GetNonCCWObjectGlobal, HandleId as RawHandleId,
+    CallArgs, DOMCallbacks, ExceptionStackBehavior,
+    HandleId as RawHandleId,
     HandleObject as RawHandleObject, Heap, JSAtom, JSContext, JSJitInfo, JSObject, JSTracer,
-    JS_DeprecatedStringHasLatin1Chars, JS_EnumerateStandardClasses,
-    JS_FreezeObject, JS_GetLatin1StringCharsAndLength, JS_IsGlobalObject,
-    JS_ResolveStandardClass, MutableHandleIdVector as RawMutableHandleIdVector,
-    MutableHandleValue as RawMutableHandleValue, ObjectOpResult, StringIsArrayIndex,
+    MutableHandleIdVector as RawMutableHandleIdVector,
+    MutableHandleValue as RawMutableHandleValue, ObjectOpResult,
 };
 use my_js::jsapi::{
     JS_ClearPendingException, JS_IsExceptionPending, JS_GetPendingException, JS_SetPendingException,
+    JS_GetLatin1StringCharsAndLength, JS_DeprecatedStringHasLatin1Chars, AtomToLinearString,
+    GetLinearStringCharAt, GetLinearStringLength, GetNonCCWObjectGlobal,
+    JS_EnumerateStandardClasses, JS_FreezeObject, JS_IsGlobalObject,
+    JS_ResolveStandardClass, StringIsArrayIndex,
 };
 use js::jsval::{JSVal, UndefinedValue};
 use js::rust::wrappers::{

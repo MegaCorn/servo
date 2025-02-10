@@ -29,9 +29,12 @@ use ipc_channel::ipc::{self, IpcSender};
 use ipc_channel::router::ROUTER;
 use js::glue::{IsWrapper, UnwrapObjectDynamic};
 use js::jsapi::{
-    Compile1, CurrentGlobalOrNull, GetNonCCWObjectGlobal, HandleObject, Heap,
+    Compile1, CurrentGlobalOrNull, HandleObject, Heap,
     InstantiateGlobalStencil, InstantiateOptions, JSContext, JSObject, JSScript, RuntimeCode,
     SetScriptPrivate,
+};
+use my_js::jsapi::{
+    GetNonCCWObjectGlobal,
 };
 use js::jsval::{PrivateValue, UndefinedValue};
 use my_js::panic::maybe_resume_unwind;
