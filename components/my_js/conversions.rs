@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-pub mod consts;
-pub mod conversions;
-pub mod error;
-pub mod panic;
-pub mod typedarray;
+ use js::jsapi::{JSContext, JSString};
+
+pub unsafe fn jsstr_to_string(cx: *mut JSContext, jsstr: *mut JSString) -> String {
+    String::new()
+}

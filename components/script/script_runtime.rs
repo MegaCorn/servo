@@ -21,7 +21,7 @@ use std::{os, ptr, thread};
 
 use background_hang_monitor_api::ScriptHangAnnotation;
 use content_security_policy::{CheckResult, PolicyDisposition};
-use js::conversions::jsstr_to_string;
+use my_js::conversions::jsstr_to_string;
 use js::glue::{
     CollectServoSizes, CreateJobQueue, DeleteJobQueue, DispatchableRun, JobQueueTraps,
     RUST_js_GetErrorMessage, SetBuildId, StreamConsumerConsumeChunk,

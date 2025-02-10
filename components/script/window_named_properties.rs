@@ -5,7 +5,7 @@
 use std::ptr;
 use std::sync::LazyLock;
 
-use js::conversions::jsstr_to_string;
+use my_js::conversions::jsstr_to_string;
 use js::glue::{AppendToIdVector, CreateProxyHandler, NewProxyObject, ProxyTraps};
 use js::jsapi::{
     GetWellKnownSymbol, Handle, HandleId, HandleObject, JSClass, JSClass_NON_NATIVE, JSContext,
