@@ -19,16 +19,19 @@ use js::jsapi::{
     AtomToLinearString, CallArgs, DOMCallbacks, ExceptionStackBehavior, GetLinearStringCharAt,
     GetLinearStringLength, GetNonCCWObjectGlobal, HandleId as RawHandleId,
     HandleObject as RawHandleObject, Heap, JSAtom, JSContext, JSJitInfo, JSObject, JSTracer,
-    JS_ClearPendingException, JS_DeprecatedStringHasLatin1Chars, JS_EnumerateStandardClasses,
-    JS_FreezeObject, JS_GetLatin1StringCharsAndLength, JS_IsExceptionPending, JS_IsGlobalObject,
+    JS_DeprecatedStringHasLatin1Chars, JS_EnumerateStandardClasses,
+    JS_FreezeObject, JS_GetLatin1StringCharsAndLength, JS_IsGlobalObject,
     JS_ResolveStandardClass, MutableHandleIdVector as RawMutableHandleIdVector,
     MutableHandleValue as RawMutableHandleValue, ObjectOpResult, StringIsArrayIndex,
+};
+use my_js::jsapi::{
+    JS_ClearPendingException, JS_IsExceptionPending, JS_GetPendingException, JS_SetPendingException,
 };
 use js::jsval::{JSVal, UndefinedValue};
 use js::rust::wrappers::{
     CallOriginalPromiseReject, JS_DeletePropertyById, JS_ForwardGetPropertyTo,
-    JS_GetPendingException, JS_GetProperty, JS_GetPrototype, JS_HasProperty, JS_HasPropertyById,
-    JS_SetPendingException, JS_SetProperty,
+    JS_GetProperty, JS_GetPrototype, JS_HasProperty, JS_HasPropertyById,
+    JS_SetProperty,
 };
 use js::rust::{
     get_object_class, is_dom_class, GCMethods, Handle, HandleId, HandleObject, HandleValue,

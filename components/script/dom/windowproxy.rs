@@ -20,10 +20,11 @@ use js::jsapi::{
     HandleValue as RawHandleValue, JSAutoRealm, JSContext, JSErrNum, JSObject, JSTracer,
     JS_DefinePropertyById, JS_ForwardGetPropertyTo, JS_ForwardSetPropertyTo,
     JS_GetOwnPropertyDescriptorById, JS_HasOwnPropertyById, JS_HasPropertyById,
-    JS_IsExceptionPending, MutableHandle as RawMutableHandle,
+    MutableHandle as RawMutableHandle,
     MutableHandleObject as RawMutableHandleObject, MutableHandleValue as RawMutableHandleValue,
     ObjectOpResult, PropertyDescriptor, JSPROP_ENUMERATE, JSPROP_READONLY,
 };
+use my_js::jsapi::JS_IsExceptionPending;
 use js::jsval::{NullValue, PrivateValue, UndefinedValue};
 use js::rust::wrappers::{JS_TransplantObject, NewWindowProxy, SetWindowProxy};
 use js::rust::{get_object_class, Handle, MutableHandle, MutableHandleValue};

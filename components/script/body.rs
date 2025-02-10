@@ -8,9 +8,12 @@ use std::{ptr, slice, str};
 use encoding_rs::{Encoding, UTF_8};
 use ipc_channel::ipc::{self, IpcReceiver, IpcSender};
 use ipc_channel::router::ROUTER;
-use js::jsapi::{Heap, JSObject, JS_ClearPendingException, Value as JSValue};
+use js::jsapi::{Heap, JSObject, Value as JSValue};
+use my_js::jsapi::{
+    JS_ClearPendingException, JS_GetPendingException,
+};
 use js::jsval::{JSVal, UndefinedValue};
-use js::rust::wrappers::{JS_GetPendingException, JS_ParseJSON};
+use js::rust::wrappers::JS_ParseJSON;
 use js::rust::HandleValue;
 use my_js::typedarray::{ArrayBufferU8, Uint8};
 use mime::{self, Mime};

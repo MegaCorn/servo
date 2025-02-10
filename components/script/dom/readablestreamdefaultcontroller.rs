@@ -10,7 +10,7 @@ use std::rc::Rc;
 use dom_struct::dom_struct;
 use js::jsapi::{Heap, JSObject};
 use js::jsval::{JSVal, UndefinedValue};
-use js::rust::wrappers::JS_GetPendingException;
+use my_js::jsapi::JS_GetPendingException;
 use js::rust::{HandleObject, HandleValue as SafeHandleValue, HandleValue, MutableHandleValue};
 use my_js::typedarray::Uint8;
 

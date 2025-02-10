@@ -18,12 +18,11 @@ use dom_struct::dom_struct;
 use js::conversions::ToJSValConvertible;
 use js::jsapi::{
     CallArgs, Heap, JSAutoRealm, JSContext, JSObject,
-    JS_ClearPendingException,
     PromiseState, PromiseUserInputEventHandlingState,
 };
 use my_js::jsapi::{
     JS_NewFunction, SetFunctionNativeReserved, NewFunctionWithReserved, GetFunctionNativeReserved,
-    AddRawValueRoot, JS_GetFunctionObject, RemoveRawValueRoot,
+    AddRawValueRoot, JS_GetFunctionObject, RemoveRawValueRoot, JS_ClearPendingException,
 };
 use js::jsval::{Int32Value, JSVal, ObjectValue, UndefinedValue};
 use js::rust::wrappers::{

@@ -16,9 +16,10 @@ use embedder_traits::{FilterPattern, InputMethodType};
 use encoding_rs::Encoding;
 use html5ever::{local_name, namespace_url, ns, LocalName, Prefix};
 use js::jsapi::{
-    ClippedTime, DateGetMsecSinceEpoch, Handle, JSObject, JS_ClearPendingException, NewDateObject,
+    ClippedTime, DateGetMsecSinceEpoch, Handle, JSObject, NewDateObject,
     NewUCRegExpObject, ObjectIsDate, RegExpFlag_Unicode, RegExpFlags,
 };
+use my_js::jsapi::JS_ClearPendingException;
 use js::jsval::UndefinedValue;
 use js::rust::jsapi_wrapped::{CheckRegExpSyntax, ExecuteRegExpNoStatics, ObjectIsRegExp};
 use js::rust::{HandleObject, MutableHandleObject};

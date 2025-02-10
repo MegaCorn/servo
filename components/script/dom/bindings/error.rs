@@ -12,10 +12,15 @@ use my_js::error::{throw_range_error, throw_type_error};
 #[cfg(feature = "js_backtrace")]
 use js::jsapi::StackFormat as JSStackFormat;
 use js::jsapi::{
-    ExceptionStackBehavior, JSContext, JS_ClearPendingException, JS_IsExceptionPending,
+    ExceptionStackBehavior, JSContext,
+};
+use my_js::jsapi::{
+    JS_ClearPendingException, JS_IsExceptionPending, JS_GetPendingException,
 };
 use js::jsval::UndefinedValue;
-use js::rust::wrappers::{JS_ErrorFromException, JS_GetPendingException, JS_SetPendingException};
+use my_js::jsapi::{
+    JS_SetPendingException, JS_ErrorFromException,
+};
 use js::rust::{HandleObject, HandleValue, MutableHandleValue};
 use libc::c_uint;
 

@@ -6,6 +6,7 @@ pub mod consts;
 pub mod conversions;
 pub mod error;
 pub mod jsapi;
+pub mod jsapi_wrapped;
 pub mod gc;
 pub mod panic;
 pub mod typedarray;

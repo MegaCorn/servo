@@ -16,10 +16,11 @@ use js::glue::{
 use js::jsapi::{
     CloneDataPolicy, HandleObject as RawHandleObject, JSContext, JSObject,
     JSStructuredCloneCallbacks, JSStructuredCloneReader, JSStructuredCloneWriter,
-    JS_ClearPendingException, JS_ReadUint32Pair, JS_WriteUint32Pair,
+    JS_ReadUint32Pair, JS_WriteUint32Pair,
     MutableHandleObject as RawMutableHandleObject, StructuredCloneScope, TransferableOwnership,
     JS_STRUCTURED_CLONE_VERSION,
 };
+use my_js::jsapi::JS_ClearPendingException;
 use js::jsval::UndefinedValue;
 use js::rust::wrappers::{JS_ReadStructuredClone, JS_WriteStructuredClone};
 use js::rust::{CustomAutoRooterGuard, HandleValue, MutableHandleValue};

@@ -20,15 +20,17 @@ use js::jsapi::{
     CompileModule1, ExceptionStackBehavior, FinishDynamicModuleImport, GetModuleRequestSpecifier,
     GetModuleResolveHook, GetRequestedModuleSpecifier, GetRequestedModulesCount,
     Handle as RawHandle, HandleObject, HandleValue as RawHandleValue, Heap, JSAutoRealm, JSContext,
-    JSObject, JSRuntime, JSString, JS_ClearPendingException, JS_DefineProperty4,
-    JS_IsExceptionPending, JS_NewStringCopyN, ModuleErrorBehaviour, ModuleEvaluate, ModuleLink,
+    JSObject, JSRuntime, JSString, JS_DefineProperty4,
+    JS_NewStringCopyN, ModuleErrorBehaviour, ModuleEvaluate, ModuleLink,
     MutableHandleValue, SetModuleDynamicImportHook, SetModuleMetadataHook, SetModulePrivate,
     SetModuleResolveHook, SetScriptPrivateReferenceHooks, ThrowOnModuleEvaluationFailure, Value,
     JSPROP_ENUMERATE,
 };
+use my_js::jsapi::{
+    JS_ClearPendingException, JS_IsExceptionPending, JS_SetPendingException,
+};
+use my_js::jsapi_wrapped::JS_GetPendingException;
 use js::jsval::{JSVal, PrivateValue, UndefinedValue};
-use js::rust::jsapi_wrapped::JS_GetPendingException;
-use js::rust::wrappers::JS_SetPendingException;
 use js::rust::{
     transform_str_to_source_text, CompileOptionsWrapper, Handle, HandleObject as RustHandleObject,
     HandleValue, IntoHandle, MutableHandleObject as RustMutableHandleObject,

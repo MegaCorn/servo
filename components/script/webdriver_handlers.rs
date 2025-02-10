@@ -13,8 +13,9 @@ use hyper_serde::Serde;
 use ipc_channel::ipc::{self, IpcSender};
 use js::jsapi::{
     self, GetPropertyKeys, HandleValueArray, JSAutoRealm, JSContext, JSType,
-    JS_GetOwnPropertyDescriptorById, JS_GetPropertyById, JS_IsExceptionPending, PropertyDescriptor,
+    JS_GetOwnPropertyDescriptorById, JS_GetPropertyById, PropertyDescriptor,
 };
+use my_js::jsapi::JS_IsExceptionPending;
 use js::jsval::UndefinedValue;
 use js::rust::wrappers::{JS_CallFunctionName, JS_GetProperty, JS_HasOwnProperty, JS_TypeOfValue};
 use js::rust::{HandleObject, HandleValue, IdVector};

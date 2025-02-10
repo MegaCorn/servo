@@ -21,11 +21,12 @@ use js::jsapi::{
     GetWellKnownSymbol, Handle as RawHandle, HandleId as RawHandleId,
     HandleObject as RawHandleObject, HandleValue as RawHandleValue, JSAutoRealm, JSContext,
     JSErrNum, JSFunctionSpec, JSObject, JSPropertySpec, JS_AtomizeAndPinString,
-    JS_DefinePropertyById, JS_GetOwnPropertyDescriptorById, JS_IsExceptionPending,
+    JS_DefinePropertyById, JS_GetOwnPropertyDescriptorById,
     MutableHandle as RawMutableHandle, MutableHandleIdVector as RawMutableHandleIdVector,
     MutableHandleObject as RawMutableHandleObject, MutableHandleValue as RawMutableHandleValue,
     ObjectOpResult, PropertyDescriptor, SetDOMProxyInformation, SymbolCode,
 };
+use my_js::jsapi::JS_IsExceptionPending;
 use js::jsid::SymbolId;
 use js::jsval::{ObjectValue, UndefinedValue};
 use js::rust::wrappers::{

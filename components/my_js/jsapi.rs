@@ -1,5 +1,9 @@
 use js::jsapi::{
-    JSObject, Value, JSContext, JSFunction, JSNative,
+    JSObject, Value, JSContext, JSFunction, JSNative, ExceptionStackBehavior,
+    JSErrorReport,
+};
+use js::rust::{
+    HandleValue, HandleObject, MutableHandleValue,
 };
 
 pub fn JS_NewFunction(
@@ -48,3 +52,29 @@ pub fn JS_GetFunctionObject(fun: *mut JSFunction) -> *mut JSObject {
 }
 
 pub fn RemoveRawValueRoot(cx: *mut JSContext, vp: *mut Value) {}
+
+pub fn JS_ClearPendingException(cx: *mut JSContext) {}
+
+pub fn JS_IsExceptionPending(cx: *mut JSContext) -> bool {
+    false
+}
+
+pub fn JS_SetPendingException(
+    cx: *mut JSContext,
+    v: HandleValue,
+    behavior: ExceptionStackBehavior,
+) {}
+
+pub fn JS_GetPendingException(
+    cx: *mut JSContext,
+    vp: MutableHandleValue,
+) -> bool {
+    false
+}
+
+pub fn JS_ErrorFromException(
+    cx: *mut JSContext,
+    obj: HandleObject,
+) -> *mut JSErrorReport {
+    std::ptr::null_mut()
+}

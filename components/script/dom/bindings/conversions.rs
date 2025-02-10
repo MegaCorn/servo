@@ -39,7 +39,8 @@ pub(crate) use js::conversions::{
 };
 use my_js::error::throw_type_error;
 use js::glue::{GetProxyReservedSlot, IsWrapper, JS_GetReservedSlot, UnwrapObjectDynamic};
-use js::jsapi::{Heap, IsWindowProxy, JSContext, JSObject, JS_IsExceptionPending};
+use js::jsapi::{Heap, IsWindowProxy, JSContext, JSObject};
+use my_js::jsapi::JS_IsExceptionPending;
 use js::jsval::UndefinedValue;
 use js::rust::wrappers::{IsArrayObject, JS_GetProperty, JS_HasProperty};
 use js::rust::{is_dom_object, HandleId, HandleObject, HandleValue, MutableHandleValue};
