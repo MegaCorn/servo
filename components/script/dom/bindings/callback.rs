@@ -11,7 +11,10 @@ use std::ptr;
 use std::rc::Rc;
 
 use js::jsapi::{
-    AddRawValueRoot, EnterRealm, Heap, IsCallable, JSObject, LeaveRealm, Realm, RemoveRawValueRoot,
+    EnterRealm, Heap, IsCallable, JSObject, LeaveRealm, Realm,
+};
+use my_js::jsapi::{
+    AddRawValueRoot, RemoveRawValueRoot,
 };
 use js::jsval::{JSVal, ObjectValue, UndefinedValue};
 use js::rust::wrappers::{JS_GetProperty, JS_WrapObject};

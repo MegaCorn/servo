@@ -14,7 +14,7 @@ use std::rc::Rc;
 use deny_public_fields::DenyPublicFields;
 use dom_struct::dom_struct;
 use fnv::FnvHasher;
-use js::jsapi::JS_GetFunctionObject;
+use my_js::jsapi::JS_GetFunctionObject;
 use js::jsval::JSVal;
 use js::rust::wrappers::CompileFunction;
 use js::rust::{

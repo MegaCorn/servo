@@ -16,10 +16,13 @@ use js::jsapi::{
     GetFunctionRealm, GetNonCCWObjectGlobal, GetRealmGlobalOrNull, GetWellKnownSymbol,
     HandleObject as RawHandleObject, IsSharableCompartment, IsSystemCompartment, JSAutoRealm,
     JSClass, JSClassOps, JSContext, JSFunctionSpec, JSObject, JSPropertySpec, JSString, JSTracer,
-    JS_AtomizeAndPinString, JS_GetFunctionObject, JS_GetProperty, JS_IterateCompartments,
-    JS_NewFunction, JS_NewGlobalObject, JS_NewObject, JS_NewPlainObject, JS_NewStringCopyN,
+    JS_AtomizeAndPinString, JS_GetProperty, JS_IterateCompartments,
+    JS_NewGlobalObject, JS_NewObject, JS_NewPlainObject, JS_NewStringCopyN,
     JS_SetReservedSlot, JS_WrapObject, ObjectOps, OnNewGlobalHookOption, SymbolCode,
     TrueHandleValue, Value, JSFUN_CONSTRUCTOR, JSPROP_PERMANENT, JSPROP_READONLY, JSPROP_RESOLVING,
+};
+use my_js::jsapi::{
+    JS_NewFunction, JS_GetFunctionObject,
 };
 use js::jsval::{JSVal, NullValue, PrivateValue};
 use js::rust::wrappers::{
