@@ -27,7 +27,7 @@ use js::jsapi::{
 use js::jsval::{NullValue, PrivateValue, UndefinedValue};
 use js::rust::wrappers::{JS_TransplantObject, NewWindowProxy, SetWindowProxy};
 use js::rust::{get_object_class, Handle, MutableHandle, MutableHandleValue};
-use js::JSCLASS_IS_GLOBAL;
+use my_js::consts::JSCLASS_IS_GLOBAL;
 use malloc_size_of::{MallocSizeOf, MallocSizeOfOps};
 use net_traits::request::Referrer;
 use script_traits::{

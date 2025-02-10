@@ -11,9 +11,10 @@ use js::jsapi::{
     GetWellKnownSymbol, Handle, HandleId, HandleObject, JSClass, JSClass_NON_NATIVE, JSContext,
     JSErrNum, JS_SetImmutablePrototype, MutableHandle, MutableHandleIdVector, MutableHandleObject,
     ObjectOpResult, PropertyDescriptor, ProxyClassExtension, ProxyClassOps, ProxyObjectOps,
-    SymbolCode, UndefinedHandleValue, JSCLASS_DELAY_METADATA_BUILDER, JSCLASS_IS_PROXY,
-    JSCLASS_RESERVED_SLOTS_MASK, JSCLASS_RESERVED_SLOTS_SHIFT, JSPROP_READONLY,
+    SymbolCode, UndefinedHandleValue, JSCLASS_DELAY_METADATA_BUILDER,
+    JSCLASS_RESERVED_SLOTS_SHIFT, JSPROP_READONLY,
 };
+use my_js::consts::{JSCLASS_RESERVED_SLOTS_MASK, JSCLASS_IS_PROXY};
 use js::jsid::SymbolId;
 use js::jsval::UndefinedValue;
 use js::rust::{

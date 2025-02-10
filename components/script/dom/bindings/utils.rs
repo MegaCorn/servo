@@ -101,13 +101,13 @@ pub(crate) const DOM_PROTO_UNFORGEABLE_HOLDER_SLOT: u32 = 0;
 
 /// The index of the slot that contains a reference to the ProtoOrIfaceArray.
 // All DOM globals must have a slot at DOM_PROTOTYPE_SLOT.
-pub(crate) const DOM_PROTOTYPE_SLOT: u32 = js::JSCLASS_GLOBAL_SLOT_COUNT;
+pub(crate) const DOM_PROTOTYPE_SLOT: u32 = my_js::consts::JSCLASS_GLOBAL_SLOT_COUNT;
 
 /// The flag set on the `JSClass`es for DOM global objects.
 // NOTE: This is baked into the Ion JIT as 0 in codegen for LGetDOMProperty and
 // LSetDOMProperty. Those constants need to be changed accordingly if this value
 // changes.
-pub(crate) const JSCLASS_DOM_GLOBAL: u32 = js::JSCLASS_USERBIT1;
+pub(crate) const JSCLASS_DOM_GLOBAL: u32 = my_js::consts::JSCLASS_USERBIT1;
 
 pub(crate) use script_bindings::utils::{DOMClass, DOMJSClass};
 

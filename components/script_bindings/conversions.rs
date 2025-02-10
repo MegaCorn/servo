@@ -244,6 +244,6 @@ pub unsafe fn get_dom_class(obj: *mut JSObject) -> Result<&'static DOMClass, ()>
 pub unsafe fn is_dom_proxy(obj: *mut JSObject) -> bool {
     unsafe {
         let clasp = get_object_class(obj);
-        ((*clasp).flags & js::JSCLASS_IS_PROXY) != 0 && IsProxyHandlerFamily(obj)
+        ((*clasp).flags & my_js::consts::JSCLASS_IS_PROXY) != 0 && IsProxyHandlerFamily(obj)
     }
 }

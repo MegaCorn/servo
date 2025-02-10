@@ -41,7 +41,7 @@ use js::rust::{
     CompileOptionsWrapper, CustomAutoRooter, CustomAutoRooterGuard, HandleValue,
     MutableHandleValue, ParentRuntime, Runtime,
 };
-use js::{JSCLASS_IS_DOMJSCLASS, JSCLASS_IS_GLOBAL};
+use my_js::consts::{JSCLASS_IS_DOMJSCLASS, JSCLASS_IS_GLOBAL};
 use net_traits::blob_url_store::{get_blob_origin, BlobBuf};
 use net_traits::filemanager_thread::{
     FileManagerResult, FileManagerThreadMsg, ReadFileProgress, RelativePos,
