@@ -4714,6 +4714,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "my_js"
+version = "0.0.1"
+dependencies = [
+ "log",
+ "mozjs",
+]
+
+[[package]]
 name = "naga"
 version = "24.0.0"
 source = "git+https://github.com/gfx-rs/wgpu?rev=d8e7ab1ad13f2bf2f9702401d1bc625e26b1c2e6#d8e7ab1ad13f2bf2f9702401d1bc625e26b1c2e6"
@@ -6280,6 +6288,7 @@ dependencies = [
  "mozangle",
  "mozjs",
  "my_array",
+ "my_js",
  "net_traits",
  "nom",
  "num-traits",
