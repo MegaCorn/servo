@@ -17,7 +17,7 @@ use js::jsapi::{
 };
 use js::rust::wrappers::DetachArrayBuffer;
 use js::rust::{CustomAutoRooterGuard, Handle, MutableHandleObject};
-use my_array::{
+use my_js::typedarray::{
     ArrayBuffer, CreateWith, HeapArrayBuffer, TypedArray, TypedArrayElement,
     TypedArrayElementCreator,
 };

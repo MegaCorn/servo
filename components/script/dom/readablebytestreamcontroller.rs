@@ -4,7 +4,7 @@
 
 use dom_struct::dom_struct;
 use js::rust::HandleValue as SafeHandleValue;
-use my_array::ArrayBufferViewU8;
+use my_js::typedarray::ArrayBufferViewU8;
 
 use super::bindings::buffer_source::HeapBufferSource;
 use super::bindings::codegen::Bindings::ReadableStreamBYOBReaderBinding::ReadableStreamBYOBReaderReadOptions;
@@ -76,7 +76,7 @@ impl ReadableByteStreamControllerMethods<crate::DomTypeHolder> for ReadableByteS
     /// <https://streams.spec.whatwg.org/#rbs-controller-enqueue>
     fn Enqueue(
         &self,
-        _chunk: js::gc::CustomAutoRooterGuard<my_array::ArrayBufferView>,
+        _chunk: js::gc::CustomAutoRooterGuard<my_js::typedarray::ArrayBufferView>,
     ) -> Fallible<()> {
         // TODO
         Err(Error::NotFound)

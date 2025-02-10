@@ -5,7 +5,7 @@
 use dom_struct::dom_struct;
 use js::gc::CustomAutoRooterGuard;
 use js::jsapi::Heap;
-use my_array::{ArrayBufferView, ArrayBufferViewU8};
+use my_js::typedarray::{ArrayBufferView, ArrayBufferViewU8};
 
 use super::bindings::buffer_source::{BufferSource, HeapBufferSource};
 use crate::dom::bindings::codegen::Bindings::ReadableStreamBYOBRequestBinding::ReadableStreamBYOBRequestMethods;
@@ -27,7 +27,7 @@ pub(crate) struct ReadableStreamBYOBRequest {
 
 impl ReadableStreamBYOBRequestMethods<crate::DomTypeHolder> for ReadableStreamBYOBRequest {
     /// <https://streams.spec.whatwg.org/#rs-byob-request-view>
-    fn GetView(&self, _cx: SafeJSContext) -> Option<my_array::ArrayBufferView> {
+    fn GetView(&self, _cx: SafeJSContext) -> Option<my_js::typedarray::ArrayBufferView> {
         // Return this.[[view]].
         self.view.buffer_to_option()
     }

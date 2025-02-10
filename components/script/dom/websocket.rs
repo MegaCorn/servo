@@ -12,7 +12,7 @@ use ipc_channel::router::ROUTER;
 use js::jsapi::{JSAutoRealm, JSObject};
 use js::jsval::UndefinedValue;
 use js::rust::{CustomAutoRooterGuard, HandleObject};
-use my_array::{ArrayBuffer, ArrayBufferView, CreateWith};
+use my_js::typedarray::{ArrayBuffer, ArrayBufferView, CreateWith};
 use net_traits::request::{Referrer, RequestBuilder, RequestMode};
 use net_traits::{
     CoreResourceMsg, FetchChannels, MessageData, WebSocketDomAction, WebSocketNetworkEvent,

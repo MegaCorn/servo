@@ -14,7 +14,7 @@ use js::rust::{
     HandleObject as SafeHandleObject, HandleValue as SafeHandleValue,
     MutableHandleValue as SafeMutableHandleValue,
 };
-use my_array::ArrayBufferViewU8;
+use my_js::typedarray::ArrayBufferViewU8;
 
 use crate::dom::bindings::codegen::Bindings::QueuingStrategyBinding::QueuingStrategy;
 use crate::dom::bindings::codegen::Bindings::ReadableStreamBinding::{

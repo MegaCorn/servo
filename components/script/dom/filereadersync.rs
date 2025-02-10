@@ -7,7 +7,7 @@ use std::ptr;
 use dom_struct::dom_struct;
 use js::jsapi::JSObject;
 use js::rust::HandleObject;
-use my_array::{ArrayBuffer, ArrayBufferU8};
+use my_js::typedarray::{ArrayBuffer, ArrayBufferU8};
 
 use crate::dom::bindings::buffer_source::create_buffer_source;
 use crate::dom::bindings::codegen::Bindings::BlobBinding::BlobMethods;

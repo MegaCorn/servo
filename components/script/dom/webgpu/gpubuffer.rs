@@ -8,7 +8,7 @@ use std::string::String;
 
 use dom_struct::dom_struct;
 use ipc_channel::ipc::IpcSharedMemory;
-use my_array::ArrayBuffer;
+use my_js::typedarray::ArrayBuffer;
 use webgpu::wgc::device::HostMap;
 use webgpu::{wgt, Mapping, WebGPU, WebGPUBuffer, WebGPURequest, WebGPUResponse};
 

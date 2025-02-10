@@ -2,5 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-pub mod panic;
-pub mod typedarray;
+pub fn maybe_resume_unwind() {}
+
+#[inline(never)]
+pub fn wrap_panic(function: &mut dyn FnMut()) {}

@@ -16,7 +16,7 @@ use devtools_traits::{DevtoolScriptControlMsg, WorkerId};
 use dom_struct::dom_struct;
 use ipc_channel::ipc::IpcSender;
 use js::jsval::UndefinedValue;
-use js::panic::maybe_resume_unwind;
+use my_js::panic::maybe_resume_unwind;
 use js::rust::{HandleValue, MutableHandleValue, ParentRuntime};
 use net_traits::policy_container::PolicyContainer;
 use net_traits::request::{

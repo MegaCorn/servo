@@ -19,7 +19,7 @@ use ipc_channel::ipc::{self, IpcSharedMemory};
 use js::jsapi::{JSObject, Type};
 use js::jsval::{BooleanValue, DoubleValue, Int32Value, NullValue, ObjectValue, UInt32Value};
 use js::rust::{CustomAutoRooterGuard, HandleObject, MutableHandleValue};
-use my_array::{ArrayBufferView, CreateWith, Float32, Int32Array, Uint32, Uint32Array};
+use my_js::typedarray::{ArrayBufferView, CreateWith, Float32, Int32Array, Uint32, Uint32Array};
 use script_layout_interface::HTMLCanvasDataSource;
 use servo_config::pref;
 use url::Host;

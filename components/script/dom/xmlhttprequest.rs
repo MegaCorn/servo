@@ -22,7 +22,7 @@ use js::jsapi::{Heap, JS_ClearPendingException};
 use js::jsval::{JSVal, NullValue};
 use js::rust::wrappers::JS_ParseJSON;
 use js::rust::{HandleObject, MutableHandleValue};
-use my_array::{ArrayBuffer, ArrayBufferU8};
+use my_js::typedarray::{ArrayBuffer, ArrayBufferU8};
 use mime::{self, Mime, Name};
 use net_traits::http_status::HttpStatus;
 use net_traits::request::{

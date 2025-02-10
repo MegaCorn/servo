@@ -5,7 +5,7 @@
 use dom_struct::dom_struct;
 use euclid::default::Transform3D;
 use js::rust::{CustomAutoRooterGuard, HandleObject};
-use my_array::{Float32Array, Float64Array};
+use my_js::typedarray::{Float32Array, Float64Array};
 
 use crate::dom::bindings::codegen::Bindings::DOMMatrixBinding::{DOMMatrixInit, DOMMatrixMethods};
 use crate::dom::bindings::codegen::Bindings::DOMMatrixReadOnlyBinding::DOMMatrixReadOnlyMethods;

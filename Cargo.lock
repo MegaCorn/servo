@@ -4706,14 +4706,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "956787520e75e9bd233246045d19f42fb73242759cc57fba9611d940ae96d4b0"
 
 [[package]]
-name = "my_array"
-version = "0.0.1"
-dependencies = [
- "log",
- "mozjs",
-]
-
-[[package]]
 name = "my_js"
 version = "0.0.1"
 dependencies = [
@@ -6287,7 +6279,6 @@ dependencies = [
  "mime_guess",
  "mozangle",
  "mozjs",
- "my_array",
  "my_js",
  "net_traits",
  "nom",

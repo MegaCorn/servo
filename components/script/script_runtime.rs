@@ -41,7 +41,7 @@ use js::jsapi::{
     SetProcessBuildIdOp, SetPromiseRejectionTrackerCallback, StreamConsumer as JSStreamConsumer,
 };
 use js::jsval::UndefinedValue;
-use js::panic::wrap_panic;
+use my_js::panic::wrap_panic;
 use js::rust::wrappers::{GetPromiseIsHandled, JS_GetPromiseResult};
 pub(crate) use js::rust::ThreadSafeJSContext;
 use js::rust::{

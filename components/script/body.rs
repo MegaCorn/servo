@@ -12,7 +12,7 @@ use js::jsapi::{Heap, JSObject, JS_ClearPendingException, Value as JSValue};
 use js::jsval::{JSVal, UndefinedValue};
 use js::rust::wrappers::{JS_GetPendingException, JS_ParseJSON};
 use js::rust::HandleValue;
-use my_array::{ArrayBufferU8, Uint8};
+use my_js::typedarray::{ArrayBufferU8, Uint8};
 use mime::{self, Mime};
 use net_traits::request::{
     BodyChunkRequest, BodyChunkResponse, BodySource as NetBodySource, RequestBody,

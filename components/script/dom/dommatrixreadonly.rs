@@ -12,7 +12,7 @@ use euclid::Angle;
 use js::jsapi::JSObject;
 use js::jsval;
 use js::rust::{CustomAutoRooterGuard, HandleObject, ToString};
-use my_array::{Float32Array, Float64Array};
+use my_js::typedarray::{Float32Array, Float64Array};
 use style::parser::ParserContext;
 use url::Url;
 
