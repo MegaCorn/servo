@@ -36,7 +36,7 @@ use js::jsapi::{
     GCReason, Heap, JSAutoRealm, JSContext as RawJSContext, JSObject, JSPROP_ENUMERATE, JS_GC,
 };
 use js::jsval::{NullValue, UndefinedValue};
-use js::rust::wrappers::JS_DefineProperty;
+use my_js::jsapi_wrapped::JS_DefineProperty;
 use js::rust::{
     CustomAutoRooter, CustomAutoRooterGuard, HandleObject, HandleValue, MutableHandleObject,
     MutableHandleValue,

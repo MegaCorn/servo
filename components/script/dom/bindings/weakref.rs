@@ -16,7 +16,8 @@ use std::ops::{Deref, DerefMut, Drop};
 use std::{mem, ptr};
 
 use js::glue::JS_GetReservedSlot;
-use js::jsapi::{JSTracer, JS_SetReservedSlot};
+use js::jsapi::JSTracer;
+use my_js::jsapi::JS_SetReservedSlot;
 use js::jsval::{PrivateValue, UndefinedValue};
 use libc::c_void;
 use malloc_size_of::{MallocSizeOf, MallocSizeOfOps};

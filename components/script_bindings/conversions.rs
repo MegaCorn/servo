@@ -14,11 +14,11 @@ use js::jsapi::{
 };
 use my_js::jsapi::{
     JS_GetLatin1StringCharsAndLength, JS_GetTwoByteStringCharsAndLength, JS_NewStringCopyN,
-    JS_DeprecatedStringHasLatin1Chars,
+    JS_DeprecatedStringHasLatin1Chars, get_object_class, is_dom_class,
 };
 use js::jsval::{ObjectValue, StringValue};
 use js::rust::{
-    get_object_class, is_dom_class, maybe_wrap_value, HandleValue, MutableHandleValue, ToString,
+    maybe_wrap_value, HandleValue, MutableHandleValue, ToString,
 };
 use servo_config::opts;
 

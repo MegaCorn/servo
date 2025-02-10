@@ -13,9 +13,10 @@ use indexmap::IndexMap;
 use js::conversions::{ConversionResult, FromJSValConvertible, ToJSValConvertible};
 use js::jsapi::glue::JS_GetOwnPropertyDescriptorById;
 use js::jsapi::{
-    HandleId as RawHandleId, JSContext, JS_NewPlainObject, PropertyDescriptor, JSITER_HIDDEN,
+    HandleId as RawHandleId, JSContext, PropertyDescriptor, JSITER_HIDDEN,
     JSITER_OWNONLY, JSITER_SYMBOLS, JSPROP_ENUMERATE,
 };
+use my_js::jsapi::JS_NewPlainObject;
 use js::jsval::{ObjectValue, UndefinedValue};
 use js::rust::wrappers::{GetPropertyKeys, JS_DefineUCProperty2, JS_GetPropertyById, JS_IdToValue};
 use js::rust::{HandleId, HandleValue, IdVector, MutableHandleValue};

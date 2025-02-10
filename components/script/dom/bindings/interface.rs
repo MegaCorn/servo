@@ -12,26 +12,29 @@ use my_js::error::throw_type_error;
 use js::glue::UncheckedUnwrapObject;
 use js::jsapi::JS::CompartmentIterResult;
 use js::jsapi::{
-    jsid, CallArgs, CheckedUnwrapStatic, Compartment, CompartmentSpecifier, CurrentGlobalOrNull,
-    GetFunctionRealm, GetRealmGlobalOrNull, GetWellKnownSymbol,
-    HandleObject as RawHandleObject, IsSharableCompartment, IsSystemCompartment, JSAutoRealm,
+    jsid, CallArgs, Compartment, CompartmentSpecifier, CurrentGlobalOrNull,
+    HandleObject as RawHandleObject, JSAutoRealm,
     JSClass, JSClassOps, JSContext, JSFunctionSpec, JSObject, JSPropertySpec, JSString, JSTracer,
-    JS_AtomizeAndPinString, JS_GetProperty, JS_IterateCompartments,
-    JS_NewGlobalObject, JS_NewObject, JS_NewPlainObject,
-    JS_SetReservedSlot, JS_WrapObject, ObjectOps, OnNewGlobalHookOption, SymbolCode,
+    ObjectOps, OnNewGlobalHookOption, SymbolCode,
     TrueHandleValue, Value, JSFUN_CONSTRUCTOR, JSPROP_PERMANENT, JSPROP_READONLY, JSPROP_RESOLVING,
 };
 use my_js::jsapi::{
     JS_NewFunction, JS_GetFunctionObject, JS_NewStringCopyN, GetNonCCWObjectGlobal,
+    CheckedUnwrapStatic, GetFunctionRealm, GetRealmGlobalOrNull, GetWellKnownSymbol,
+    JS_AtomizeAndPinString, JS_GetProperty, JS_IterateCompartments,
+    IsSharableCompartment, IsSystemCompartment, JS_NewGlobalObject,
+    JS_NewObject, JS_NewPlainObject, JS_SetReservedSlot, JS_WrapObject,
+    define_methods, define_properties, maybe_wrap_object, get_object_class,
+    is_dom_class,
 };
 use js::jsval::{JSVal, NullValue, PrivateValue};
-use js::rust::wrappers::{
-    JS_DefineProperty, JS_DefineProperty3, JS_DefineProperty4, JS_DefineProperty5,
-    JS_DefinePropertyById5, JS_FireOnNewGlobalObject, JS_LinkConstructorAndPrototype,
-    JS_NewObjectWithGivenProto, RUST_SYMBOL_TO_JSID,
+use my_js::jsapi_wrapped::{
+    JS_DefineProperty3, JS_DefineProperty4, JS_DefineProperty,
+    JS_DefineProperty5, JS_DefinePropertyById5, JS_FireOnNewGlobalObject,
+    JS_LinkConstructorAndPrototype, JS_NewObjectWithGivenProto,
 };
+use js::rust::wrappers::RUST_SYMBOL_TO_JSID;
 use js::rust::{
-    define_methods, define_properties, get_object_class, is_dom_class, maybe_wrap_object,
     HandleObject, HandleValue, MutableHandleObject, RealmOptions,
 };
 use servo_url::MutableOrigin;

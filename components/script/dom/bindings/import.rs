@@ -9,7 +9,10 @@ pub(crate) mod base {
 
     pub(crate) use js::jsapi::{
         HandleValue as RawHandleValue, HandleValueArray, Heap, IsCallable,
-        JSContext, JSObject, JS_NewObject,
+        JSContext, JSObject,
+    };
+    pub(crate) use my_js::jsapi::{
+        JS_NewObject,
     };
     pub(crate) use js::jsval::{JSVal, NullValue, ObjectOrNullValue, ObjectValue, UndefinedValue};
     pub(crate) use js::rust::wrappers::{JS_CallFunctionValue, JS_WrapValue};

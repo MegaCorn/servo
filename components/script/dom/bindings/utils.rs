@@ -27,7 +27,7 @@ use my_js::jsapi::{
     JS_GetLatin1StringCharsAndLength, JS_DeprecatedStringHasLatin1Chars, AtomToLinearString,
     GetLinearStringCharAt, GetLinearStringLength, GetNonCCWObjectGlobal,
     JS_EnumerateStandardClasses, JS_FreezeObject, JS_IsGlobalObject,
-    JS_ResolveStandardClass, StringIsArrayIndex,
+    JS_ResolveStandardClass, StringIsArrayIndex, get_object_class, is_dom_class,
 };
 use js::jsval::{JSVal, UndefinedValue};
 use js::rust::wrappers::{
@@ -36,7 +36,7 @@ use js::rust::wrappers::{
     JS_SetProperty,
 };
 use js::rust::{
-    get_object_class, is_dom_class, GCMethods, Handle, HandleId, HandleObject, HandleValue,
+    GCMethods, Handle, HandleId, HandleObject, HandleValue,
     MutableHandleValue, ToString,
 };
 use js::JS_CALLEE;

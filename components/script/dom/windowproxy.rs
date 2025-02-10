@@ -24,10 +24,12 @@ use js::jsapi::{
     MutableHandleObject as RawMutableHandleObject, MutableHandleValue as RawMutableHandleValue,
     ObjectOpResult, PropertyDescriptor, JSPROP_ENUMERATE, JSPROP_READONLY,
 };
-use my_js::jsapi::JS_IsExceptionPending;
+use my_js::jsapi::{
+    JS_IsExceptionPending, get_object_class,
+};
 use js::jsval::{NullValue, PrivateValue, UndefinedValue};
 use js::rust::wrappers::{JS_TransplantObject, NewWindowProxy, SetWindowProxy};
-use js::rust::{get_object_class, Handle, MutableHandle, MutableHandleValue};
+use js::rust::{Handle, MutableHandle, MutableHandleValue};
 use my_js::consts::JSCLASS_IS_GLOBAL;
 use malloc_size_of::{MallocSizeOf, MallocSizeOfOps};
 use net_traits::request::Referrer;

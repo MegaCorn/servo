@@ -10,7 +10,8 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use dom_struct::dom_struct;
-use js::jsapi::{Heap, JSObject, JS_NewPlainObject};
+use js::jsapi::{Heap, JSObject};
+use my_js::jsapi::JS_NewPlainObject;
 use js::jsval::JSVal;
 use js::rust::{CustomAutoRooterGuard, HandleObject, HandleValue, MutableHandleValue};
 use my_js::typedarray::{self, Uint8ClampedArray};

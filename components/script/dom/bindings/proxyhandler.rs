@@ -18,21 +18,24 @@ use js::glue::{
 use js::jsapi;
 use js::jsapi::{
     jsid, DOMProxyShadowsResult, GetObjectRealmOrNull, GetRealmPrincipals, GetStaticPrototype,
-    GetWellKnownSymbol, Handle as RawHandle, HandleId as RawHandleId,
+    Handle as RawHandle, HandleId as RawHandleId,
     HandleObject as RawHandleObject, HandleValue as RawHandleValue, JSAutoRealm, JSContext,
-    JSErrNum, JSFunctionSpec, JSObject, JSPropertySpec, JS_AtomizeAndPinString,
+    JSErrNum, JSFunctionSpec, JSObject, JSPropertySpec,
     JS_DefinePropertyById, JS_GetOwnPropertyDescriptorById,
     MutableHandle as RawMutableHandle, MutableHandleIdVector as RawMutableHandleIdVector,
     MutableHandleObject as RawMutableHandleObject, MutableHandleValue as RawMutableHandleValue,
     ObjectOpResult, PropertyDescriptor, SetDOMProxyInformation, SymbolCode,
 };
-use my_js::jsapi::JS_IsExceptionPending;
+use my_js::jsapi::{
+    JS_IsExceptionPending, GetWellKnownSymbol, JS_AtomizeAndPinString,
+};
 use js::jsid::SymbolId;
 use js::jsval::{ObjectValue, UndefinedValue};
 use js::rust::wrappers::{
-    AppendToIdVector, JS_AlreadyHasOwnPropertyById, JS_NewObjectWithGivenProto,
+    AppendToIdVector, JS_AlreadyHasOwnPropertyById,
     SetDataPropertyDescriptor, RUST_INTERNED_STRING_TO_JSID,
 };
+use my_js::jsapi_wrapped::JS_NewObjectWithGivenProto;
 use js::rust::{
     get_context_realm, Handle, HandleObject, HandleValue, MutableHandle, MutableHandleObject,
 };

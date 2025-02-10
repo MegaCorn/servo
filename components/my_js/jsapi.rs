@@ -3,10 +3,13 @@ use js::jsapi::{
     JSErrorReport, JSString, AutoRequireNoGC, Latin1Char,
     JSLinearString, JSAtom, ReadOnlyCompileOptions, SourceText, Handle,
     JSRuntime, ModuleDynamicImportHook, ModuleMetadataHook, ModuleResolveHook,
-    ScriptPrivateReferenceHook, ModuleErrorBehaviour,
+    ScriptPrivateReferenceHook, ModuleErrorBehaviour, Realm,
+    SymbolCode, Symbol, Compartment, JSIterateCompartmentCallback,
+    JSClass, JSPrincipals, OnNewGlobalHookOption, RealmOptions,
+    JSFunctionSpec, JSPropertySpec,
 };
 use js::rust::{
-    HandleValue, HandleObject, MutableHandleValue, HandleId,
+    HandleValue, HandleObject, MutableHandleValue, HandleId, MutableHandleObject,
 };
 
 pub fn JS_NewFunction(
@@ -256,3 +259,111 @@ pub fn ThrowOnModuleEvaluationFailure(
 ) -> bool {
     true
 }
+
+pub fn CheckedUnwrapStatic(obj: *mut JSObject) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn GetFunctionRealm(
+    cx: *mut JSContext,
+    objArg: HandleObject,
+) -> *mut Realm {
+    std::ptr::null_mut()
+}
+
+pub fn GetRealmGlobalOrNull(realm: *mut Realm) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn GetWellKnownSymbol(
+    cx: *mut JSContext,
+    which: SymbolCode,
+) -> *mut Symbol {
+    std::ptr::null_mut()
+}
+
+pub fn IsSharableCompartment(comp: *mut Compartment) -> bool {
+    true
+}
+
+pub fn IsSystemCompartment(comp: *mut Compartment) -> bool {
+    true
+}
+
+pub fn JS_AtomizeAndPinString(
+    cx: *mut JSContext,
+    s: *const ::std::os::raw::c_char,
+) -> *mut JSString {
+    std::ptr::null_mut()
+}
+
+pub fn JS_GetProperty(
+    cx: *mut JSContext,
+    obj: Handle<*mut JSObject>,
+    name: *const ::std::os::raw::c_char,
+    vp: js::jsapi::MutableHandleValue,
+) -> bool {
+    true
+}
+
+pub fn JS_IterateCompartments(
+    cx: *mut JSContext,
+    data: *mut ::std::os::raw::c_void,
+    compartmentCallback: JSIterateCompartmentCallback,
+) {}
+
+pub fn JS_NewGlobalObject(
+    cx: *mut JSContext,
+    clasp: *const JSClass,
+    principals: *mut JSPrincipals,
+    hookOption: OnNewGlobalHookOption,
+    options: *const RealmOptions,
+) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn JS_NewObject(
+    cx: *mut JSContext,
+    clasp: *const JSClass,
+) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn JS_NewPlainObject(cx: *mut JSContext) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn JS_SetReservedSlot(obj: *mut JSObject, index: u32, v: *const Value) {}
+
+pub fn JS_WrapObject(cx: *mut JSContext, objp: js::jsapi::MutableHandleObject) -> bool {
+    true
+}
+
+pub unsafe fn define_methods(
+    cx: *mut JSContext,
+    obj: HandleObject,
+    methods: &'static [JSFunctionSpec],
+) -> Result<(), ()> {
+    Err(())
+}
+
+pub unsafe fn define_properties(
+    cx: *mut JSContext,
+    obj: HandleObject,
+    properties: &'static [JSPropertySpec],
+) -> Result<(), ()> {
+    Err(())
+}
+
+#[inline]
+pub unsafe fn get_object_class(obj: *mut JSObject) -> *const JSClass {
+    std::ptr::null_mut()
+}
+
+#[inline]
+pub fn is_dom_class(class: &JSClass) -> bool {
+    true
+}
+
+#[inline]
+pub unsafe fn maybe_wrap_object(cx: *mut JSContext, obj: MutableHandleObject) {}

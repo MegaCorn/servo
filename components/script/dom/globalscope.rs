@@ -34,13 +34,13 @@ use js::jsapi::{
     SetScriptPrivate,
 };
 use my_js::jsapi::{
-    GetNonCCWObjectGlobal,
+    GetNonCCWObjectGlobal, get_object_class,
 };
 use js::jsval::{PrivateValue, UndefinedValue};
 use my_js::panic::maybe_resume_unwind;
 use js::rust::wrappers::{JS_ExecuteScript, JS_GetScriptPrivate};
 use js::rust::{
-    describe_scripted_caller, get_object_class, transform_str_to_source_text,
+    describe_scripted_caller, transform_str_to_source_text,
     CompileOptionsWrapper, CustomAutoRooter, CustomAutoRooterGuard, HandleValue,
     MutableHandleValue, ParentRuntime, Runtime,
 };
