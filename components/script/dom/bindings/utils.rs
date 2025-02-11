@@ -532,7 +532,8 @@ pub(crate) unsafe extern "C" fn generic_method<const EXCEPTION_TO_REJECTION: boo
     argc: libc::c_uint,
     vp: *mut JSVal,
 ) -> bool {
-    generic_call::<EXCEPTION_TO_REJECTION>(cx, argc, vp, false, CallJitMethodOp)
+    // generic_call::<EXCEPTION_TO_REJECTION>(cx, argc, vp, false, CallJitMethodOp)
+    false
 }
 
 /// Generic getter of IDL interface.
@@ -541,7 +542,8 @@ pub(crate) unsafe extern "C" fn generic_getter<const EXCEPTION_TO_REJECTION: boo
     argc: libc::c_uint,
     vp: *mut JSVal,
 ) -> bool {
-    generic_call::<EXCEPTION_TO_REJECTION>(cx, argc, vp, false, CallJitGetterOp)
+    // generic_call::<EXCEPTION_TO_REJECTION>(cx, argc, vp, false, CallJitGetterOp)
+    false
 }
 
 /// Generic lenient getter of IDL interface.
@@ -550,7 +552,8 @@ pub(crate) unsafe extern "C" fn generic_lenient_getter<const EXCEPTION_TO_REJECT
     argc: libc::c_uint,
     vp: *mut JSVal,
 ) -> bool {
-    generic_call::<EXCEPTION_TO_REJECTION>(cx, argc, vp, true, CallJitGetterOp)
+    // generic_call::<EXCEPTION_TO_REJECTION>(cx, argc, vp, true, CallJitGetterOp)
+    false
 }
 
 unsafe extern "C" fn call_setter(

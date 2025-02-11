@@ -37,7 +37,7 @@ use js::jsapi::{
     JS_SetGCCallback, JS_SetGCParameter, JS_SetGlobalJitCompilerOption,
     JS_SetOffthreadIonCompilationEnabled, JS_SetParallelParsingEnabled, JS_SetSecurityCallbacks,
     JobQueue, MimeType, PromiseRejectionHandlingState, PromiseUserInputEventHandlingState,
-    RuntimeCode, SetDOMCallbacks, SetGCSliceCallback, SetJobQueue, SetPreserveWrapperCallbacks,
+    RuntimeCode, SetDOMCallbacks, SetJobQueue, SetPreserveWrapperCallbacks,
     SetProcessBuildIdOp, SetPromiseRejectionTrackerCallback, StreamConsumer as JSStreamConsumer,
 };
 use js::jsval::UndefinedValue;
@@ -555,7 +555,7 @@ impl Runtime {
         }
 
         if opts::get().debug.gc_profile {
-            SetGCSliceCallback(cx, Some(gc_slice_callback));
+            // SetGCSliceCallback(cx, Some(gc_slice_callback));
         }
 
         unsafe extern "C" fn empty_wrapper_callback(_: *mut RawJSContext, _: HandleObject) -> bool {

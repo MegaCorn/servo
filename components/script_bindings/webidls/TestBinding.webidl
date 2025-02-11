@@ -263,7 +263,7 @@ interface TestBinding {
   undefined passByteString(ByteString arg);
   undefined passEnum(TestEnum arg);
   undefined passInterface(Blob arg);
-  undefined passTypedArray(Int8Array arg);
+  // undefined passTypedArray(Int8Array arg);
   undefined passTypedArray2(ArrayBuffer arg);
   undefined passTypedArray3(ArrayBufferView arg);
   undefined passUnion((HTMLElement or long) arg);
@@ -316,7 +316,7 @@ interface TestBinding {
   // void passNullableEnum(TestEnum? arg);
   undefined passNullableInterface(Blob? arg);
   undefined passNullableObject(object? arg);
-  undefined passNullableTypedArray(Int8Array? arg);
+  // undefined passNullableTypedArray(Int8Array? arg);
   undefined passNullableUnion((HTMLElement or long)? arg);
   undefined passNullableUnion2((Event or DOMString)? data);
   undefined passNullableUnion3((DOMString or sequence<long>)? data);

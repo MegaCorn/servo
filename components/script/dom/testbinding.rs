@@ -657,7 +657,7 @@ impl TestBindingMethods<crate::DomTypeHolder> for TestBinding {
     fn PassByteString(&self, _: ByteString) {}
     fn PassEnum(&self, _: TestEnum) {}
     fn PassInterface(&self, _: &Blob) {}
-    fn PassTypedArray(&self, _: CustomAutoRooterGuard<typedarray::Int8Array>) {}
+    // fn PassTypedArray(&self, _: CustomAutoRooterGuard<typedarray::Int8Array>) {}
     fn PassTypedArray2(&self, _: CustomAutoRooterGuard<typedarray::ArrayBuffer>) {}
     fn PassTypedArray3(&self, _: CustomAutoRooterGuard<typedarray::ArrayBufferView>) {}
     fn PassUnion(&self, _: HTMLElementOrLong) {}
@@ -720,7 +720,7 @@ impl TestBindingMethods<crate::DomTypeHolder> for TestBinding {
     // fn PassNullableEnum(self, _: Option<TestEnum>) {}
     fn PassNullableInterface(&self, _: Option<&Blob>) {}
     fn PassNullableObject(&self, _: SafeJSContext, _: *mut JSObject) {}
-    fn PassNullableTypedArray(&self, _: CustomAutoRooterGuard<Option<typedarray::Int8Array>>) {}
+    // fn PassNullableTypedArray(&self, _: CustomAutoRooterGuard<Option<typedarray::Int8Array>>) {}
     fn PassNullableUnion(&self, _: Option<HTMLElementOrLong>) {}
     fn PassNullableUnion2(&self, _: Option<EventOrString>) {}
     fn PassNullableUnion3(&self, _: Option<StringOrLongSequence>) {}

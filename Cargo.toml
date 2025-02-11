@@ -81,7 +81,7 @@ imsz = "0.2"
 indexmap = { version = "2.7.1", features = ["std"] }
 ipc-channel = "0.19"
 itertools = "0.13"
-js = { package = "mozjs", git = "https://github.com/servo/mozjs" }
+js = { path = "components/mozjs", features = ["streams"] }
 keyboard-types = "0.7"
 libc = "0.2"
 log = "0.4"

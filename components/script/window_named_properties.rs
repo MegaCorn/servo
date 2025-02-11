@@ -10,7 +10,7 @@ use js::glue::{AppendToIdVector, CreateProxyHandler, NewProxyObject, ProxyTraps}
 use js::jsapi::{
     GetWellKnownSymbol, Handle, HandleId, HandleObject, JSClass, JSClass_NON_NATIVE, JSContext,
     JSErrNum, JS_SetImmutablePrototype, MutableHandle, MutableHandleIdVector, MutableHandleObject,
-    ObjectOpResult, PropertyDescriptor, ProxyClassExtension, ProxyClassOps, ProxyObjectOps,
+    ObjectOpResult, PropertyDescriptor,
     SymbolCode, UndefinedHandleValue, JSCLASS_DELAY_METADATA_BUILDER, JSCLASS_IS_PROXY,
     JSCLASS_RESERVED_SLOTS_MASK, JSCLASS_RESERVED_SLOTS_SHIFT, JSPROP_READONLY,
 };
@@ -227,10 +227,10 @@ static CLASS: JSClass = JSClass {
         JSCLASS_IS_PROXY |
         JSCLASS_DELAY_METADATA_BUILDER |
         ((1 & JSCLASS_RESERVED_SLOTS_MASK) << JSCLASS_RESERVED_SLOTS_SHIFT), /* JSCLASS_HAS_RESERVED_SLOTS(1) */
-    cOps: unsafe { &ProxyClassOps },
+    cOps: ptr::null(),
     spec: ptr::null(),
-    ext: unsafe { &ProxyClassExtension },
-    oOps: unsafe { &ProxyObjectOps },
+    ext: ptr::null(),
+    oOps: ptr::null(),
 };
 
 #[allow(unsafe_code)]

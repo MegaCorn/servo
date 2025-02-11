@@ -1,0 +1,24 @@
+[package]
+name = "js"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+publish.workspace = true
+rust-version.workspace = true
+
+[lib]
+doctest = false
+
+[features]
+debugmozjs = ['mozjs_sys/debugmozjs']
+jitspew = ['mozjs_sys/jitspew']
+profilemozjs = ['mozjs_sys/profilemozjs']
+streams = ['mozjs_sys/streams']
+crown = ['mozjs_sys/crown']
+
+[dependencies]
+libc = { workspace = true }
+lazy_static = "1"
+log = { workspace = true }
+mozjs_sys = { path = "../mozjs-sys" }
