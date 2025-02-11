@@ -11,10 +11,11 @@ use embedder_traits::EmbedderMsg;
 use html5ever::local_name;
 use indexmap::map::IndexMap;
 use ipc_channel::ipc;
-use js::glue::{
-    CreateWrapperProxyHandler, DeleteWrapperProxyHandler, GetProxyPrivate, GetProxyReservedSlot,
-    ProxyTraps, SetProxyReservedSlot,
+use my_js::glue::{
+    GetProxyPrivate, GetProxyReservedSlot, SetProxyReservedSlot,
+    CreateWrapperProxyHandler, DeleteWrapperProxyHandler,
 };
+use js::glue::ProxyTraps;
 use js::jsapi::{
     GCContext, Handle as RawHandle, HandleId as RawHandleId, HandleObject as RawHandleObject,
     HandleValue as RawHandleValue, JSAutoRealm, JSContext, JSErrNum, JSObject, JSTracer,

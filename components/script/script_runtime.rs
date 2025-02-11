@@ -23,11 +23,10 @@ use background_hang_monitor_api::ScriptHangAnnotation;
 use content_security_policy::{CheckResult, PolicyDisposition};
 use my_js::conversions::jsstr_to_string;
 use my_js::glue::{
-    CollectServoSizes, CreateJobQueue, DeleteJobQueue, DispatchableRun,
+    CollectServoSizes, DeleteJobQueue, DispatchableRun,
     RUST_js_GetErrorMessage, SetBuildId, StreamConsumerConsumeChunk,
     StreamConsumerNoteResponseURLs, StreamConsumerStreamEnd, StreamConsumerStreamError,
 };
-use js::glue::JobQueueTraps;
 use js::jsapi::{
     AsmJSOption, BuildIdCharVector, ContextOptionsRef, DisableIncrementalGC,
     Dispatchable as JSRunnable, Dispatchable_MaybeShuttingDown, GCDescription, GCOptions,
@@ -89,11 +88,11 @@ use crate::script_thread::trace_thread;
 use crate::security_manager::CSPViolationReporter;
 use crate::task_source::SendableTaskSource;
 
-static JOB_QUEUE_TRAPS: JobQueueTraps = JobQueueTraps {
-    getIncumbentGlobal: Some(get_incumbent_global),
-    enqueuePromiseJob: Some(enqueue_promise_job),
-    empty: Some(empty),
-};
+// static JOB_QUEUE_TRAPS: JobQueueTraps = JobQueueTraps {
+//     getIncumbentGlobal: Some(get_incumbent_global),
+//     enqueuePromiseJob: Some(enqueue_promise_job),
+//     empty: Some(empty),
+// };
 
 static SECURITY_CALLBACKS: JSSecurityCallbacks = JSSecurityCallbacks {
     contentSecurityPolicyAllows: Some(content_security_policy_allows),
@@ -606,10 +605,11 @@ impl Runtime {
         InitConsumeStreamCallback(cx, Some(consume_stream), Some(report_stream_error));
 
         let microtask_queue = Rc::new(MicrotaskQueue::default());
-        let job_queue = CreateJobQueue(
-            &JOB_QUEUE_TRAPS,
-            &*microtask_queue as *const _ as *const c_void,
-        );
+        // let job_queue = CreateJobQueue(
+        //     &JOB_QUEUE_TRAPS,
+        //     &*microtask_queue as *const _ as *const c_void,
+        // );
+        let job_queue = std::ptr::null_mut();
         SetJobQueue(cx, job_queue);
         SetPromiseRejectionTrackerCallback(cx, Some(promise_rejection_tracker), ptr::null_mut());
 

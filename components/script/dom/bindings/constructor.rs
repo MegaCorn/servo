@@ -7,7 +7,7 @@ use std::ptr;
 use html5ever::interface::QualName;
 use html5ever::{local_name, namespace_url, ns, LocalName};
 use js::conversions::ToJSValConvertible;
-use js::glue::{UnwrapObjectDynamic, UnwrapObjectStatic};
+use my_js::glue::{UnwrapObjectDynamic, UnwrapObjectStatic};
 use js::jsapi::{CallArgs, CurrentGlobalOrNull, JSAutoRealm, JSObject};
 use my_js::jsapi_wrapped::{JS_WrapObject, JS_SetPrototype};
 use js::rust::{HandleObject, MutableHandleObject, MutableHandleValue};

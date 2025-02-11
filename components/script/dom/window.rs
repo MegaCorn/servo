@@ -31,7 +31,6 @@ use euclid::{Point2D, Rect, Scale, Size2D, Vector2D};
 use fonts::FontContext;
 use ipc_channel::ipc::{self, IpcSender};
 use js::conversions::ToJSValConvertible;
-use js::glue::DumpJSStack;
 use js::jsapi::{
     GCReason, Heap, JSAutoRealm, JSContext as RawJSContext, JSObject, JSPROP_ENUMERATE, JS_GC,
 };
@@ -3095,5 +3094,5 @@ fn is_named_element_with_id_attribute(elem: &Element) -> bool {
 #[no_mangle]
 /// Helper for interactive debugging sessions in lldb/gdb.
 unsafe extern "C" fn dump_js_stack(cx: *mut RawJSContext) {
-    DumpJSStack(cx, true, false, false);
+    // DumpJSStack(cx, true, false, false);
 }

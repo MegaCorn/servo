@@ -8,7 +8,7 @@ use js::conversions::{
     latin1_to_string, ConversionResult, FromJSValConvertible, ToJSValConvertible,
 };
 use my_js::error::throw_type_error;
-use js::glue::{GetProxyHandlerExtra, IsProxyHandlerFamily};
+use my_js::glue::{GetProxyHandlerExtra, IsProxyHandlerFamily};
 use js::jsapi::{
     JSContext, JSObject, JSString,
 };

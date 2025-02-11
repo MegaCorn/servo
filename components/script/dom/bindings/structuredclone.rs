@@ -9,7 +9,7 @@ use std::os::raw;
 use std::ptr;
 
 use base::id::{BlobId, MessagePortId};
-use js::glue::{
+use my_js::glue::{
     CopyJSStructuredCloneData, DeleteJSAutoStructuredCloneBuffer, GetLengthOfJSStructuredCloneData,
     NewJSAutoStructuredCloneBuffer, WriteBytesToJSStructuredCloneData,
 };

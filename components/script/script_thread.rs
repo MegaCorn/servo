@@ -56,7 +56,7 @@ use html5ever::{local_name, namespace_url, ns};
 use hyper_serde::Serde;
 use ipc_channel::ipc;
 use ipc_channel::router::ROUTER;
-use js::glue::GetWindowProxyClass;
+use my_js::glue::GetWindowProxyClass;
 use js::jsapi::{
     JSContext as UnsafeJSContext, JSTracer, JS_AddInterruptCallback, SetWindowProxyClass,
 };

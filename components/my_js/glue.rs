@@ -2,11 +2,18 @@
 
 use js::jsapi::{
     JSContext, ServoSizes, JobQueue, Dispatchable, Dispatchable_MaybeShuttingDown,
-    JSErrorFormatString, BuildIdCharVector, StreamConsumer,
+    JSErrorFormatString, BuildIdCharVector, StreamConsumer, JSJitInfo, Value,
+    JSObject, HandleObject, JSTracer, Heap, JSScript, JSString,
+    StructuredCloneScope, JSAutoStructuredCloneBuffer, JSStructuredCloneData,
+    JSStructuredCloneCallbacks, JSPrincipals,
+    PropertyDescriptor, HandleId, MutableHandle,
+    MutableHandleIdVector, HandleValue, JSClass,
 };
 use js::glue::{
-    GetSize, JobQueueTraps,
+    JobQueueTraps, JSPrincipalsCallbacks, ProxyTraps,
 };
+
+pub type GetSize = ::std::option::Option<unsafe extern "C" fn(obj: *mut JSObject) -> usize>;
 
 pub fn CollectServoSizes(
     cx: *mut JSContext,
@@ -16,12 +23,12 @@ pub fn CollectServoSizes(
     true
 }
 
-pub fn CreateJobQueue(
-    aTraps: *const JobQueueTraps,
-    aQueue: *const ::std::os::raw::c_void,
-) -> *mut JobQueue {
-    std::ptr::null_mut()
-}
+// pub fn CreateJobQueue(
+//     aTraps: *const JobQueueTraps,
+//     aQueue: *const ::std::os::raw::c_void,
+// ) -> *mut JobQueue {
+//     std::ptr::null_mut()
+// }
 
 pub fn DeleteJobQueue(queue: *mut JobQueue) {}
 
@@ -63,3 +70,174 @@ pub fn StreamConsumerNoteResponseURLs(
 pub fn StreamConsumerStreamEnd(sc: *mut StreamConsumer) {}
 
 pub fn StreamConsumerStreamError(sc: *mut StreamConsumer, errorCode: usize) {}
+
+pub fn IsWrapper(obj: *mut JSObject) -> bool {
+    true
+}
+
+pub fn JS_GetReservedSlot(obj: *mut JSObject, index: u32, dest: *mut Value) {}
+
+pub fn UnwrapObjectDynamic(
+    obj: *mut JSObject,
+    cx: *mut JSContext,
+    stopAtWindowProxy: bool,
+) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn UnwrapObjectStatic(obj: *mut JSObject) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn RUST_FUNCTION_VALUE_TO_JITINFO(v: Value) -> *const JSJitInfo {
+    std::ptr::null_mut()
+}
+
+pub fn GetProxyHandlerExtra(obj: *mut JSObject) -> *const ::std::os::raw::c_void {
+    std::ptr::null_mut()
+}
+
+pub fn IsProxyHandlerFamily(obj: *mut JSObject) -> bool {
+    true
+}
+
+pub fn CallObjectTracer(
+    trc: *mut JSTracer,
+    objp: *mut Heap<*mut JSObject>,
+    name: *const ::std::os::raw::c_char,
+) {}
+
+pub fn CallScriptTracer(
+    trc: *mut JSTracer,
+    scriptp: *mut Heap<*mut JSScript>,
+    name: *const ::std::os::raw::c_char,
+) {}
+
+pub fn CallStringTracer(
+    trc: *mut JSTracer,
+    strp: *mut Heap<*mut JSString>,
+    name: *const ::std::os::raw::c_char,
+) {}
+
+pub fn CallValueTracer(
+    trc: *mut JSTracer,
+    valuep: *mut Heap<Value>,
+    name: *const ::std::os::raw::c_char,
+) {}
+
+pub fn CopyJSStructuredCloneData(src: *mut JSStructuredCloneData, dest: *mut u8) {}
+
+pub fn DeleteJSAutoStructuredCloneBuffer(buf: *mut JSAutoStructuredCloneBuffer) {}
+
+pub fn GetLengthOfJSStructuredCloneData(data: *mut JSStructuredCloneData) -> usize {
+    0
+}
+
+pub fn NewJSAutoStructuredCloneBuffer(
+    scope: StructuredCloneScope,
+    callbacks: *const JSStructuredCloneCallbacks,
+) -> *mut JSAutoStructuredCloneBuffer {
+    std::ptr::null_mut()
+}
+
+pub fn WriteBytesToJSStructuredCloneData(
+    src: *const u8,
+    len: usize,
+    dest: *mut JSStructuredCloneData,
+) -> bool {
+    true
+}
+
+pub fn GetProxyHandler(obj: *mut JSObject) -> *const ::std::os::raw::c_void {
+    std::ptr::null_mut()
+}
+
+pub fn GetProxyHandlerFamily() -> *const ::std::os::raw::c_void {
+    std::ptr::null_mut()
+}
+
+pub fn GetProxyPrivate(obj: *mut JSObject, dest: *mut Value) {}
+
+pub fn InvokeGetOwnPropertyDescriptor(
+    handler: *const ::std::os::raw::c_void,
+    cx: *mut JSContext,
+    proxy: HandleObject,
+    id: HandleId,
+    desc: MutableHandle<PropertyDescriptor>,
+    isNone: *mut bool,
+) -> bool {
+    true
+}
+
+pub fn SetProxyPrivate(obj: *mut JSObject, expando: *const Value) {}
+
+pub fn CreateRustJSPrincipals(
+    callbacks: *const JSPrincipalsCallbacks,
+    privateData: *mut ::std::os::raw::c_void,
+) -> *mut JSPrincipals {
+    std::ptr::null_mut()
+}
+
+pub fn DestroyRustJSPrincipals(principals: *mut JSPrincipals) {}
+
+pub fn GetRustJSPrincipalsPrivate(
+    principals: *mut JSPrincipals,
+) -> *mut ::std::os::raw::c_void {
+    std::ptr::null_mut()
+}
+
+pub fn UncheckedUnwrapObject(
+    obj: *mut JSObject,
+    stopAtWindowProxy: bool,
+) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn GetProxyReservedSlot(
+    obj: *mut JSObject,
+    slot: u32,
+    dest: *mut Value,
+) {}
+
+pub fn CreateWrapperProxyHandler(
+    aTraps: *const ProxyTraps,
+) -> *const ::std::os::raw::c_void {
+    std::ptr::null_mut()
+}
+
+pub fn DeleteWrapperProxyHandler(handler: *const ::std::os::raw::c_void) {}
+
+pub fn SetProxyReservedSlot(
+    obj: *mut JSObject,
+    slot: u32,
+    val: *const Value,
+) {}
+
+pub fn AppendToIdVector(v: MutableHandleIdVector, id: HandleId) -> bool {
+    true
+}
+
+pub fn CreateProxyHandler(
+    aTraps: *const ProxyTraps,
+    aExtra: *const ::std::os::raw::c_void,
+) -> *const ::std::os::raw::c_void {
+    std::ptr::null_mut()
+}
+
+pub fn NewProxyObject(
+    aCx: *mut JSContext,
+    aHandler: *const ::std::os::raw::c_void,
+    aPriv: HandleValue,
+    proto: *mut JSObject,
+    aClass: *const JSClass,
+    aLazyProto: bool,
+) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn GetWindowProxyClass() -> *const JSClass {
+    std::ptr::null_mut()
+}
+
+
+

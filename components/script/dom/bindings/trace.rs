@@ -42,7 +42,7 @@ use indexmap::IndexMap;
 /// A trait to allow tracing (only) DOM objects.
 pub(crate) use js::gc::Traceable as JSTraceable;
 pub(crate) use js::gc::{RootableVec, RootedVec};
-use js::glue::{CallObjectTracer, CallScriptTracer, CallStringTracer, CallValueTracer};
+use my_js::glue::{CallObjectTracer, CallScriptTracer, CallStringTracer, CallValueTracer};
 use js::jsapi::{GCTraceKindToAscii, Heap, JSObject, JSScript, JSString, JSTracer, TraceKind};
 use js::jsval::JSVal;
 use js::rust::{GCMethods, Handle};

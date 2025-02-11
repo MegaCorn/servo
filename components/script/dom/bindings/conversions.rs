@@ -38,7 +38,9 @@ pub(crate) use js::conversions::{
     ConversionBehavior, ConversionResult, FromJSValConvertible, ToJSValConvertible,
 };
 use my_js::error::throw_type_error;
-use js::glue::{GetProxyReservedSlot, IsWrapper, JS_GetReservedSlot, UnwrapObjectDynamic};
+use my_js::glue::{
+    IsWrapper, JS_GetReservedSlot, UnwrapObjectDynamic, GetProxyReservedSlot,
+};
 use js::jsapi::{Heap, IsWindowProxy, JSContext, JSObject};
 use my_js::jsapi::JS_IsExceptionPending;
 use js::jsval::UndefinedValue;

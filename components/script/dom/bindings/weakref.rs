@@ -15,7 +15,7 @@ use std::cell::{Cell, UnsafeCell};
 use std::ops::{Deref, DerefMut, Drop};
 use std::{mem, ptr};
 
-use js::glue::JS_GetReservedSlot;
+use my_js::glue::JS_GetReservedSlot;
 use js::jsapi::JSTracer;
 use my_js::jsapi::JS_SetReservedSlot;
 use js::jsval::{PrivateValue, UndefinedValue};

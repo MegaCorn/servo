@@ -11,7 +11,7 @@ use std::os::raw::c_char;
 use std::ptr;
 
 use js::conversions::ToJSValConvertible;
-use js::glue::{
+use my_js::glue::{
     GetProxyHandler, GetProxyHandlerFamily, GetProxyPrivate, InvokeGetOwnPropertyDescriptor,
     SetProxyPrivate,
 };

@@ -11,7 +11,7 @@ use std::{mem, ptr};
 use dom_struct::dom_struct;
 use html5ever::{namespace_url, ns, LocalName, Namespace, Prefix};
 use js::conversions::ToJSValConvertible;
-use js::glue::UnwrapObjectStatic;
+use my_js::glue::UnwrapObjectStatic;
 use js::jsapi::{HandleValueArray, Heap, IsCallable, IsConstructor, JSAutoRealm, JSObject};
 use js::jsval::{BooleanValue, JSVal, NullValue, ObjectValue, UndefinedValue};
 use my_js::jsapi_wrapped::{

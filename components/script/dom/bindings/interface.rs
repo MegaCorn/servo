@@ -9,7 +9,7 @@ use std::ffi::CStr;
 use std::ptr;
 
 use my_js::error::throw_type_error;
-use js::glue::UncheckedUnwrapObject;
+use my_js::glue::UncheckedUnwrapObject;
 use js::jsapi::JS::CompartmentIterResult;
 use js::jsapi::{
     jsid, CallArgs, Compartment, CompartmentSpecifier, CurrentGlobalOrNull,

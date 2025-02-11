@@ -6,7 +6,8 @@ use std::ptr;
 use std::sync::LazyLock;
 
 use my_js::conversions::jsstr_to_string;
-use js::glue::{AppendToIdVector, CreateProxyHandler, NewProxyObject, ProxyTraps};
+use my_js::glue::{AppendToIdVector, CreateProxyHandler, NewProxyObject};
+use js::glue::ProxyTraps;
 use js::jsapi::{
     Handle, HandleId, HandleObject, JSClass, JSClass_NON_NATIVE, JSContext,
     JSErrNum, JS_SetImmutablePrototype, MutableHandle, MutableHandleIdVector, MutableHandleObject,

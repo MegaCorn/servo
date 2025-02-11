@@ -27,7 +27,9 @@ use embedder_traits::{
 };
 use ipc_channel::ipc::{self, IpcSender};
 use ipc_channel::router::ROUTER;
-use js::glue::{IsWrapper, UnwrapObjectDynamic};
+use my_js::glue::{
+    IsWrapper, UnwrapObjectDynamic,
+};
 use js::jsapi::{
     Compile1, CurrentGlobalOrNull, HandleObject, Heap,
     InstantiateGlobalStencil, InstantiateOptions, JSContext, JSObject, JSScript, RuntimeCode,

@@ -7,9 +7,8 @@ use std::mem::ManuallyDrop;
 use std::ops::Deref;
 use std::ptr::NonNull;
 
-use js::glue::{
+use my_js::glue::{
     CreateRustJSPrincipals, DestroyRustJSPrincipals, GetRustJSPrincipalsPrivate,
-    JSPrincipalsCallbacks,
 };
 use js::jsapi::{
     JSContext, JSPrincipals, JSStructuredCloneReader, JSStructuredCloneWriter, JS_DropPrincipals,
@@ -28,10 +27,10 @@ impl ServoJSPrincipals {
     pub(crate) fn new(origin: &MutableOrigin) -> Self {
         unsafe {
             let private: Box<MutableOrigin> = Box::new(origin.clone());
-            let raw = CreateRustJSPrincipals(&PRINCIPALS_CALLBACKS, Box::into_raw(private) as _);
+            // let raw = CreateRustJSPrincipals(&PRINCIPALS_CALLBACKS, Box::into_raw(private) as _);
             // The created `JSPrincipals` object has an initial reference
             // count of zero, so the following code will set it to one
-            Self::from_raw_nonnull(NonNull::new_unchecked(raw))
+            Self::from_raw_nonnull(NonNull::new_unchecked(std::ptr::null_mut()))
         }
     }
 
@@ -182,10 +181,10 @@ pub(crate) unsafe extern "C" fn read_jsprincipal(
     true
 }
 
-const PRINCIPALS_CALLBACKS: JSPrincipalsCallbacks = JSPrincipalsCallbacks {
-    write: Some(write_jsprincipal),
-    isSystemOrAddonPrincipal: Some(principals_is_system_or_addon_principal),
-};
+// const PRINCIPALS_CALLBACKS: JSPrincipalsCallbacks = JSPrincipalsCallbacks {
+//     write: Some(write_jsprincipal),
+//     isSystemOrAddonPrincipal: Some(principals_is_system_or_addon_principal),
+// };
 
 unsafe extern "C" fn principals_is_system_or_addon_principal(_: *mut JSPrincipals) -> bool {
     false

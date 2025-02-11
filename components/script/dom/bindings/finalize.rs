@@ -7,7 +7,7 @@
 use std::any::type_name;
 use std::mem;
 
-use js::glue::JS_GetReservedSlot;
+use my_js::glue::JS_GetReservedSlot;
 use js::jsapi::JSObject;
 use js::jsval::UndefinedValue;
 
