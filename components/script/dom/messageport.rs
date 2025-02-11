@@ -11,7 +11,8 @@ use std::rc::Rc;
 use base::id::{MessagePortId, MessagePortIndex, PipelineNamespaceId};
 use dom_struct::dom_struct;
 use js::jsapi::{Heap, JSObject, MutableHandleObject};
-use js::rust::{CustomAutoRooter, CustomAutoRooterGuard, HandleValue};
+use js::rust::HandleValue;
+use my_js::gc::{CustomAutoRooter, CustomAutoRooterGuard};
 use script_traits::PortMessageTask;
 
 use crate::dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;

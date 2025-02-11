@@ -8,7 +8,7 @@ use std::mem;
 use std::rc::Rc;
 
 use dom_struct::dom_struct;
-use js::gc::CustomAutoRooterGuard;
+use my_js::gc::CustomAutoRooterGuard;
 use js::jsapi::Heap;
 use js::jsval::{JSVal, UndefinedValue};
 use js::rust::{HandleObject as SafeHandleObject, HandleValue as SafeHandleValue};

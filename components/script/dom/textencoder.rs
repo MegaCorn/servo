@@ -5,7 +5,7 @@
 use std::ptr;
 
 use dom_struct::dom_struct;
-use js::gc::CustomAutoRooterGuard;
+use my_js::gc::CustomAutoRooterGuard;
 use js::jsapi::JSObject;
 use js::rust::HandleObject;
 use my_js::typedarray::Uint8Array;

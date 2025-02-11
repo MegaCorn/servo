@@ -5,7 +5,7 @@
 use std::cell::Cell;
 
 use dom_struct::dom_struct;
-use js::gc::CustomAutoRooterGuard;
+use my_js::gc::CustomAutoRooterGuard;
 use my_js::typedarray::Float32Array;
 use webxr_api::{Frame, LayerId, SubImages};
 

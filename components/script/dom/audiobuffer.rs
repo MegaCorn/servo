@@ -5,7 +5,8 @@
 use std::cmp::min;
 
 use dom_struct::dom_struct;
-use js::rust::{CustomAutoRooterGuard, HandleObject};
+use js::rust::HandleObject;
+use my_js::gc::CustomAutoRooterGuard;
 use my_js::typedarray::{Float32, Float32Array};
 use servo_media::audio::buffer_source_node::AudioBuffer as ServoMediaAudioBuffer;
 

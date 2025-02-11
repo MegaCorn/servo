@@ -11,7 +11,8 @@ use ipc_channel::ipc::{self, IpcReceiver, IpcSender};
 use ipc_channel::router::ROUTER;
 use js::jsapi::{JSAutoRealm, JSObject};
 use js::jsval::UndefinedValue;
-use js::rust::{CustomAutoRooterGuard, HandleObject};
+use js::rust::HandleObject;
+use my_js::gc::CustomAutoRooterGuard;
 use my_js::typedarray::{ArrayBuffer, ArrayBufferView, CreateWith};
 use net_traits::request::{Referrer, RequestBuilder, RequestMode};
 use net_traits::{

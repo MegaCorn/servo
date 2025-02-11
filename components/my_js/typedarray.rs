@@ -10,7 +10,8 @@ use js::conversions::ConversionResult;
 use js::conversions::FromJSValConvertible;
 use js::conversions::ToJSValConvertible;
 use js::jsapi::{JSObject, Heap, JSContext, JSTracer, Type};
-use js::rust::{CustomTrace, HandleValue, MutableHandleObject, MutableHandleValue};
+use js::rust::{HandleValue, MutableHandleObject, MutableHandleValue};
+use crate::gc::CustomTrace;
 
 /// Trait that specifies how pointers to wrapped objects are stored. It supports
 /// two variants, one with bare pointer (to be rooted on stack using

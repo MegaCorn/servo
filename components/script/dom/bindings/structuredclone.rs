@@ -23,7 +23,8 @@ use js::jsapi::{
 use my_js::jsapi::JS_ClearPendingException;
 use js::jsval::UndefinedValue;
 use my_js::jsapi_wrapped::{JS_ReadStructuredClone, JS_WriteStructuredClone};
-use js::rust::{CustomAutoRooterGuard, HandleValue, MutableHandleValue};
+use js::rust::{HandleValue, MutableHandleValue};
+use my_js::gc::CustomAutoRooterGuard;
 use script_traits::serializable::BlobImpl;
 use script_traits::transferable::MessagePortImpl;
 use script_traits::StructuredSerializedData;

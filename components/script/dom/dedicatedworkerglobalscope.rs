@@ -14,7 +14,8 @@ use ipc_channel::ipc::IpcReceiver;
 use ipc_channel::router::ROUTER;
 use js::jsapi::{Heap, JSContext, JSObject, JS_AddInterruptCallback};
 use js::jsval::UndefinedValue;
-use js::rust::{CustomAutoRooter, CustomAutoRooterGuard, HandleValue};
+use js::rust::HandleValue;
+use my_js::gc::{CustomAutoRooter, CustomAutoRooterGuard};
 use net_traits::image_cache::ImageCache;
 use net_traits::request::{
     CredentialsMode, Destination, InsecureRequestsPolicy, ParserMetadata, Referrer, RequestBuilder,

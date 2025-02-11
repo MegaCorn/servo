@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom_struct::dom_struct;
-use js::gc::CustomAutoRooterGuard;
+use my_js::gc::CustomAutoRooterGuard;
 use js::jsapi::Heap;
 use my_js::typedarray::{ArrayBufferView, ArrayBufferViewU8};
 

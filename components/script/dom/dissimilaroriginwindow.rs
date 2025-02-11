@@ -6,7 +6,8 @@ use base::id::PipelineId;
 use dom_struct::dom_struct;
 use js::jsapi::{Heap, JSObject};
 use js::jsval::UndefinedValue;
-use js::rust::{CustomAutoRooter, CustomAutoRooterGuard, HandleValue, MutableHandleValue};
+use js::rust::{HandleValue, MutableHandleValue};
+use my_js::gc::{CustomAutoRooter, CustomAutoRooterGuard};
 use script_traits::{ScriptMsg, StructuredSerializedData};
 use servo_url::ServoUrl;
 

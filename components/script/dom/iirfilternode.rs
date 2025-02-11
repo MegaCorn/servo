@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use dom_struct::dom_struct;
 use itertools::Itertools;
-use js::gc::CustomAutoRooterGuard;
+use my_js::gc::CustomAutoRooterGuard;
 use js::rust::HandleObject;
 use my_js::typedarray::Float32Array;
 use servo_media::audio::iir_filter_node::{IIRFilterNode as IIRFilter, IIRFilterNodeOptions};

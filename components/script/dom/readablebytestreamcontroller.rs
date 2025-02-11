@@ -76,7 +76,7 @@ impl ReadableByteStreamControllerMethods<crate::DomTypeHolder> for ReadableByteS
     /// <https://streams.spec.whatwg.org/#rbs-controller-enqueue>
     fn Enqueue(
         &self,
-        _chunk: js::gc::CustomAutoRooterGuard<my_js::typedarray::ArrayBufferView>,
+        _chunk: my_js::gc::CustomAutoRooterGuard<my_js::typedarray::ArrayBufferView>,
     ) -> Fallible<()> {
         // TODO
         Err(Error::NotFound)

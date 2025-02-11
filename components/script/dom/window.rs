@@ -37,9 +37,10 @@ use js::jsapi::{
 use js::jsval::{NullValue, UndefinedValue};
 use my_js::jsapi_wrapped::JS_DefineProperty;
 use js::rust::{
-    CustomAutoRooter, CustomAutoRooterGuard, HandleObject, HandleValue, MutableHandleObject,
+    HandleObject, HandleValue, MutableHandleObject,
     MutableHandleValue,
 };
+use my_js::gc::{CustomAutoRooter, CustomAutoRooterGuard};
 use malloc_size_of::MallocSizeOf;
 use media::WindowGLContext;
 use net_traits::image_cache::{

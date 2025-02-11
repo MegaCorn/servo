@@ -9,7 +9,7 @@ use dom_struct::dom_struct;
 use js::conversions::ToJSValConvertible;
 use js::jsapi::{JSAutoRealm, JSObject};
 use js::jsval::UndefinedValue;
-use js::rust::CustomAutoRooterGuard;
+use my_js::gc::CustomAutoRooterGuard;
 use my_js::typedarray::{ArrayBuffer, ArrayBufferView, CreateWith};
 use script_traits::serializable::BlobImpl;
 use servo_media::webrtc::{
