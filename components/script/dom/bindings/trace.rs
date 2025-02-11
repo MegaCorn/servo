@@ -41,7 +41,7 @@ use crossbeam_channel::Sender;
 use indexmap::IndexMap;
 /// A trait to allow tracing (only) DOM objects.
 pub(crate) use js::gc::Traceable as JSTraceable;
-pub(crate) use js::gc::{RootableVec, RootedVec};
+pub(crate) use my_js::gc::{RootableVec, RootedVec};
 use my_js::glue::{CallObjectTracer, CallScriptTracer, CallStringTracer, CallValueTracer};
 use js::jsapi::{GCTraceKindToAscii, Heap, JSObject, JSScript, JSString, JSTracer, TraceKind};
 use js::jsval::JSVal;
@@ -486,7 +486,7 @@ where
 /// If you have an arbitrary number of DomObjects to root, use rooted_vec!.
 /// If you know what you're doing, use this.
 #[cfg_attr(crown, crown::unrooted_must_root_lint::allow_unrooted_interior)]
-pub(crate) struct RootedTraceableBox<T: JSTraceable + 'static>(js::gc::RootedTraceableBox<T>);
+pub(crate) struct RootedTraceableBox<T: JSTraceable + 'static>(my_js::gc::RootedTraceableBox<T>);
 
 unsafe impl<T: JSTraceable + 'static> JSTraceable for RootedTraceableBox<T> {
     unsafe fn trace(&self, tracer: *mut JSTracer) {
@@ -497,12 +497,12 @@ unsafe impl<T: JSTraceable + 'static> JSTraceable for RootedTraceableBox<T> {
 impl<T: JSTraceable + 'static> RootedTraceableBox<T> {
     /// DomRoot a JSTraceable thing for the life of this RootedTraceableBox
     pub(crate) fn new(traceable: T) -> RootedTraceableBox<T> {
-        Self(js::gc::RootedTraceableBox::new(traceable))
+        Self(my_js::gc::RootedTraceableBox::new(traceable))
     }
 
     /// Consumes a boxed JSTraceable and roots it for the life of this RootedTraceableBox.
     pub(crate) fn from_box(boxed_traceable: Box<T>) -> RootedTraceableBox<T> {
-        Self(js::gc::RootedTraceableBox::from_box(boxed_traceable))
+        Self(my_js::gc::RootedTraceableBox::from_box(boxed_traceable))
     }
 }
 

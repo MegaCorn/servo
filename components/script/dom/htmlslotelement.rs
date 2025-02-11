@@ -6,7 +6,7 @@ use std::cell::{Cell, Ref, RefCell};
 
 use dom_struct::dom_struct;
 use html5ever::{local_name, namespace_url, ns, LocalName, Prefix};
-use js::gc::RootedVec;
+use my_js::gc::RootedVec;
 use js::rust::HandleObject;
 
 use crate::dom::attr::Attr;
