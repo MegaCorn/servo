@@ -22,11 +22,12 @@ use std::{os, ptr, thread};
 use background_hang_monitor_api::ScriptHangAnnotation;
 use content_security_policy::{CheckResult, PolicyDisposition};
 use my_js::conversions::jsstr_to_string;
-use js::glue::{
-    CollectServoSizes, CreateJobQueue, DeleteJobQueue, DispatchableRun, JobQueueTraps,
+use my_js::glue::{
+    CollectServoSizes, CreateJobQueue, DeleteJobQueue, DispatchableRun,
     RUST_js_GetErrorMessage, SetBuildId, StreamConsumerConsumeChunk,
     StreamConsumerNoteResponseURLs, StreamConsumerStreamEnd, StreamConsumerStreamError,
 };
+use js::glue::JobQueueTraps;
 use js::jsapi::{
     AsmJSOption, BuildIdCharVector, ContextOptionsRef, DisableIncrementalGC,
     Dispatchable as JSRunnable, Dispatchable_MaybeShuttingDown, GCDescription, GCOptions,

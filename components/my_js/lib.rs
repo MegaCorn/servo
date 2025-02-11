@@ -8,5 +8,6 @@ pub mod error;
 pub mod jsapi;
 pub mod jsapi_wrapped;
 pub mod gc;
+pub mod glue;
 pub mod panic;
 pub mod typedarray;
