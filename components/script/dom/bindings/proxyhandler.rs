@@ -17,7 +17,7 @@ use my_js::glue::{
 };
 use js::jsapi;
 use js::jsapi::{
-    jsid, DOMProxyShadowsResult, GetObjectRealmOrNull, GetRealmPrincipals, GetStaticPrototype,
+    jsid, DOMProxyShadowsResult, GetStaticPrototype,
     Handle as RawHandle, HandleId as RawHandleId,
     HandleObject as RawHandleObject, HandleValue as RawHandleValue, JSAutoRealm, JSContext,
     JSErrNum, JSFunctionSpec, JSObject, JSPropertySpec,
@@ -28,6 +28,7 @@ use js::jsapi::{
 };
 use my_js::jsapi::{
     JS_IsExceptionPending, GetWellKnownSymbol, JS_AtomizeAndPinString,
+    GetRealmPrincipals, GetObjectRealmOrNull,
 };
 use js::jsid::SymbolId;
 use js::jsval::{ObjectValue, UndefinedValue};

@@ -25,7 +25,7 @@ use my_js::jsapi::{
     IsSharableCompartment, IsSystemCompartment, JS_NewGlobalObject,
     JS_NewObject, JS_NewPlainObject, JS_SetReservedSlot, JS_WrapObject,
     define_methods, define_properties, maybe_wrap_object, get_object_class,
-    is_dom_class,
+    is_dom_class, RealmOptions,
 };
 use js::jsval::{JSVal, NullValue, PrivateValue};
 use my_js::jsapi_wrapped::{
@@ -35,7 +35,7 @@ use my_js::jsapi_wrapped::{
     RUST_SYMBOL_TO_JSID,
 };
 use js::rust::{
-    HandleObject, HandleValue, MutableHandleObject, RealmOptions,
+    HandleObject, HandleValue, MutableHandleObject,
 };
 use servo_url::MutableOrigin;
 
@@ -150,8 +150,8 @@ pub(crate) unsafe fn create_global_object(
     assert!(rval.is_null());
 
     let mut options = RealmOptions::default();
-    options.creationOptions_.traceGlobal_ = Some(trace);
-    options.creationOptions_.sharedMemoryAndAtomics_ = false;
+    // options.creationOptions_.traceGlobal_ = Some(trace);
+    // options.creationOptions_.sharedMemoryAndAtomics_ = false;
     select_compartment(cx, &mut options);
 
     let principal = ServoJSPrincipals::new(origin);
@@ -161,7 +161,7 @@ pub(crate) unsafe fn create_global_object(
         class,
         principal.as_raw(),
         OnNewGlobalHookOption::DontFireOnNewGlobalHook,
-        &*options,
+        &options,
     ));
     assert!(!rval.is_null());
 
@@ -208,10 +208,10 @@ fn select_compartment(cx: SafeJSContext, options: &mut RealmOptions) {
     }
 
     if compartment.is_null() {
-        options.creationOptions_.compSpec_ = CompartmentSpecifier::NewCompartmentAndZone;
+        // options.creationOptions_.compSpec_ = CompartmentSpecifier::NewCompartmentAndZone;
     } else {
-        options.creationOptions_.compSpec_ = CompartmentSpecifier::ExistingCompartment;
-        options.creationOptions_.__bindgen_anon_1.comp_ = compartment;
+        // options.creationOptions_.compSpec_ = CompartmentSpecifier::ExistingCompartment;
+        // options.creationOptions_.__bindgen_anon_1.comp_ = compartment;
     }
 }
 

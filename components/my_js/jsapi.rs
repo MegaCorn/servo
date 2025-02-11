@@ -3,15 +3,44 @@ use js::jsapi::{
     JSErrorReport, JSString, AutoRequireNoGC, Latin1Char,
     JSLinearString, JSAtom, ReadOnlyCompileOptions, SourceText, Handle,
     JSRuntime, ModuleDynamicImportHook, ModuleMetadataHook, ModuleResolveHook,
-    ScriptPrivateReferenceHook, ModuleErrorBehaviour, Realm,
+    ScriptPrivateReferenceHook, ModuleErrorBehaviour,
     SymbolCode, Symbol, Compartment, JSIterateCompartmentCallback,
-    JSClass, JSPrincipals, OnNewGlobalHookOption, RealmOptions,
+    JSClass, JSPrincipals, OnNewGlobalHookOption,
     JSFunctionSpec, JSPropertySpec, PropertyDescriptor,
 };
 use js::rust::{
     HandleValue, HandleObject, MutableHandleValue, HandleId, MutableHandleObject,
     MutableHandle,
 };
+
+#[repr(C)]
+#[derive(Default)]
+pub struct RealmOptions {
+    _unused: [u8; 0],
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Realm {
+    _unused: [u8; 0],
+}
+
+pub fn EnterRealm(
+    cx: *mut JSContext,
+    target: *mut JSObject,
+) -> *mut Realm {
+    std::ptr::null_mut()
+}
+
+pub fn LeaveRealm(cx: *mut JSContext, oldRealm: *mut Realm) {}
+
+pub fn GetRealmPrincipals(realm: *mut Realm) -> *mut JSPrincipals {
+    std::ptr::null_mut()
+}
+
+pub fn GetObjectRealmOrNull(obj: *mut JSObject) -> *mut Realm {
+    std::ptr::null_mut()
+}
 
 pub fn JS_NewFunction(
     cx: *mut JSContext,
@@ -318,7 +347,7 @@ pub fn JS_NewGlobalObject(
     clasp: *const JSClass,
     principals: *mut JSPrincipals,
     hookOption: OnNewGlobalHookOption,
-    options: *const RealmOptions,
+    options: &RealmOptions,
 ) -> *mut JSObject {
     std::ptr::null_mut()
 }

@@ -1,4 +1,5 @@
-use js::jsapi::{SourceText, JSContext, Realm, JSString};
+use js::jsapi::{SourceText, JSContext, JSString};
+use crate::jsapi::Realm;
 use js::jsapi::mozilla::Utf8Unit;
 use std::marker::PhantomData;
 use js::rust::ScriptedCaller;
