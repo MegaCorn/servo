@@ -15,7 +15,8 @@ use my_js::jsapi_wrapped::{
     GetBuiltinClass, GetPropertyKeys, JS_GetPropertyById, JS_IdToValue,
     JS_ValueToSource, JS_GetOwnPropertyDescriptorById,
 };
-use js::rust::{describe_scripted_caller, CapturedJSStack, HandleValue, IdVector};
+use js::rust::{CapturedJSStack, HandleValue, IdVector};
+use my_js::rust::describe_scripted_caller;
 
 use crate::dom::bindings::codegen::Bindings::ConsoleBinding::consoleMethods;
 use crate::dom::bindings::conversions::jsstring_to_str;

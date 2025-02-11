@@ -37,9 +37,10 @@ use my_js::jsapi::{
 use my_js::jsapi_wrapped::JS_GetPendingException;
 use js::jsval::{JSVal, PrivateValue, UndefinedValue};
 use js::rust::{
-    transform_str_to_source_text, CompileOptionsWrapper, Handle, HandleObject as RustHandleObject,
+    CompileOptionsWrapper, Handle, HandleObject as RustHandleObject,
     HandleValue, IntoHandle, MutableHandleObject as RustMutableHandleObject,
 };
+use my_js::rust::transform_str_to_source_text;
 use mime::Mime;
 use net_traits::http_status::HttpStatus;
 use net_traits::request::{

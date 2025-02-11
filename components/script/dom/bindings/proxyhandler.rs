@@ -36,8 +36,9 @@ use my_js::jsapi_wrapped::{
     SetDataPropertyDescriptor, RUST_INTERNED_STRING_TO_JSID,
 };
 use js::rust::{
-    get_context_realm, Handle, HandleObject, HandleValue, MutableHandle, MutableHandleObject,
+    Handle, HandleObject, HandleValue, MutableHandle, MutableHandleObject,
 };
+use my_js::rust::get_context_realm;
 
 use crate::dom::bindings::conversions::{is_dom_proxy, jsid_to_string, jsstring_to_str};
 use crate::dom::bindings::error::{throw_dom_exception, Error};

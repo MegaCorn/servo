@@ -18,8 +18,9 @@ use my_js::jsapi::JS_GetFunctionObject;
 use js::jsval::JSVal;
 use my_js::jsapi_wrapped::CompileFunction;
 use js::rust::{
-    transform_u16_to_source_text, CompileOptionsWrapper, HandleObject, RootedObjectVectorWrapper,
+    CompileOptionsWrapper, HandleObject, RootedObjectVectorWrapper,
 };
+use my_js::rust::transform_u16_to_source_text;
 use libc::c_char;
 use servo_atoms::Atom;
 use servo_url::ServoUrl;

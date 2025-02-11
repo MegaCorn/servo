@@ -42,10 +42,10 @@ use js::jsval::{PrivateValue, UndefinedValue};
 use my_js::panic::maybe_resume_unwind;
 use my_js::jsapi_wrapped::{JS_ExecuteScript, JS_GetScriptPrivate};
 use js::rust::{
-    describe_scripted_caller, transform_str_to_source_text,
     CompileOptionsWrapper, HandleValue,
     MutableHandleValue, ParentRuntime, Runtime,
 };
+use my_js::rust::{transform_str_to_source_text, describe_scripted_caller};
 use my_js::gc::{CustomAutoRooter, CustomAutoRooterGuard};
 use my_js::consts::{JSCLASS_IS_DOMJSCLASS, JSCLASS_IS_GLOBAL};
 use net_traits::blob_url_store::{get_blob_origin, BlobBuf};

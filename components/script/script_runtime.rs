@@ -47,9 +47,10 @@ use my_js::jsapi_wrapped::{
 };
 pub(crate) use js::rust::ThreadSafeJSContext;
 use js::rust::{
-    describe_scripted_caller, Handle, HandleObject as RustHandleObject, IntoHandle, JSEngine,
+    Handle, HandleObject as RustHandleObject, IntoHandle, JSEngine,
     JSEngineHandle, ParentRuntime, Runtime as RustRuntime,
 };
+use my_js::rust::describe_scripted_caller;
 use malloc_size_of::MallocSizeOfOps;
 use malloc_size_of_derive::MallocSizeOf;
 use profile_traits::mem::{Report, ReportKind};

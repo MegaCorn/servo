@@ -13,7 +13,7 @@ use devtools_traits::{
 };
 use ipc_channel::ipc::IpcSender;
 use js::jsval::UndefinedValue;
-use js::rust::ToString;
+use my_js::rust::ToString;
 use uuid::Uuid;
 
 use crate::document_collection::DocumentCollection;

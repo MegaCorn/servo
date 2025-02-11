@@ -18,7 +18,8 @@ use encoding_rs::Encoding;
 use html5ever::{local_name, namespace_url, ns, LocalName, Prefix};
 use ipc_channel::ipc;
 use js::jsval::UndefinedValue;
-use js::rust::{transform_str_to_source_text, CompileOptionsWrapper, HandleObject, Stencil};
+use js::rust::{CompileOptionsWrapper, HandleObject, Stencil};
+use my_js::rust::transform_str_to_source_text;
 use net_traits::http_status::HttpStatus;
 use net_traits::request::{
     CorsSettings, CredentialsMode, Destination, InsecureRequestsPolicy, ParserMetadata,

@@ -10,4 +10,5 @@ pub mod jsapi_wrapped;
 pub mod gc;
 pub mod glue;
 pub mod panic;
+pub mod rust;
 pub mod typedarray;

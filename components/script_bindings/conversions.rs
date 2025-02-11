@@ -18,8 +18,9 @@ use my_js::jsapi::{
 };
 use js::jsval::{ObjectValue, StringValue};
 use js::rust::{
-    maybe_wrap_value, HandleValue, MutableHandleValue, ToString,
+    HandleValue, MutableHandleValue, ToString,
 };
+use my_js::rust::maybe_wrap_value;
 use servo_config::opts;
 
 use crate::inheritance::Castable;
