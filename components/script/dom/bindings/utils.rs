@@ -30,12 +30,10 @@ use my_js::jsapi::{
     JS_ResolveStandardClass, StringIsArrayIndex, get_object_class, is_dom_class,
 };
 use js::jsval::{JSVal, UndefinedValue};
-use js::rust::wrappers::{
-    CallOriginalPromiseReject, JS_DeletePropertyById, JS_ForwardGetPropertyTo,
-    JS_GetPrototype, JS_HasProperty, JS_HasPropertyById,
-    JS_SetProperty,
+use my_js::jsapi_wrapped::{
+    JS_GetProperty, CallOriginalPromiseReject, JS_DeletePropertyById, JS_ForwardGetPropertyTo,
+    JS_GetPrototype, JS_HasProperty, JS_HasPropertyById, JS_SetProperty,
 };
-use my_js::jsapi_wrapped::JS_GetProperty;
 use js::rust::{
     GCMethods, Handle, HandleId, HandleObject, HandleValue,
     MutableHandleValue, ToString,

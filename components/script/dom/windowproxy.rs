@@ -28,7 +28,7 @@ use my_js::jsapi::{
     JS_IsExceptionPending, get_object_class,
 };
 use js::jsval::{NullValue, PrivateValue, UndefinedValue};
-use js::rust::wrappers::{JS_TransplantObject, NewWindowProxy, SetWindowProxy};
+use my_js::jsapi_wrapped::{JS_TransplantObject, NewWindowProxy, SetWindowProxy};
 use js::rust::{Handle, MutableHandle, MutableHandleValue};
 use my_js::consts::JSCLASS_IS_GLOBAL;
 use malloc_size_of::{MallocSizeOf, MallocSizeOfOps};

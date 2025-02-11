@@ -13,14 +13,12 @@ use hyper_serde::Serde;
 use ipc_channel::ipc::{self, IpcSender};
 use js::jsapi::{
     self, HandleValueArray, JSAutoRealm, JSContext, JSType,
-    JS_GetPropertyById, PropertyDescriptor,
+    JS_GetPropertyById, PropertyDescriptor, JS_GetOwnPropertyDescriptorById,
 };
 use my_js::jsapi::JS_IsExceptionPending;
 use js::jsval::UndefinedValue;
-use js::rust::wrappers::JS_TypeOfValue;
 use my_js::jsapi_wrapped::{
-    JS_CallFunctionName, JS_GetProperty, JS_HasOwnProperty, GetPropertyKeys,
-    JS_GetOwnPropertyDescriptorById,
+    JS_CallFunctionName, JS_GetProperty, JS_HasOwnProperty, GetPropertyKeys, JS_TypeOfValue,
 };
 use js::rust::{HandleObject, HandleValue, IdVector};
 use net_traits::CookieSource::{NonHTTP, HTTP};

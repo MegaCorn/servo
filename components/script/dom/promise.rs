@@ -25,12 +25,12 @@ use my_js::jsapi::{
     AddRawValueRoot, JS_GetFunctionObject, RemoveRawValueRoot, JS_ClearPendingException,
 };
 use js::jsval::{Int32Value, JSVal, ObjectValue, UndefinedValue};
-use js::rust::wrappers::{
-    AddPromiseReactions, CallOriginalPromiseReject, CallOriginalPromiseResolve,
-    GetPromiseState, IsPromiseObject, NewPromiseObject, RejectPromise,
-    ResolvePromise, SetAnyPromiseIsHandled, SetPromiseUserInputEventHandlingState,
+use my_js::jsapi_wrapped::{
+    GetPromiseIsHandled, CallOriginalPromiseReject, AddPromiseReactions,
+    CallOriginalPromiseResolve, GetPromiseState, IsPromiseObject,
+    NewPromiseObject, RejectPromise, ResolvePromise, SetAnyPromiseIsHandled,
+    SetPromiseUserInputEventHandlingState,
 };
-use my_js::jsapi_wrapped::GetPromiseIsHandled;
 use js::rust::{HandleObject, HandleValue, MutableHandleObject, Runtime};
 
 use crate::dom::bindings::conversions::root_from_object;

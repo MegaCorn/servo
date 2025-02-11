@@ -22,8 +22,7 @@ use my_js::jsapi::{
     JS_ClearPendingException, JS_IsExceptionPending,
 };
 use js::jsval::{JSVal, ObjectValue, UndefinedValue};
-use js::rust::wrappers::Call;
-use my_js::jsapi_wrapped::Construct1;
+use my_js::jsapi_wrapped::{Construct1, Call};
 use js::rust::{HandleValue, Runtime};
 use net_traits::image_cache::ImageCache;
 use pixels::PixelFormat;

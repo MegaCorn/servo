@@ -6,10 +6,11 @@ use js::jsapi::{
     ScriptPrivateReferenceHook, ModuleErrorBehaviour, Realm,
     SymbolCode, Symbol, Compartment, JSIterateCompartmentCallback,
     JSClass, JSPrincipals, OnNewGlobalHookOption, RealmOptions,
-    JSFunctionSpec, JSPropertySpec,
+    JSFunctionSpec, JSPropertySpec, PropertyDescriptor,
 };
 use js::rust::{
     HandleValue, HandleObject, MutableHandleValue, HandleId, MutableHandleObject,
+    MutableHandle,
 };
 
 pub fn JS_NewFunction(
@@ -367,3 +368,13 @@ pub fn is_dom_class(class: &JSClass) -> bool {
 
 #[inline]
 pub unsafe fn maybe_wrap_object(cx: *mut JSContext, obj: MutableHandleObject) {}
+
+pub fn JS_GetOwnPropertyDescriptorById(
+    cx: *mut JSContext,
+    obj: HandleObject,
+    id: HandleId,
+    desc: MutableHandle<PropertyDescriptor>,
+    isNone: *mut bool,
+) -> bool {
+    true
+}

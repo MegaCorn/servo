@@ -31,11 +31,10 @@ use my_js::jsapi::{
 };
 use js::jsid::SymbolId;
 use js::jsval::{ObjectValue, UndefinedValue};
-use js::rust::wrappers::{
-    AppendToIdVector, JS_AlreadyHasOwnPropertyById,
+use my_js::jsapi_wrapped::{
+    JS_NewObjectWithGivenProto, AppendToIdVector, JS_AlreadyHasOwnPropertyById,
     SetDataPropertyDescriptor, RUST_INTERNED_STRING_TO_JSID,
 };
-use my_js::jsapi_wrapped::JS_NewObjectWithGivenProto;
 use js::rust::{
     get_context_realm, Handle, HandleObject, HandleValue, MutableHandle, MutableHandleObject,
 };

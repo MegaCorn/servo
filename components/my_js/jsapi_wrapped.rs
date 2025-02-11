@@ -1,13 +1,14 @@
 use js::jsapi::{
     JSContext, JSObject, RegExpFlags, Value,
     JSString, jsid, JSClass, HandleValueArray, ESClass, MutableHandleIdVector,
-    HandleId, PropertyDescriptor, HandleObjectVector, ReadOnlyCompileOptions,
+    PropertyDescriptor, HandleObjectVector, ReadOnlyCompileOptions,
     SourceText, JSFunction, JSScript, JSStructuredCloneData, StructuredCloneScope,
-    CloneDataPolicy, JSStructuredCloneCallbacks, Symbol,
+    CloneDataPolicy, JSStructuredCloneCallbacks, Symbol, ObjectOpResult,
+    JSType, PromiseState, PromiseUserInputEventHandlingState,
 };
 use js::rust::{
     MutableHandleValue, MutableHandle, Handle, HandleObject, MutableHandleObject,
-    HandleValue, MutableHandleId,
+    HandleValue, MutableHandleId, HandleId,
 };
 
 pub fn JS_GetPendingException(
@@ -173,16 +174,6 @@ pub fn GetPropertyKeys(
     true
 }
 
-pub fn JS_GetOwnPropertyDescriptorById(
-    cx: *mut JSContext,
-    obj: HandleObject,
-    id: HandleId,
-    desc: MutableHandle<PropertyDescriptor>,
-    isNone: *mut bool,
-) -> bool {
-    true
-}
-
 pub fn JS_GetPropertyById(
     cx: *mut JSContext,
     obj: Handle<*mut JSObject>,
@@ -249,16 +240,6 @@ pub fn JS_ExecuteScript(
 
 pub fn JS_GetScriptPrivate(script: *mut JSScript, dest: MutableHandleValue) {}
 
-pub fn Call(
-    cx: *mut JSContext,
-    thisv: Handle<Value>,
-    fun: Handle<Value>,
-    args: *const HandleValueArray,
-    rval: MutableHandle<Value>,
-) -> bool {
-    true
-}
-
 pub fn DetachArrayBuffer(
     cx: *mut JSContext,
     obj: Handle<*mut JSObject>,
@@ -322,3 +303,207 @@ pub fn JS_CallFunctionValue(
 pub fn JS_WrapValue(cx: *mut JSContext, vp: MutableHandleValue) -> bool {
     true
 }
+
+pub fn JS_GetOwnPropertyDescriptorById(
+    cx: *mut JSContext,
+    obj: HandleObject,
+    id: HandleId,
+    desc: MutableHandle<PropertyDescriptor>,
+    isNone: *mut bool
+) -> bool {
+    true
+}
+
+pub fn CallOriginalPromiseReject(
+    cx: *mut JSContext,
+    rejectionValue: HandleValue,
+) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn JS_DeletePropertyById(
+    cx: *mut JSContext,
+    obj: Handle<*mut JSObject>,
+    id: Handle<jsid>,
+    result: *mut ObjectOpResult,
+) -> bool {
+    true
+}
+
+pub fn JS_ForwardGetPropertyTo(
+    cx: *mut JSContext,
+    obj: Handle<*mut JSObject>,
+    id: Handle<jsid>,
+    receiver: Handle<Value>,
+    vp: MutableHandleValue,
+) -> bool {
+    true
+}
+
+pub fn JS_GetPrototype(
+    cx: *mut JSContext,
+    obj: HandleObject,
+    result: MutableHandleObject,
+) -> bool {
+    true
+}
+
+pub fn JS_HasProperty(
+    cx: *mut JSContext,
+    obj: Handle<*mut JSObject>,
+    name: *const ::std::os::raw::c_char,
+    foundp: *mut bool,
+) -> bool {
+    true
+}
+
+pub fn JS_HasPropertyById(
+    cx: *mut JSContext,
+    obj: Handle<*mut JSObject>,
+    id: Handle<jsid>,
+    foundp: *mut bool,
+) -> bool {
+    true
+}
+
+pub fn JS_SetProperty(
+    cx: *mut JSContext,
+    obj: Handle<*mut JSObject>,
+    name: *const ::std::os::raw::c_char,
+    v: Handle<Value>,
+) -> bool {
+    true
+}
+
+pub fn JS_TransplantObject(
+    cx: *mut JSContext,
+    origobj: HandleObject,
+    target: HandleObject,
+) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn NewWindowProxy(
+    aCx: *mut JSContext,
+    aObj: HandleObject,
+    aHandler: *const ::std::os::raw::c_void
+) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn SetWindowProxy(
+    cx: *mut JSContext,
+    global: Handle<*mut JSObject>,
+    windowProxy: Handle<*mut JSObject>,
+) {}
+
+pub fn JS_SetPrototype(
+    cx: *mut JSContext,
+    obj: HandleObject,
+    proto: HandleObject,
+) -> bool {
+    true
+}
+
+pub fn IsArrayObject(
+    cx: *mut JSContext,
+    value: Handle<Value>,
+    isArray: *mut bool,
+) -> bool {
+    true
+}
+
+pub fn Call(
+    cx: *mut JSContext,
+    thisv: Handle<Value>,
+    fun: Handle<Value>,
+    args: *const HandleValueArray,
+    rval: MutableHandle<Value>,
+) -> bool {
+    true
+}
+
+pub fn JS_TypeOfValue(
+    cx: *mut JSContext,
+    v: Handle<Value>,
+) -> JSType {
+    JSType::JSTYPE_UNDEFINED
+}
+
+pub fn AddPromiseReactions(
+    cx: *mut JSContext,
+    promise: HandleObject,
+    onFulfilled: HandleObject,
+    onRejected: HandleObject,
+) -> bool {
+    true
+}
+
+pub fn CallOriginalPromiseResolve(
+    cx: *mut JSContext,
+    resolutionValue: HandleValue,
+) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn GetPromiseState(promise: HandleObject) -> PromiseState {
+    PromiseState::Rejected
+}
+
+pub fn IsPromiseObject(obj: HandleObject) -> bool {
+    true
+}
+
+pub fn NewPromiseObject(
+    cx: *mut JSContext,
+    executor: HandleObject,
+) -> *mut JSObject {
+    std::ptr::null_mut()
+}
+
+pub fn RejectPromise(
+    cx: *mut JSContext,
+    promiseObj: HandleObject,
+    rejectionValue: HandleValue,
+) -> bool {
+    true
+}
+
+pub fn ResolvePromise(
+    cx: *mut JSContext,
+    promiseObj: HandleObject,
+    resolutionValue: HandleValue,
+) -> bool {
+    true
+}
+
+pub fn SetAnyPromiseIsHandled(
+    cx: *mut JSContext,
+    promise: HandleObject,
+) -> bool {
+    true
+}
+
+pub fn SetPromiseUserInputEventHandlingState(
+    promise: HandleObject,
+    state: PromiseUserInputEventHandlingState,
+) -> bool {
+    true
+}
+
+pub fn AppendToIdVector(v: MutableHandleIdVector, id: HandleId) -> bool {
+    true
+}
+
+pub fn JS_AlreadyHasOwnPropertyById(
+    cx: *mut JSContext,
+    obj: Handle<*mut JSObject>,
+    id: Handle<jsid>,
+    foundp: *mut bool,
+) -> bool {
+    true
+}
+
+pub fn SetDataPropertyDescriptor(desc: MutableHandle<PropertyDescriptor>, value: HandleValue, attrs: u32) {}
+
+pub fn RUST_INTERNED_STRING_TO_JSID(cx: *mut JSContext, str_: *mut JSString, id: MutableHandleId) {}
