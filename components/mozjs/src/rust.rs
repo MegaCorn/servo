@@ -345,7 +345,14 @@ impl Runtime {
     unsafe fn create(engine: JSEngineHandle, parent: Option<ParentRuntime>) -> Runtime {
         let parent_runtime = parent.as_ref().map_or(ptr::null_mut(), |r| r.parent);
         let js_context = JS_NewContext(default_heapsize + (ChunkSize as u32), parent_runtime);
-        assert!(!js_context.is_null());
+        // assert!(!js_context.is_null());
+
+        if parent_runtime == ptr::null_mut() {
+            println!("===== v8 initialize =====");
+            let platform = v8::new_default_platform(0, false).make_shared();
+            v8::V8::initialize_platform(platform);
+            v8::V8::initialize();
+        }
 
         // Unconstrain the runtime's threshold on nominal heap size, to avoid
         // triggering GC too often if operating continuously near an arbitrary
@@ -443,6 +450,10 @@ impl Drop for Runtime {
                 assert_eq!(context.get(), self.cx);
                 context.set(ptr::null_mut());
             });
+
+            println!("===== v8 dispose =====");
+            v8::V8::dispose();
+            v8::V8::dispose_platform();
         }
     }
 }

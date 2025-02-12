@@ -25,6 +25,7 @@ bitflags = { workspace = true }
 cssparser = { workspace = true }
 html5ever = { workspace = true }
 js = { workspace = true }
+v8 = { workspace = true }
 jstraceable_derive = { path = "../jstraceable_derive" }
 libc = { workspace = true }
 log = { workspace = true }

@@ -72,6 +72,7 @@ indexmap = { workspace = true }
 ipc-channel = { workspace = true }
 itertools = { workspace = true }
 js = { workspace = true }
+v8 = { workspace = true }
 jstraceable_derive = { path = "../jstraceable_derive" }
 keyboard-types = { workspace = true }
 libc = { workspace = true }

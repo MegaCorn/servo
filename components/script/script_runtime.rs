@@ -631,21 +631,22 @@ impl Runtime {
             JSJitCompilerOption::JSJITCOMPILER_ION_ENABLE,
             pref!(js_ion_enabled) as u32,
         );
-        cx_opts.compileOptions_.asmJSOption_ = if pref!(js_asmjs_enabled) {
-            AsmJSOption::Enabled
-        } else {
-            AsmJSOption::DisabledByAsmJSPref
-        };
+        // cx_opts is nullptr
+        // cx_opts.compileOptions_.asmJSOption_ = if pref!(js_asmjs_enabled) {
+        //     AsmJSOption::Enabled
+        // } else {
+        //     AsmJSOption::DisabledByAsmJSPref
+        // };
         let wasm_enabled = pref!(js_wasm_enabled);
-        cx_opts.set_wasm_(wasm_enabled);
+        // cx_opts.set_wasm_(wasm_enabled);
         if wasm_enabled {
             // If WASM is enabled without setting the buildIdOp,
             // initializing a module will report an out of memory error.
             // https://dxr.mozilla.org/mozilla-central/source/js/src/wasm/WasmTypes.cpp#458
             SetProcessBuildIdOp(Some(servo_build_id));
         }
-        cx_opts.set_wasmBaseline_(pref!(js_wasm_baseline_enabled));
-        cx_opts.set_wasmIon_(pref!(js_wasm_ion_enabled));
+        // cx_opts.set_wasmBaseline_(pref!(js_wasm_baseline_enabled));
+        // cx_opts.set_wasmIon_(pref!(js_wasm_ion_enabled));
         // TODO: handle js.throw_on_asmjs_validation_failure (needs new Spidermonkey)
         JS_SetGlobalJitCompilerOption(
             cx,
