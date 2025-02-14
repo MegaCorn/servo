@@ -61,8 +61,9 @@ impl BluetoothDevice {
         name: Option<DOMString>,
         context: &Bluetooth,
     ) -> BluetoothDevice {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         BluetoothDevice {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::BluetoothDevice),
             id,
             name,
             gatt: Default::default(),

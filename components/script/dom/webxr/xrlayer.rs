@@ -33,8 +33,10 @@ impl XRLayer {
         context: &WebGLRenderingContext,
         layer_id: Option<LayerId>,
     ) -> XRLayer {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
+        use crate::dom::bindings::codegen::InheritTypes::XRLayerTypeId;
         XRLayer {
-            event_target: EventTarget::new_inherited(),
+            event_target: EventTarget::new_inherited(EventTargetTypeId::XRLayer(XRLayerTypeId::XRLayer)),
             session: Dom::from_ref(session),
             context: Dom::from_ref(context),
             layer_id,

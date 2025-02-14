@@ -48,8 +48,9 @@ impl OffscreenCanvas {
         height: u64,
         placeholder: Option<&HTMLCanvasElement>,
     ) -> OffscreenCanvas {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         OffscreenCanvas {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::OffscreenCanvas),
             width: Cell::new(width),
             height: Cell::new(height),
             context: DomRefCell::new(None),

@@ -108,8 +108,9 @@ pub(crate) struct WebSocket {
 
 impl WebSocket {
     fn new_inherited(url: ServoUrl, sender: IpcSender<WebSocketDomAction>) -> WebSocket {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         WebSocket {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::WebSocket),
             url,
             ready_state: Cell::new(WebSocketRequestState::Connecting),
             buffered_amount: Cell::new(0),

@@ -34,8 +34,10 @@ impl TextTrackCue {
         end_time: f64,
         track: Option<&TextTrack>,
     ) -> TextTrackCue {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
+        use crate::dom::bindings::codegen::InheritTypes::TextTrackCueTypeId;
         TextTrackCue {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::TextTrackCue(TextTrackCueTypeId::TextTrackCue)),
             id: DomRefCell::new(id),
             track: track.map(Dom::from_ref),
             start_time: Cell::new(start_time),

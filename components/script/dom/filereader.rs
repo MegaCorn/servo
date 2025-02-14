@@ -175,8 +175,9 @@ pub(crate) struct FileReader {
 
 impl FileReader {
     pub(crate) fn new_inherited() -> FileReader {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         FileReader {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::FileReader),
             ready_state: Cell::new(FileReaderReadyState::Empty),
             error: MutNullableDom::new(None),
             result: DomRefCell::new(None),

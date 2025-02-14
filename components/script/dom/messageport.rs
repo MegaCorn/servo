@@ -43,8 +43,9 @@ pub(crate) struct MessagePort {
 
 impl MessagePort {
     fn new_inherited(message_port_id: MessagePortId) -> MessagePort {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         MessagePort {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::MessagePort),
             entangled_port: RefCell::new(None),
             detached: Cell::new(false),
             message_port_id,
@@ -67,10 +68,11 @@ impl MessagePort {
         transferred_port: MessagePortId,
         entangled_port: Option<MessagePortId>,
     ) -> DomRoot<MessagePort> {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         reflect_dom_object(
             Box::new(MessagePort {
                 message_port_id: transferred_port,
-                eventtarget: EventTarget::new_inherited(),
+                eventtarget: EventTarget::new_inherited(EventTargetTypeId::MessagePort),
                 detached: Cell::new(false),
                 entangled_port: RefCell::new(entangled_port),
             }),

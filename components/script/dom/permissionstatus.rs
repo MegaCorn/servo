@@ -26,8 +26,10 @@ pub(crate) struct PermissionStatus {
 
 impl PermissionStatus {
     pub(crate) fn new_inherited(query: PermissionName) -> PermissionStatus {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
+        use crate::dom::bindings::codegen::InheritTypes::PermissionStatusTypeId;
         PermissionStatus {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::PermissionStatus(PermissionStatusTypeId::PermissionStatus)),
             state: Cell::new(PermissionState::Denied),
             query: Cell::new(query),
         }

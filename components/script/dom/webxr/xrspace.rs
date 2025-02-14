@@ -28,8 +28,10 @@ pub(crate) struct XRSpace {
 
 impl XRSpace {
     pub(crate) fn new_inherited(session: &XRSession) -> XRSpace {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
+        use crate::dom::bindings::codegen::InheritTypes::XRSpaceTypeId;
         XRSpace {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::XRSpace(XRSpaceTypeId::XRSpace)),
             session: Dom::from_ref(session),
             input_source: Default::default(),
             is_grip_space: false,
@@ -41,8 +43,10 @@ impl XRSpace {
         input: &XRInputSource,
         is_grip_space: bool,
     ) -> XRSpace {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
+        use crate::dom::bindings::codegen::InheritTypes::XRSpaceTypeId;
         XRSpace {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::XRSpace(XRSpaceTypeId::XRSpace)),
             session: Dom::from_ref(session),
             input_source: MutNullableDom::new(Some(input)),
             is_grip_space,

@@ -451,8 +451,9 @@ impl PreInvoke for EventSourceContext {
 
 impl EventSource {
     fn new_inherited(url: ServoUrl, with_credentials: bool) -> EventSource {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         EventSource {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::EventSource),
             url,
             request: DomRefCell::new(None),
             last_event_id: DomRefCell::new(DOMString::from("")),

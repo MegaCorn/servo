@@ -48,8 +48,9 @@ impl ServiceWorkerRegistration {
         scope: ServoUrl,
         registration_id: ServiceWorkerRegistrationId,
     ) -> ServiceWorkerRegistration {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         ServiceWorkerRegistration {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::ServiceWorkerRegistration),
             active: DomRefCell::new(None),
             installing: DomRefCell::new(None),
             waiting: DomRefCell::new(None),

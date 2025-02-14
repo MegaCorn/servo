@@ -122,8 +122,9 @@ impl XRSession {
         input_sources: &XRInputSourceArray,
         mode: XRSessionMode,
     ) -> XRSession {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         XRSession {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::XRSession),
             blend_mode: session.environment_blend_mode().convert(),
             mode,
             visibility_state: Cell::new(XRVisibilityState::Visible),

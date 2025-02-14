@@ -121,8 +121,9 @@ impl GPUDevice {
         label: String,
         lost_promise: Rc<Promise>,
     ) -> Self {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         Self {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::GPUDevice),
             channel,
             adapter: Dom::from_ref(adapter),
             extensions,

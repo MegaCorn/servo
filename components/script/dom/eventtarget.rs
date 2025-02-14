@@ -378,7 +378,7 @@ pub(crate) struct EventTarget {
 }
 
 impl EventTarget {
-    pub(crate) fn new_inherited() -> EventTarget {
+    pub(crate) fn new_inherited(id: crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId) -> EventTarget {
         EventTarget {
             reflector_: Reflector::new(),
             handlers: DomRefCell::new(Default::default()),
@@ -389,9 +389,10 @@ impl EventTarget {
         global: &GlobalScope,
         proto: Option<HandleObject>,
         can_gc: CanGc,
+        id: crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId,
     ) -> DomRoot<EventTarget> {
         reflect_dom_object_with_proto(
-            Box::new(EventTarget::new_inherited()),
+            Box::new(EventTarget::new_inherited(id)),
             global,
             proto,
             can_gc,
@@ -891,7 +892,8 @@ impl EventTargetMethods<crate::DomTypeHolder> for EventTarget {
         proto: Option<HandleObject>,
         can_gc: CanGc,
     ) -> Fallible<DomRoot<EventTarget>> {
-        Ok(EventTarget::new(global, proto, can_gc))
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
+        Ok(EventTarget::new(global, proto, can_gc, EventTargetTypeId::EventTarget))
     }
 
     // https://dom.spec.whatwg.org/#dom-eventtarget-addeventlistener

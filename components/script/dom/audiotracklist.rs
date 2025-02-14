@@ -29,8 +29,9 @@ impl AudioTrackList {
         tracks: &[&AudioTrack],
         media_element: Option<&HTMLMediaElement>,
     ) -> AudioTrackList {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         AudioTrackList {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::AudioTrackList),
             tracks: DomRefCell::new(tracks.iter().map(|track| Dom::from_ref(&**track)).collect()),
             media_element: media_element.map(Dom::from_ref),
         }

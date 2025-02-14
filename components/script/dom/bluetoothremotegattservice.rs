@@ -38,8 +38,9 @@ impl BluetoothRemoteGATTService {
         is_primary: bool,
         instance_id: String,
     ) -> BluetoothRemoteGATTService {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         BluetoothRemoteGATTService {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::BluetoothRemoteGATTService),
             device: Dom::from_ref(device),
             uuid,
             is_primary,

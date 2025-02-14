@@ -722,12 +722,14 @@ impl GlobalScope {
         inherited_secure_context: Option<bool>,
         unminify_js: bool,
     ) -> Self {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
+        use crate::dom::bindings::codegen::InheritTypes::GlobalScopeTypeId;
         Self {
             task_manager: Default::default(),
             message_port_state: DomRefCell::new(MessagePortState::UnManaged),
             broadcast_channel_state: DomRefCell::new(BroadcastChannelState::UnManaged),
             blob_state: Default::default(),
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::GlobalScope(GlobalScopeTypeId::Window)),
             crypto: Default::default(),
             registration_map: DomRefCell::new(HashMapTracedValues::new()),
             worker_map: DomRefCell::new(HashMapTracedValues::new()),

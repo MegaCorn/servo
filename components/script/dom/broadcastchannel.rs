@@ -46,8 +46,9 @@ impl BroadcastChannel {
     }
 
     pub(crate) fn new_inherited(name: DOMString) -> BroadcastChannel {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         BroadcastChannel {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::BroadcastChannel),
             name,
             closed: Default::default(),
             id: Uuid::new_v4(),

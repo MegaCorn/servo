@@ -130,8 +130,10 @@ impl BaseAudioContext {
             .create_audio_context(&client_context_id, options.convert())
             .map_err(|_| Error::NotSupported)?;
 
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
+        use crate::dom::bindings::codegen::InheritTypes::BaseAudioContextTypeId;
         Ok(BaseAudioContext {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::BaseAudioContext(BaseAudioContextTypeId::BaseAudioContext)),
             audio_context_impl,
             destination: Default::default(),
             listener: Default::default(),

@@ -152,8 +152,9 @@ pub(crate) struct Performance {
 
 impl Performance {
     fn new_inherited(time_origin: CrossProcessInstant) -> Performance {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         Performance {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::Performance),
             buffer: DomRefCell::new(PerformanceEntryList::new(Vec::new())),
             observers: DomRefCell::new(Vec::new()),
             pending_notification_observers_task: Cell::new(false),

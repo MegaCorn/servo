@@ -29,8 +29,9 @@ impl VideoTrackList {
         tracks: &[&VideoTrack],
         media_element: Option<&HTMLMediaElement>,
     ) -> VideoTrackList {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         VideoTrackList {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::VideoTrackList),
             tracks: DomRefCell::new(tracks.iter().map(|track| Dom::from_ref(&**track)).collect()),
             media_element: media_element.map(Dom::from_ref),
         }

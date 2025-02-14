@@ -14,8 +14,10 @@ pub(crate) struct XMLHttpRequestEventTarget {
 
 impl XMLHttpRequestEventTarget {
     pub(crate) fn new_inherited() -> XMLHttpRequestEventTarget {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
+        use crate::dom::bindings::codegen::InheritTypes::XMLHttpRequestEventTargetTypeId;
         XMLHttpRequestEventTarget {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::XMLHttpRequestEventTarget(XMLHttpRequestEventTargetTypeId::XMLHttpRequest)),
         }
     }
 }

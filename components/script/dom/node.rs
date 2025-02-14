@@ -1895,7 +1895,7 @@ impl Node {
     #[cfg_attr(crown, allow(crown::unrooted_must_root))]
     fn new_(flags: NodeFlags, doc: Option<&Document>) -> Node {
         Node {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::Node(NodeTypeId::DocumentType)), // jinguoen
 
             parent_node: Default::default(),
             first_child: Default::default(),

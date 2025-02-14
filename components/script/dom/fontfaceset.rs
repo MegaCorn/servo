@@ -25,8 +25,9 @@ pub(crate) struct FontFaceSet {
 
 impl FontFaceSet {
     pub(crate) fn new_inherited(global: &GlobalScope, can_gc: CanGc) -> Self {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         FontFaceSet {
-            target: EventTarget::new_inherited(),
+            target: EventTarget::new_inherited(EventTargetTypeId::FontFaceSet),
             promise: Promise::new(global, can_gc),
         }
     }

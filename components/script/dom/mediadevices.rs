@@ -35,8 +35,9 @@ pub(crate) struct MediaDevices {
 
 impl MediaDevices {
     pub(crate) fn new_inherited() -> MediaDevices {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         MediaDevices {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::MediaDevices),
         }
     }
 

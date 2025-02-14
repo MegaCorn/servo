@@ -60,8 +60,9 @@ pub(crate) struct Worker {
 
 impl Worker {
     fn new_inherited(sender: Sender<DedicatedWorkerScriptMsg>, closing: Arc<AtomicBool>) -> Worker {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         Worker {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::Worker),
             sender,
             closing,
             terminated: Cell::new(false),

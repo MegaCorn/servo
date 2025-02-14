@@ -38,8 +38,9 @@ pub(crate) struct MediaQueryList {
 
 impl MediaQueryList {
     fn new_inherited(document: &Document, media_query_list: MediaList) -> MediaQueryList {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         MediaQueryList {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::MediaQueryList),
             document: Dom::from_ref(document),
             media_query_list,
             last_match_state: Cell::new(None),

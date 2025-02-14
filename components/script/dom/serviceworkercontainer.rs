@@ -37,8 +37,9 @@ pub(crate) struct ServiceWorkerContainer {
 
 impl ServiceWorkerContainer {
     fn new_inherited(client: &Client) -> ServiceWorkerContainer {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         ServiceWorkerContainer {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::ServiceWorkerContainer),
             controller: Default::default(),
             client: Dom::from_ref(client),
         }

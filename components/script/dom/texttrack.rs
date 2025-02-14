@@ -42,8 +42,9 @@ impl TextTrack {
         mode: TextTrackMode,
         track_list: Option<&TextTrackList>,
     ) -> TextTrack {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         TextTrack {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::TextTrack),
             kind,
             label: label.into(),
             language: language.into(),

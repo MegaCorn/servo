@@ -54,8 +54,9 @@ impl BluetoothRemoteGATTCharacteristic {
         properties: &BluetoothCharacteristicProperties,
         instance_id: String,
     ) -> BluetoothRemoteGATTCharacteristic {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         BluetoothRemoteGATTCharacteristic {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::BluetoothRemoteGATTCharacteristic),
             service: Dom::from_ref(service),
             uuid,
             properties: Dom::from_ref(properties),

@@ -74,8 +74,9 @@ impl RTCDataChannel {
                 .expect("Expected data channel id"),
         );
 
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         RTCDataChannel {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::RTCDataChannel),
             servo_media_id,
             peer_connection: Dom::from_ref(peer_connection),
             label,

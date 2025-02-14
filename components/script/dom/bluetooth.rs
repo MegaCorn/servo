@@ -145,8 +145,9 @@ pub(crate) struct Bluetooth {
 
 impl Bluetooth {
     pub(crate) fn new_inherited() -> Bluetooth {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         Bluetooth {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::Bluetooth),
             device_instance_map: DomRefCell::new(HashMap::new()),
         }
     }

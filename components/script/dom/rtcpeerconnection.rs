@@ -160,8 +160,9 @@ impl WebRtcSignaller for RTCSignaller {
 
 impl RTCPeerConnection {
     pub(crate) fn new_inherited() -> RTCPeerConnection {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         RTCPeerConnection {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::RTCPeerConnection),
             controller: DomRefCell::new(None),
             closed: Cell::new(false),
             offer_answer_generation: Cell::new(0),

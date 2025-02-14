@@ -27,8 +27,9 @@ pub(crate) struct TextTrackList {
 
 impl TextTrackList {
     pub(crate) fn new_inherited(tracks: &[&TextTrack]) -> TextTrackList {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         TextTrackList {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::TextTrackList),
             dom_tracks: DomRefCell::new(tracks.iter().map(|g| Dom::from_ref(&**g)).collect()),
         }
     }

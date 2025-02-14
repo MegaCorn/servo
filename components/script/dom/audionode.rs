@@ -82,8 +82,9 @@ impl AudioNode {
         number_of_inputs: u32,
         number_of_outputs: u32,
     ) -> AudioNode {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         AudioNode {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::AudioNode(AudioNodeTypeId::AudioNode)),
             node_id,
             context: Dom::from_ref(context),
             number_of_inputs,

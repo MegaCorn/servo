@@ -50,8 +50,9 @@ pub(crate) struct XRSystem {
 
 impl XRSystem {
     fn new_inherited(pipeline: PipelineId) -> XRSystem {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         XRSystem {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::XRSystem),
             gamepads: DomRefCell::new(Vec::new()),
             pending_immersive_session: Cell::new(false),
             active_immersive_session: Default::default(),

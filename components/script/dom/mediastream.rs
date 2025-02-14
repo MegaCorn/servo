@@ -27,8 +27,9 @@ pub(crate) struct MediaStream {
 
 impl MediaStream {
     pub(crate) fn new_inherited() -> MediaStream {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         MediaStream {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::MediaStream),
             tracks: DomRefCell::new(vec![]),
         }
     }

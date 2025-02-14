@@ -49,8 +49,9 @@ impl ServiceWorker {
         scope_url: ServoUrl,
         worker_id: ServiceWorkerId,
     ) -> ServiceWorker {
+        use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
         ServiceWorker {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::ServiceWorker),
             script_url: DomRefCell::new(String::from(script_url)),
             state: Cell::new(ServiceWorkerState::Installing),
             scope_url,
