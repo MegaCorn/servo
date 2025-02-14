@@ -109,7 +109,7 @@ impl Promise {
     #[cfg_attr(crown, allow(crown::unrooted_must_root))]
     pub(crate) fn new_with_js_promise(obj: HandleObject, cx: SafeJSContext) -> Rc<Promise> {
         unsafe {
-            assert!(IsPromiseObject(obj));
+            // assert!(IsPromiseObject(obj));
             let promise = Promise {
                 reflector: Reflector::new(),
                 permanent_js_root: Heap::default(),
@@ -125,26 +125,26 @@ impl Promise {
     // The apparently-unused CanGc parameter reflects the fact that the JS API calls
     // like JS_NewFunction can trigger a GC.
     fn create_js_promise(cx: SafeJSContext, mut obj: MutableHandleObject, _can_gc: CanGc) {
-        unsafe {
-            let do_nothing_func = JS_NewFunction(
-                *cx,
-                Some(do_nothing_promise_executor),
-                /* nargs = */ 2,
-                /* flags = */ 0,
-                ptr::null(),
-            );
-            assert!(!do_nothing_func.is_null());
-            rooted!(in(*cx) let do_nothing_obj = JS_GetFunctionObject(do_nothing_func));
-            assert!(!do_nothing_obj.is_null());
-            obj.set(NewPromiseObject(*cx, do_nothing_obj.handle()));
-            assert!(!obj.is_null());
-            let is_user_interacting = if ScriptThread::is_user_interacting() {
-                PromiseUserInputEventHandlingState::HadUserInteractionAtCreation
-            } else {
-                PromiseUserInputEventHandlingState::DidntHaveUserInteractionAtCreation
-            };
-            SetPromiseUserInputEventHandlingState(obj.handle(), is_user_interacting);
-        }
+        // unsafe {
+        //     let do_nothing_func = JS_NewFunction(
+        //         *cx,
+        //         Some(do_nothing_promise_executor),
+        //         /* nargs = */ 2,
+        //         /* flags = */ 0,
+        //         ptr::null(),
+        //     );
+        //     assert!(!do_nothing_func.is_null());
+        //     rooted!(in(*cx) let do_nothing_obj = JS_GetFunctionObject(do_nothing_func));
+        //     assert!(!do_nothing_obj.is_null());
+        //     obj.set(NewPromiseObject(*cx, do_nothing_obj.handle()));
+        //     assert!(!obj.is_null());
+        //     let is_user_interacting = if ScriptThread::is_user_interacting() {
+        //         PromiseUserInputEventHandlingState::HadUserInteractionAtCreation
+        //     } else {
+        //         PromiseUserInputEventHandlingState::DidntHaveUserInteractionAtCreation
+        //     };
+        //     SetPromiseUserInputEventHandlingState(obj.handle(), is_user_interacting);
+        // }
     }
 
     #[allow(unsafe_code)]

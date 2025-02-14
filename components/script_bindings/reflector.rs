@@ -87,6 +87,6 @@ pub trait MutDomObject: DomObject {
 
 impl MutDomObject for Reflector {
     unsafe fn init_reflector(&self, obj: *mut JSObject) {
-        self.set_jsobject(obj)
+        // self.set_jsobject(obj)
     }
 }

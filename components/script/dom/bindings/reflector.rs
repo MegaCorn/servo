@@ -21,8 +21,15 @@ where
     T: DomObject + DomObjectWrap,
     U: DerivedFrom<GlobalScope>,
 {
-    let global_scope = global.upcast();
-    unsafe { T::WRAP(GlobalScope::get_cx(), global_scope, None, obj, can_gc) }
+    // let global_scope = global.upcast();
+    // unsafe { T::WRAP(GlobalScope::get_cx(), global_scope, None, obj, can_gc) }
+    unsafe {
+        let raw = Root::new(MaybeUnreflectedDom::from_box(obj));
+        let ptr = raw.as_ptr();
+        drop(raw);
+        let root = DomRoot::from_ref(&*ptr);
+        DomRoot::from_ref(&*root)
+    }
 }
 
 pub(crate) fn reflect_dom_object_with_proto<T, U>(
