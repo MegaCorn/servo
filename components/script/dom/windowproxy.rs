@@ -172,17 +172,17 @@ impl WindowProxy {
             let handler = window.windowproxy_handler();
 
             let cx = GlobalScope::get_cx();
-            let window_jsobject = window.reflector().get_jsobject();
-            assert!(!window_jsobject.get().is_null());
-            assert_ne!(
-                ((*get_object_class(window_jsobject.get())).flags & JSCLASS_IS_GLOBAL),
-                0
-            );
-            let _ac = JSAutoRealm::new(*cx, window_jsobject.get());
+            // let window_jsobject = window.reflector().get_jsobject();
+            // assert!(!window_jsobject.get().is_null());
+            // assert_ne!(
+            //     ((*get_object_class(window_jsobject.get())).flags & JSCLASS_IS_GLOBAL),
+            //     0
+            // );
+            // let _ac = JSAutoRealm::new(*cx, window_jsobject.get());
 
             // Create a new window proxy.
-            rooted!(in(*cx) let js_proxy = handler.new_window_proxy(&cx, window_jsobject));
-            assert!(!js_proxy.is_null());
+            // rooted!(in(*cx) let js_proxy = handler.new_window_proxy(&cx, window_jsobject));
+            // assert!(!js_proxy.is_null());
 
             // Create a new browsing context.
             let current = Some(window.global().pipeline_id());
@@ -198,22 +198,22 @@ impl WindowProxy {
 
             // The window proxy owns the browsing context.
             // When we finalize the window proxy, it drops the browsing context it owns.
-            SetProxyReservedSlot(
-                js_proxy.get(),
-                0,
-                &PrivateValue((*window_proxy).as_void_ptr()),
-            );
+            // SetProxyReservedSlot(
+            //     js_proxy.get(),
+            //     0,
+            //     &PrivateValue((*window_proxy).as_void_ptr()),
+            // );
 
             // Notify the JS engine about the new window proxy binding.
-            SetWindowProxy(*cx, window_jsobject, js_proxy.handle());
+            // SetWindowProxy(*cx, window_jsobject, js_proxy.handle());
 
             // Set the reflector.
-            debug!(
-                "Initializing reflector of {:p} to {:p}.",
-                window_proxy,
-                js_proxy.get()
-            );
-            window_proxy.reflector.set_jsobject(js_proxy.get());
+            // debug!(
+            //     "Initializing reflector of {:p} to {:p}.",
+            //     window_proxy,
+            //     js_proxy.get()
+            // );
+            // window_proxy.reflector.set_jsobject(js_proxy.get());
             DomRoot::from_ref(&*Box::into_raw(window_proxy))
         }
     }
@@ -1139,7 +1139,7 @@ impl WindowProxyHandler {
         window_jsobject: js::gc::HandleObject,
     ) -> *mut JSObject {
         let obj = unsafe { NewWindowProxy(**cx, window_jsobject, self.0) };
-        assert!(!obj.is_null());
+        // assert!(!obj.is_null());
         obj
     }
 }

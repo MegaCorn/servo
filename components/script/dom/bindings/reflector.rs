@@ -8,7 +8,7 @@ use js::rust::HandleObject;
 
 use crate::dom::bindings::conversions::DerivedFrom;
 use crate::dom::bindings::iterable::{Iterable, IterableIterator};
-use crate::dom::bindings::root::{Dom, DomRoot, Root};
+use crate::dom::bindings::root::{Dom, DomRoot, Root, MaybeUnreflectedDom};
 use crate::dom::bindings::trace::JSTraceable;
 use crate::dom::globalscope::GlobalScope;
 use crate::realms::AlreadyInRealm;
@@ -35,8 +35,15 @@ where
     T: DomObject + DomObjectWrap,
     U: DerivedFrom<GlobalScope>,
 {
-    let global_scope = global.upcast();
-    unsafe { T::WRAP(GlobalScope::get_cx(), global_scope, proto, obj, can_gc) }
+    // let global_scope = global.upcast();
+    // unsafe { T::WRAP(GlobalScope::get_cx(), global_scope, proto, obj, can_gc) }
+    unsafe {
+        let raw = Root::new(MaybeUnreflectedDom::from_box(obj));
+        let ptr = raw.as_ptr();
+        drop(raw);
+        let root = DomRoot::from_ref(&*ptr);
+        DomRoot::from_ref(&*root)
+    }
 }
 
 pub trait DomGlobal: DomObject {
@@ -47,8 +54,11 @@ pub trait DomGlobal: DomObject {
     where
         Self: Sized,
     {
-        let realm = AlreadyInRealm::assert_for_cx(GlobalScope::get_cx());
-        GlobalScope::from_reflector(self, &realm)
+        let ptr = js::rust::Runtime::my_get_window() as *const crate::dom::window::Window;
+        let global_scope = unsafe { (*ptr).as_global_scope() };
+        DomRoot::from_ref(global_scope)
+        // let realm = AlreadyInRealm::assert_for_cx(GlobalScope::get_cx());
+        // GlobalScope::from_reflector(self, &realm)
     }
 }
 

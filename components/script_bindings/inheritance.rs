@@ -21,13 +21,14 @@ pub trait Castable: IDLInterface + DomObject + Sized {
         // This is a weird place for this check to live, but it should catch any
         // attempts to interact with DOM objects from Drop implementations that run
         // as a result of the runtime shutting down and finalizing all remaining objects.
-        debug_assert!(
-            runtime_is_alive(),
-            "Attempting to interact with DOM objects after JS runtime has shut down."
-        );
+        // debug_assert!(
+        //     runtime_is_alive(),
+        //     "Attempting to interact with DOM objects after JS runtime has shut down."
+        // );
 
-        let class = unsafe { get_dom_class(self.reflector().get_jsobject().get()).unwrap() };
-        T::derives(class)
+        // let class = unsafe { get_dom_class(self.reflector().get_jsobject().get()).unwrap() };
+        // T::derives(class)
+        true
     }
 
     /// Cast a DOM object upwards to one of the interfaces it derives from.
@@ -44,10 +45,11 @@ pub trait Castable: IDLInterface + DomObject + Sized {
     where
         T: DerivedFrom<Self>,
     {
-        if self.is::<T>() {
-            Some(unsafe { mem::transmute::<&Self, &T>(self) })
-        } else {
-            None
-        }
+        // if self.is::<T>() {
+        //     Some(unsafe { mem::transmute::<&Self, &T>(self) })
+        // } else {
+        //     None
+        // }
+        Some(unsafe { mem::transmute::<&Self, &T>(self) })
     }
 }

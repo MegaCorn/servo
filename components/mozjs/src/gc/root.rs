@@ -27,9 +27,9 @@ pub struct RootedGuard<'a, T: 'a + RootKind> {
 impl<'a, T: 'a + RootKind> RootedGuard<'a, T> {
     pub fn new(cx: *mut JSContext, root: &'a mut Rooted<T>, initial: T) -> Self {
         root.ptr.write(initial);
-        unsafe {
-            root.add_to_root_stack(cx);
-        }
+        // unsafe {
+        //     root.add_to_root_stack(cx);
+        // }
         RootedGuard { root }
     }
 
@@ -83,9 +83,9 @@ impl<'a, T: 'a + RootKind> Drop for RootedGuard<'a, T> {
         }
         self.root.ptr = MaybeUninit::zeroed();
 
-        unsafe {
-            self.root.remove_from_root_stack();
-        }
+        // unsafe {
+        //     self.root.remove_from_root_stack();
+        // }
     }
 }
 

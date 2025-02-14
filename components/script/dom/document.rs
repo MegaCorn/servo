@@ -1056,8 +1056,8 @@ impl Document {
 
         self.ready_state.set(state);
 
-        self.upcast::<EventTarget>()
-            .fire_event(atom!("readystatechange"), can_gc);
+        // self.upcast::<EventTarget>()
+        //     .fire_event(atom!("readystatechange"), can_gc);
     }
 
     /// Return whether scripting is enabled or not

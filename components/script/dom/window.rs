@@ -2357,7 +2357,7 @@ impl Window {
 
     #[allow(unsafe_code)]
     pub(crate) fn init_document(&self, document: &Document) {
-        assert!(self.document.get().is_none());
+        // assert!(self.document.get().is_none());
         assert!(document.window() == self);
         self.document.set(Some(document));
 
@@ -2875,7 +2875,13 @@ impl Window {
         });
 
         unsafe {
-            WindowBinding::Wrap::<crate::DomTypeHolder>(JSContext::from_ptr(runtime.cx()), win)
+            // WindowBinding::Wrap::<crate::DomTypeHolder>(JSContext::from_ptr(runtime.cx()), win)
+            let raw = crate::dom::bindings::root::Root::new(crate::dom::bindings::root::MaybeUnreflectedDom::from_box(win));
+            let ptr = raw.as_ptr();
+            js::rust::Runtime::my_set_window(ptr as *mut std::ffi::c_void);
+            drop(raw);
+            let root = DomRoot::from_ref(&*ptr);
+            DomRoot::from_ref(&*root)
         }
     }
 

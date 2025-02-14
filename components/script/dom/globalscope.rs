@@ -2126,10 +2126,10 @@ impl GlobalScope {
 
     #[allow(unsafe_code)]
     pub(crate) fn get_cx() -> SafeJSContext {
-        let cx = Runtime::get()
-            .expect("Can't obtain context after runtime shutdown")
-            .as_ptr();
-        unsafe { SafeJSContext::from_ptr(cx) }
+        // let cx = Runtime::get()
+        //     .expect("Can't obtain context after runtime shutdown")
+        //     .as_ptr();
+        unsafe { SafeJSContext::from_ptr(ptr::null_mut() as *mut js::jsapi::JSContext) }
     }
 
     pub(crate) fn crypto(&self) -> DomRoot<Crypto> {

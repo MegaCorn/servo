@@ -150,6 +150,7 @@ impl Drop for RealmOptions {
 }
 
 thread_local!(static CONTEXT: Cell<*mut JSContext> = Cell::new(ptr::null_mut()));
+thread_local!(static WINDOW: Cell<*mut std::ffi::c_void> = Cell::new(ptr::null_mut()));
 
 #[derive(PartialEq)]
 enum EngineState {
@@ -306,6 +307,18 @@ impl Runtime {
     pub fn get() -> Option<NonNull<JSContext>> {
         let cx = CONTEXT.with(|context| context.get());
         NonNull::new(cx)
+    }
+
+    pub fn my_set_window(window: *mut std::ffi::c_void) {
+        WINDOW.with(|win| {
+            println!("===== v8 my_set_window =====");
+            assert!(win.get().is_null());
+            win.set(window);
+        });
+    }
+
+    pub fn my_get_window() -> *mut std::ffi::c_void {
+        WINDOW.with(|win| win.get())
     }
 
     /// Create a [`ThreadSafeJSContext`] that can detect when this `Runtime` is destroyed.
