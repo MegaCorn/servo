@@ -19,6 +19,8 @@ use js::rust::{
 };
 use servo_config::opts;
 
+use crate::codegen::PrototypeList;
+use crate::codegen::PrototypeList::MAX_PROTO_CHAIN_LENGTH;
 use crate::inheritance::Castable;
 use crate::reflector::Reflector;
 use crate::str::{ByteString, DOMString, USVString};
@@ -27,7 +29,7 @@ use crate::utils::{DOMClass, DOMJSClass};
 /// A trait to check whether a given `JSObject` implements an IDL interface.
 pub trait IDLInterface {
     /// Returns whether the given DOM class derives that interface.
-    fn derives(_: &'static DOMClass) -> bool;
+    fn derives(_: &[PrototypeList::ID; MAX_PROTO_CHAIN_LENGTH]) -> bool;
 }
 
 /// A trait to mark an IDL interface as deriving from another one.

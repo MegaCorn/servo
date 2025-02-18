@@ -57,6 +57,12 @@ fn expand_dom_object(input: syn::DeriveInput) -> proc_macro2::TokenStream {
             fn get_type_id(&self) -> &crate::dom::bindings::inheritance::TopTypeId {
                 self.#first_field_name.get_type_id()
             }
+            fn set_interface_chain(&self, new_chain: [crate::dom::bindings::codegen::PrototypeList::ID; crate::dom::bindings::codegen::PrototypeList::MAX_PROTO_CHAIN_LENGTH]) {
+                self.#first_field_name.set_interface_chain(new_chain)
+            }
+            fn get_interface_chain(&self) -> &[crate::dom::bindings::codegen::PrototypeList::ID; crate::dom::bindings::codegen::PrototypeList::MAX_PROTO_CHAIN_LENGTH] {
+                self.#first_field_name.get_interface_chain()
+            }
         }
 
         impl #impl_generics crate::MutDomObject for #name #ty_generics #where_clause {

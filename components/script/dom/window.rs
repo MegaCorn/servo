@@ -96,6 +96,7 @@ use crate::dom::bindings::codegen::Bindings::ImageBitmapBinding::{
     ImageBitmapOptions, ImageBitmapSource,
 };
 use crate::dom::bindings::codegen::Bindings::MediaQueryListBinding::MediaQueryList_Binding::MediaQueryListMethods;
+use crate::dom::bindings::codegen::PrototypeList;
 use crate::dom::bindings::codegen::Bindings::RequestBinding::RequestInit;
 use crate::dom::bindings::codegen::Bindings::VoidFunctionBinding::VoidFunction;
 use crate::dom::bindings::codegen::Bindings::WindowBinding::{
@@ -2886,6 +2887,8 @@ impl Window {
             let root = DomRoot::from_ref(&*ptr);
             let type_id = TopTypeId { eventtarget: (EventTargetTypeId::GlobalScope(GlobalScopeTypeId::Window)) };
             root.set_type_id(type_id);
+            let chain = [ PrototypeList::ID::EventTarget, PrototypeList::ID::GlobalScope, PrototypeList::ID::Window, PrototypeList::ID::Last, PrototypeList::ID::Last, PrototypeList::ID::Last ];
+            root.set_interface_chain(chain);
             DomRoot::from_ref(&*root)
         }
     }

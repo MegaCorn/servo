@@ -3059,16 +3059,19 @@ class CGIDLInterface(CGThing):
         if (interface.getUserData("hasConcreteDescendant", False)
                 or interface.getUserData("hasProxyDescendant", False)):
             depth = self.descriptor.prototypeDepth
-            check = f"class.interface_chain[{depth}] == PrototypeList::ID::{name}"
-        elif self.descriptor.proxy:
-            check = "ptr::eq(class, &Class)"
+            check = f"class[{depth}] == PrototypeList::ID::{name}"
+        # elif self.descriptor.proxy:
+        #     check = "ptr::eq(class, &Class)"
+        # else:
+        #     check = "ptr::eq(class, unsafe { &Class.get().dom_class })"
         else:
-            check = "ptr::eq(class, unsafe { &Class.get().dom_class })"
+            check = f"""println!("TODO TODO TODO");
+        true"""
         return f"""
 impl IDLInterface for {name} {{
     #[inline]
-    fn derives(class: &'static DOMClass) -> bool {{
-        true
+    fn derives(class: &[PrototypeList::ID; crate::dom::bindings::codegen::PrototypeList::MAX_PROTO_CHAIN_LENGTH]) -> bool {{
+        {check}
     }}
 }}
 """
@@ -3085,6 +3088,11 @@ class CGDomObjectWrap(CGThing):
     def define(self):
         name = self.descriptor.concreteType
         name = f"dom::{name.lower()}::{name}"
+
+        protoList = [f'PrototypeList::ID::{proto}' for proto in self.descriptor.prototypeChain]
+        protoList.extend(['PrototypeList::ID::Last'] * (self.descriptor.config.maxProtoChainLength - len(protoList)))
+        prototypeChainString = ', '.join(protoList)
+
         return f"""
 impl DomObjectWrap for {name} {{
     const WRAP: unsafe fn(
@@ -3097,6 +3105,10 @@ impl DomObjectWrap for {name} {{
 
     fn get_type_id_from_wrap() -> crate::dom::bindings::codegen::InheritTypes::TopTypeId {{
         {DOMClassTypeId(self.descriptor)}
+    }}
+
+    fn get_interface_chain_from_wrap() -> [PrototypeList::ID; crate::dom::bindings::codegen::PrototypeList::MAX_PROTO_CHAIN_LENGTH] {{
+        [ {prototypeChainString} ]
     }}
 }}
 """

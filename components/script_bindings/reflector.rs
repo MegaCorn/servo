@@ -6,6 +6,8 @@ use js::jsapi::{Heap, JSObject};
 use js::rust::HandleObject;
 use malloc_size_of_derive::MallocSizeOf;
 use crate::codegen::InheritTypes::TopTypeId;
+use crate::codegen::PrototypeList;
+use crate::codegen::PrototypeList::MAX_PROTO_CHAIN_LENGTH;
 
 /// A struct to store a reference to the reflector of a DOM object.
 #[cfg_attr(crown, allow(crown::unrooted_must_root))]
@@ -21,6 +23,9 @@ pub struct Reflector {
 
     #[ignore_malloc_size_of = "v8"]
     my_object: Box<i32>,
+
+    #[ignore_malloc_size_of = "v8"]
+    my_interface_chain: *mut [PrototypeList::ID; MAX_PROTO_CHAIN_LENGTH],
 }
 
 unsafe impl js::gc::Traceable for Reflector {
@@ -68,6 +73,7 @@ impl Reflector {
             object: Heap::default(),
             my_object: Box::new(0),
             my_type_id: Box::into_raw(Box::new(TopTypeId { abstract_: () })),
+            my_interface_chain: Box::into_raw(Box::new([PrototypeList::ID::Last; MAX_PROTO_CHAIN_LENGTH])),
         }
     }
 }
@@ -78,6 +84,8 @@ pub trait DomObject: js::gc::Traceable + 'static {
     fn reflector(&self) -> &Reflector;
     fn set_type_id(&self, id: TopTypeId);
     fn get_type_id(&self) -> &TopTypeId;
+    fn set_interface_chain(&self, new_chain: [PrototypeList::ID; MAX_PROTO_CHAIN_LENGTH]);
+    fn get_interface_chain(&self) -> &[PrototypeList::ID; MAX_PROTO_CHAIN_LENGTH];
 }
 
 impl DomObject for Reflector {
@@ -89,6 +97,12 @@ impl DomObject for Reflector {
     }
     fn get_type_id(&self) -> &TopTypeId {
         unsafe { &*(self.my_type_id) }
+    }
+    fn set_interface_chain(&self, new_chain: [PrototypeList::ID; MAX_PROTO_CHAIN_LENGTH]) {
+        unsafe { *(self.my_interface_chain) = new_chain };
+    }
+    fn get_interface_chain(&self) -> &[PrototypeList::ID; MAX_PROTO_CHAIN_LENGTH] {
+        unsafe { &*(self.my_interface_chain) }
     }
 }
 

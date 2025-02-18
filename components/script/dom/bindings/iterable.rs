@@ -19,6 +19,8 @@ use js::rust::{HandleObject, HandleValue, MutableHandleObject};
 use crate::dom::bindings::codegen::Bindings::IterableIteratorBinding::{
     IterableKeyAndValueResult, IterableKeyOrValueResult,
 };
+use crate::dom::bindings::codegen::PrototypeList;
+use crate::dom::bindings::codegen::PrototypeList::MAX_PROTO_CHAIN_LENGTH;
 use crate::dom::bindings::error::Fallible;
 use crate::dom::bindings::reflector::{
     reflect_dom_object, DomGlobal, DomObjectIteratorWrap, DomObjectWrap, Reflector,
@@ -131,6 +133,10 @@ impl<T: DomObjectIteratorWrap + JSTraceable + Iterable> DomObjectWrap for Iterab
 
     fn get_type_id_from_wrap() -> crate::dom::bindings::inheritance::TopTypeId {
         crate::dom::bindings::codegen::InheritTypes::TopTypeId { abstract_: () }
+    }
+
+    fn get_interface_chain_from_wrap() -> [PrototypeList::ID; MAX_PROTO_CHAIN_LENGTH] {
+        [ PrototypeList::ID::Last, PrototypeList::ID::Last, PrototypeList::ID::Last, PrototypeList::ID::Last, PrototypeList::ID::Last, PrototypeList::ID::Last ]
     }
 }
 

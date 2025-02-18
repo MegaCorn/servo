@@ -256,10 +256,11 @@ pub(crate) fn native_from_object<T>(obj: *mut JSObject, cx: *mut JSContext) -> R
 where
     T: DomObject + IDLInterface,
 {
-    unsafe {
-        private_from_proto_check(obj, cx, PrototypeCheck::Derive(T::derives))
-            .map(|ptr| ptr as *const T)
-    }
+    // unsafe {
+    //     private_from_proto_check(obj, cx, PrototypeCheck::Derive(T::derives))
+    //         .map(|ptr| ptr as *const T)
+    // }
+    Err(())
 }
 
 /// Get a `*const T` for a DOM object accessible from a `JSObject`, where the DOM object
@@ -268,7 +269,8 @@ pub(crate) fn native_from_object_static<T>(obj: *mut JSObject) -> Result<*const 
 where
     T: DomObject + IDLInterface,
 {
-    unsafe { private_from_proto_check_static(obj, T::derives).map(|ptr| ptr as *const T) }
+    // unsafe { private_from_proto_check_static(obj, T::derives).map(|ptr| ptr as *const T) }
+    Err(())
 }
 
 /// Get a `DomRoot<T>` for the given DOM object, unwrapping any wrapper

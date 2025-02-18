@@ -6,6 +6,8 @@
 
 use js::rust::HandleObject;
 
+use crate::dom::bindings::codegen::PrototypeList;
+use crate::dom::bindings::codegen::PrototypeList::MAX_PROTO_CHAIN_LENGTH;
 use crate::dom::bindings::conversions::DerivedFrom;
 use crate::dom::bindings::iterable::{Iterable, IterableIterator};
 use crate::dom::bindings::root::{Dom, DomRoot, Root, MaybeUnreflectedDom};
@@ -30,6 +32,8 @@ where
         let root = DomRoot::from_ref(&*ptr);
         let type_id = T::get_type_id_from_wrap();
         root.set_type_id(type_id);
+        let chain = T::get_interface_chain_from_wrap();
+        root.set_interface_chain(chain);
         DomRoot::from_ref(&*root)
     }
 }
@@ -53,6 +57,8 @@ where
         let root = DomRoot::from_ref(&*ptr);
         let type_id = T::get_type_id_from_wrap();
         root.set_type_id(type_id);
+        let chain = T::get_interface_chain_from_wrap();
+        root.set_interface_chain(chain);
         DomRoot::from_ref(&*root)
     }
 }
@@ -90,6 +96,8 @@ pub(crate) trait DomObjectWrap: Sized + DomObject {
     ) -> Root<Dom<Self>>;
 
     fn get_type_id_from_wrap() -> crate::dom::bindings::inheritance::TopTypeId;
+
+    fn get_interface_chain_from_wrap() -> [PrototypeList::ID; MAX_PROTO_CHAIN_LENGTH];
 }
 
 /// A trait to provide a function pointer to wrap function for
