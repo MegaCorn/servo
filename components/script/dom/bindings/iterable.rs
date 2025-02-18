@@ -128,6 +128,10 @@ impl<T: DomObjectIteratorWrap + JSTraceable + Iterable> DomObjectWrap for Iterab
         Box<Self>,
         CanGc,
     ) -> Root<Dom<Self>> = T::ITER_WRAP;
+
+    fn get_type_id_from_wrap() -> crate::dom::bindings::inheritance::TopTypeId {
+        crate::dom::bindings::codegen::InheritTypes::TopTypeId { abstract_: () }
+    }
 }
 
 fn dict_return(

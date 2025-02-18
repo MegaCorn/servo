@@ -51,6 +51,12 @@ fn expand_dom_object(input: syn::DeriveInput) -> proc_macro2::TokenStream {
             fn reflector(&self) -> &crate::Reflector {
                 self.#first_field_name.reflector()
             }
+            fn set_type_id(&self, id: crate::dom::bindings::inheritance::TopTypeId) {
+                self.#first_field_name.set_type_id(id)
+            }
+            fn get_type_id(&self) -> &crate::dom::bindings::inheritance::TopTypeId {
+                self.#first_field_name.get_type_id()
+            }
         }
 
         impl #impl_generics crate::MutDomObject for #name #ty_generics #where_clause {

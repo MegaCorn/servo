@@ -28,6 +28,8 @@ where
         let ptr = raw.as_ptr();
         drop(raw);
         let root = DomRoot::from_ref(&*ptr);
+        let type_id = T::get_type_id_from_wrap();
+        root.set_type_id(type_id);
         DomRoot::from_ref(&*root)
     }
 }
@@ -49,6 +51,8 @@ where
         let ptr = raw.as_ptr();
         drop(raw);
         let root = DomRoot::from_ref(&*ptr);
+        let type_id = T::get_type_id_from_wrap();
+        root.set_type_id(type_id);
         DomRoot::from_ref(&*root)
     }
 }
@@ -84,6 +88,8 @@ pub(crate) trait DomObjectWrap: Sized + DomObject {
         Box<Self>,
         CanGc,
     ) -> Root<Dom<Self>>;
+
+    fn get_type_id_from_wrap() -> crate::dom::bindings::inheritance::TopTypeId;
 }
 
 /// A trait to provide a function pointer to wrap function for

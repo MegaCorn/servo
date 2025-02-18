@@ -2880,7 +2880,12 @@ impl Window {
             let ptr = raw.as_ptr();
             js::rust::Runtime::my_set_window(ptr as *mut std::ffi::c_void);
             drop(raw);
+            use crate::dom::bindings::codegen::InheritTypes::TopTypeId;
+            use crate::dom::bindings::codegen::InheritTypes::EventTargetTypeId;
+            use crate::dom::bindings::codegen::InheritTypes::GlobalScopeTypeId;
             let root = DomRoot::from_ref(&*ptr);
+            let type_id = TopTypeId { eventtarget: (EventTargetTypeId::GlobalScope(GlobalScopeTypeId::Window)) };
+            root.set_type_id(type_id);
             DomRoot::from_ref(&*root)
         }
     }

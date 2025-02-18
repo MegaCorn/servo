@@ -5,6 +5,7 @@
 use js::jsapi::{Heap, JSObject};
 use js::rust::HandleObject;
 use malloc_size_of_derive::MallocSizeOf;
+use crate::codegen::InheritTypes::TopTypeId;
 
 /// A struct to store a reference to the reflector of a DOM object.
 #[cfg_attr(crown, allow(crown::unrooted_must_root))]
@@ -14,6 +15,12 @@ use malloc_size_of_derive::MallocSizeOf;
 pub struct Reflector {
     #[ignore_malloc_size_of = "defined and measured in rust-mozjs"]
     object: Heap<*mut JSObject>,
+
+    #[ignore_malloc_size_of = "v8"]
+    my_type_id: *mut TopTypeId,
+
+    #[ignore_malloc_size_of = "v8"]
+    my_object: Box<i32>,
 }
 
 unsafe impl js::gc::Traceable for Reflector {
@@ -23,7 +30,7 @@ unsafe impl js::gc::Traceable for Reflector {
 #[cfg_attr(crown, allow(crown::unrooted_must_root))]
 impl PartialEq for Reflector {
     fn eq(&self, other: &Reflector) -> bool {
-        self.object.get() == other.object.get()
+        std::ptr::eq(&*self.my_object, &*other.my_object)
     }
 }
 
@@ -59,6 +66,8 @@ impl Reflector {
     pub fn new() -> Reflector {
         Reflector {
             object: Heap::default(),
+            my_object: Box::new(0),
+            my_type_id: Box::into_raw(Box::new(TopTypeId { abstract_: () })),
         }
     }
 }
@@ -67,11 +76,19 @@ impl Reflector {
 pub trait DomObject: js::gc::Traceable + 'static {
     /// Returns the receiver's reflector.
     fn reflector(&self) -> &Reflector;
+    fn set_type_id(&self, id: TopTypeId);
+    fn get_type_id(&self) -> &TopTypeId;
 }
 
 impl DomObject for Reflector {
     fn reflector(&self) -> &Self {
         self
+    }
+    fn set_type_id(&self, id: TopTypeId) {
+        unsafe { *(self.my_type_id) = id };
+    }
+    fn get_type_id(&self) -> &TopTypeId {
+        unsafe { &*(self.my_type_id) }
     }
 }
 

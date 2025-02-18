@@ -3094,6 +3094,10 @@ impl DomObjectWrap for {name} {{
         Box<Self>,
         CanGc,
     ) -> Root<Dom<Self>> = Wrap::<crate::DomTypeHolder>;
+
+    fn get_type_id_from_wrap() -> crate::dom::bindings::codegen::InheritTypes::TopTypeId {{
+        {DOMClassTypeId(self.descriptor)}
+    }}
 }}
 """
 
@@ -8171,13 +8175,8 @@ class GlobalGenRoots():
             if base in topTypes:
                 typeIdCode.append(CGGeneric(f"""
 impl {base} {{
-    pub(crate) fn type_id(&self) -> &'static {base}TypeId {{
-        unsafe {{
-            &get_dom_class(self.reflector().get_jsobject().get())
-                .unwrap()
-                .type_id
-                .{base.lower()}
-        }}
+    pub(crate) fn type_id(&self) -> &{base}TypeId {{
+        unsafe {{ &self.get_type_id().{base.lower()} }}
     }}
 }}
 
