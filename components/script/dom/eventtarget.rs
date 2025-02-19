@@ -67,6 +67,35 @@ use crate::dom::window::Window;
 use crate::dom::workerglobalscope::WorkerGlobalScope;
 use crate::realms::{enter_realm, InRealm};
 use crate::script_runtime::CanGc;
+use crate::dom::bindings::import::module::CallbackInterface;
+
+impl EventListener {
+    pub fn new_v8(callback: std::ptr::NonNull<v8::Function>) -> Rc<EventListener> {
+        let mut ret = Rc::new(EventListener {
+            parent: CallbackInterface::new_v8(callback)
+        });
+        ret
+    }
+
+    pub fn handle_event_v8(&self, obj: &EventTarget) -> Fallible<()> {
+        log::error!("jinguoen EventListener::handle_event_v8");
+
+        let element = obj.downcast::<Element>();
+        let document = match element {
+            Some(element) => element.owner_document(),
+            None => obj.downcast::<Window>().unwrap().Document(),
+        };
+        let window = document.window();
+        let global_scope: &GlobalScope = window.upcast();
+        let scope = &mut global_scope.handle_scope();
+        let func = unsafe { v8::Global::from_raw(&mut *global_scope.isolate_ptr(), std::ptr::NonNull::new(self.parent.v8_func).unwrap()) };
+        let func_ = v8::Local::new(scope, &func);
+        let recv = scope.get_current_context().global(scope).into();
+        func_.call(scope, recv, &[]);
+
+        Ok(())
+    }
+}
 
 #[derive(Clone, JSTraceable, MallocSizeOf, PartialEq)]
 #[allow(clippy::enum_variant_names)]
@@ -196,7 +225,8 @@ impl CompiledEventListener {
         // Step 3
         match *self {
             CompiledEventListener::Listener(ref listener) => {
-                let _ = listener.HandleEvent_(object, event, exception_handle);
+                // let _ = listener.HandleEvent_(object, event, exception_handle);
+                let _ = listener.handle_event_v8(object);
             },
             CompiledEventListener::Handler(ref handler) => {
                 match *handler {
@@ -375,6 +405,9 @@ impl EventListeners {
 pub(crate) struct EventTarget {
     reflector_: Reflector,
     handlers: DomRefCell<HashMapTracedValues<Atom, EventListeners, BuildHasherDefault<FnvHasher>>>,
+
+    #[ignore_malloc_size_of = "mozjs"]
+    cb_map: std::collections::HashMap<String, Rc<EventListener>>,
 }
 
 impl EventTarget {
@@ -382,6 +415,7 @@ impl EventTarget {
         EventTarget {
             reflector_: Reflector::new(),
             handlers: DomRefCell::new(Default::default()),
+            cb_map: std::collections::HashMap::new(),
         }
     }
 
@@ -396,6 +430,14 @@ impl EventTarget {
             proto,
             can_gc,
         )
+    }
+
+    pub fn add_cb_map(&mut self, key: String, value: Rc<EventListener>) {
+        self.cb_map.insert(key, value);
+    }
+
+    pub fn remove_cb_map(&mut self, key: &str) -> Option<Rc<EventListener>> {
+        self.cb_map.remove(key)
     }
 
     /// Determine if there are any listeners for a given event type.

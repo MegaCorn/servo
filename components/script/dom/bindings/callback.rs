@@ -130,6 +130,9 @@ pub(crate) trait CallbackContainer {
 #[cfg_attr(crown, crown::unrooted_must_root_lint::must_root)]
 pub(crate) struct CallbackFunction {
     object: CallbackObject,
+
+    #[no_trace]
+    pub v8_func: *mut v8::Function,
 }
 
 impl CallbackFunction {
@@ -140,6 +143,7 @@ impl CallbackFunction {
     pub(crate) fn new() -> CallbackFunction {
         CallbackFunction {
             object: CallbackObject::new(),
+            v8_func: std::ptr::null_mut(),
         }
     }
 
@@ -153,6 +157,11 @@ impl CallbackFunction {
     pub(crate) unsafe fn init(&mut self, cx: JSContext, callback: *mut JSObject) {
         self.object.init(cx, callback);
     }
+
+    pub unsafe fn init_v8(&mut self, callback: std::ptr::NonNull<v8::Function>) {
+        self.v8_func = callback.as_ptr();
+        // TODO
+    }
 }
 
 /// A common base class for representing IDL callback interface types.
@@ -160,6 +169,9 @@ impl CallbackFunction {
 #[cfg_attr(crown, crown::unrooted_must_root_lint::must_root)]
 pub(crate) struct CallbackInterface {
     object: CallbackObject,
+
+    #[no_trace]
+    pub v8_func: *mut v8::Function,
 }
 
 impl CallbackInterface {
@@ -169,6 +181,15 @@ impl CallbackInterface {
     pub(crate) fn new() -> CallbackInterface {
         CallbackInterface {
             object: CallbackObject::new(),
+            v8_func: std::ptr::null_mut(),
+        }
+    }
+
+    #[allow(clippy::new_without_default)]
+    pub fn new_v8(callback: std::ptr::NonNull<v8::Function>) -> CallbackInterface {
+        CallbackInterface {
+            object: CallbackObject::new(),
+            v8_func: callback.as_ptr(),
         }
     }
 

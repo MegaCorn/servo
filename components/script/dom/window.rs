@@ -1435,9 +1435,9 @@ impl WindowMethods<crate::DomTypeHolder> for Window {
         fetch::Fetch(self.upcast(), input, init, comp, can_gc)
     }
 
-    fn TestRunner(&self) -> DomRoot<TestRunner> {
-        self.test_runner.or_init(|| TestRunner::new(self.upcast()))
-    }
+    // fn TestRunner(&self) -> DomRoot<TestRunner> {
+    //     self.test_runner.or_init(|| TestRunner::new(self.upcast()))
+    // }
 
     fn RunningAnimationCount(&self) -> u32 {
         self.document

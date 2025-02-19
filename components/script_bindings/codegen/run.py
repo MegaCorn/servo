@@ -29,6 +29,7 @@ def main():
     import WebIDL
     from Configuration import Configuration
     from CodegenRust import CGBindingRoot
+    from CodegenV8 import CGBindingRootV8
 
     parser = WebIDL.Parser(make_dir(os.path.join(out_dir, "cache")))
     webidls = [name for name in os.listdir(webidls_dir) if name.endswith(".webidl")]
@@ -74,6 +75,9 @@ def main():
         if module:
             with open(os.path.join(out_dir, prefix + ".rs"), "wb") as f:
                 f.write(module.encode("utf-8"))
+                if not webidl.startswith("Test"):
+                    module_v8 = CGBindingRootV8(config, prefix, filename).define()
+                    f.write(module_v8.encode("utf-8"))
 
 
 def make_dir(path):

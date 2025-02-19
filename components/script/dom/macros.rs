@@ -2,6 +2,43 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+use crate::dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
+
+impl EventHandlerNonNull {
+    pub unsafe fn new_v8(v8_callback: std::ptr::NonNull<v8::Function>) -> std::rc::Rc<EventHandlerNonNull> {
+        let mut ret = std::rc::Rc::new(EventHandlerNonNull {
+            parent: crate::dom::bindings::callback::CallbackFunction::new()
+        });
+        // Note: callback cannot be moved after calling init.
+        match std::rc::Rc::get_mut(&mut ret) {
+            Some(ref mut callback) => callback.parent.init_v8(v8_callback),
+            None => unreachable!(),
+        };
+        ret
+    }
+
+    pub fn get_v8(&self) -> std::ptr::NonNull<v8::Function> {
+        std::ptr::NonNull::new(self.parent.v8_func).unwrap()
+    }
+}
+
+#[macro_export]
+macro_rules! return_if_none {
+    ($option:expr) => {
+        if $option.is_none() {
+            return;
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! return_if_err {
+    ($option:expr) => {
+        if $option.is_err() {
+            return;
+        }
+    };
+}
 
 #[macro_export]
 macro_rules! v8_new_global {

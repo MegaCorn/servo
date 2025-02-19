@@ -209,6 +209,7 @@ const SPURIOUS_ANIMATION_FRAME_THRESHOLD: u8 = 5;
 
 /// The amount of time between fake `requestAnimationFrame()`s.
 const FAKE_REQUEST_ANIMATION_FRAME_DELAY: u64 = 16;
+static mut V8_INITIALIZED: bool = false;
 
 pub(crate) enum TouchEventResult {
     Processed(bool),
@@ -3792,6 +3793,20 @@ impl Document {
             proto,
             can_gc,
         );
+        unsafe {
+            if !V8_INITIALIZED {
+                V8_INITIALIZED = true;
+                {
+                    let global_scope: &GlobalScope = window.upcast();
+                    let scope = &mut global_scope.handle_scope();
+                    let context = v8::Local::new(scope, global_scope.context_global());
+                    let scope = &mut v8::ContextScope::new(scope, context);
+                    let template  = document.new_template(scope);
+                    v8_new_global!(scope, template, context, document, document);
+                }
+            }
+        }
+
         {
             let node = document.upcast::<Node>();
             node.set_owner_doc(&document);

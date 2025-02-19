@@ -46,7 +46,7 @@ use crate::dom::node::Node;
 #[cfg_attr(crown, crown::unrooted_must_root_lint::allow_unrooted_interior)]
 pub(crate) struct Root<T: StableTraceObject> {
     /// The value to root.
-    value: T,
+    pub value: T,
     /// List that ensures correct dynamic root ordering
     root_list: *const RootCollection,
 }
@@ -337,7 +337,7 @@ where
 #[cfg_attr(crown, crown::unrooted_must_root_lint::must_root)]
 #[repr(transparent)]
 pub(crate) struct Dom<T> {
-    ptr: ptr::NonNull<T>,
+    pub ptr: ptr::NonNull<T>,
 }
 
 // Dom<T> is similar to Rc<T>, in that it's not always clear how to avoid double-counting.

@@ -132,7 +132,7 @@
 
 #![allow(unsafe_code)]
 #![deny(missing_docs)]
-#![deny(non_snake_case)]
+// #![deny(non_snake_case)]
 
 pub(crate) mod buffer_source;
 pub(crate) mod callback;

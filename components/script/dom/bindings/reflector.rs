@@ -63,6 +63,19 @@ where
     }
 }
 
+pub trait V8Template: {
+    fn new_template<'s>(scope: &mut v8::HandleScope<'s>) -> v8::Local<'s, v8::ObjectTemplate>;
+}
+
+pub fn new_template<'s, T>(
+    scope: &mut v8::HandleScope<'s>
+) -> v8::Local<'s, v8::ObjectTemplate>
+where
+    T: V8Template
+{
+    T::new_template(scope)
+}
+
 pub trait DomGlobal: DomObject {
     /// Returns the [`GlobalScope`] of the realm that the [`DomObject`] was created in.  If this
     /// object is a `Node`, this will be different from it's owning `Document` if adopted by. For

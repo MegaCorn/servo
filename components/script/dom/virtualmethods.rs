@@ -60,6 +60,38 @@ use crate::dom::shadowroot::ShadowRoot;
 use crate::dom::svgelement::SVGElement;
 use crate::dom::svgsvgelement::SVGSVGElement;
 
+use crate::dom::characterdata::CharacterData;
+use crate::dom::documenttype::DocumentType;
+use crate::dom::htmlbrelement::HTMLBRElement;
+use crate::dom::htmldlistelement::HTMLDListElement;
+use crate::dom::htmldataelement::HTMLDataElement;
+use crate::dom::htmldatalistelement::HTMLDataListElement;
+use crate::dom::htmldialogelement::HTMLDialogElement;
+use crate::dom::htmldirectoryelement::HTMLDirectoryElement;
+use crate::dom::htmldivelement::HTMLDivElement;
+use crate::dom::htmlembedelement::HTMLEmbedElement;
+use crate::dom::htmlframeelement::HTMLFrameElement;
+use crate::dom::htmlframesetelement::HTMLFrameSetElement;
+use crate::dom::htmlheadingelement::HTMLHeadingElement;
+use crate::dom::htmlhtmlelement::HTMLHtmlElement;
+use crate::dom::htmllegendelement::HTMLLegendElement;
+use crate::dom::htmlmapelement::HTMLMapElement;
+use crate::dom::htmlmenuelement::HTMLMenuElement;
+use crate::dom::htmlmeterelement::HTMLMeterElement;
+use crate::dom::htmlmodelement::HTMLModElement;
+use crate::dom::htmlolistelement::HTMLOListElement;
+use crate::dom::htmlparagraphelement::HTMLParagraphElement;
+use crate::dom::htmlparamelement::HTMLParamElement;
+use crate::dom::htmlpictureelement::HTMLPictureElement;
+use crate::dom::htmlprogresselement::HTMLProgressElement;
+use crate::dom::htmlquoteelement::HTMLQuoteElement;
+use crate::dom::htmltablecaptionelement::HTMLTableCaptionElement;
+use crate::dom::htmltimeelement::HTMLTimeElement;
+use crate::dom::htmltrackelement::HTMLTrackElement;
+use crate::dom::htmlulistelement::HTMLUListElement;
+use crate::dom::htmlunknownelement::HTMLUnknownElement;
+use crate::dom::htmlspanelement::HTMLSpanElement;
+
 /// Trait to allow DOM nodes to opt-in to overriding (or adding to) common
 /// behaviours. Replicates the effect of C++ virtual methods.
 pub(crate) trait VirtualMethods {
@@ -160,6 +192,577 @@ pub(crate) trait VirtualMethods {
         if let Some(s) = self.super_type() {
             s.pop();
         }
+    }
+}
+
+pub fn node_downcast_template1<'s>(node: &Node, scope: &mut v8::HandleScope<'s>) -> v8::Local<'s, v8::ObjectTemplate> {
+    match node.type_id() {
+        NodeTypeId::CharacterData(CharacterDataTypeId) => {
+            let node_ = node.downcast::<CharacterData>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::DocumentType => {
+            let node_ = node.downcast::<DocumentType>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLElement)) => {
+            let node_ = node.downcast::<HTMLElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLAnchorElement)) => {
+            let node_ = node.downcast::<HTMLAnchorElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLAreaElement)) => {
+            let node_ = node.downcast::<HTMLAreaElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLBRElement)) => {
+            let node_ = node.downcast::<HTMLBRElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLBaseElement)) => {
+            let node_ = node.downcast::<HTMLBaseElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLBodyElement)) => {
+            let node_ = node.downcast::<HTMLBodyElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLButtonElement)) => {
+            let node_ = node.downcast::<HTMLButtonElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLCanvasElement)) => {
+            let node_ = node.downcast::<HTMLCanvasElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDListElement)) => {
+            let node_ = node.downcast::<HTMLDListElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDataElement)) => {
+            let node_ = node.downcast::<HTMLDataElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDataListElement)) => {
+            let node_ = node.downcast::<HTMLDataListElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDetailsElement)) => {
+            let node_ = node.downcast::<HTMLDetailsElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDialogElement)) => {
+            let node_ = node.downcast::<HTMLDialogElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDirectoryElement)) => {
+            let node_ = node.downcast::<HTMLDirectoryElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDivElement)) => {
+            let node_ = node.downcast::<HTMLDivElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLEmbedElement)) => {
+            let node_ = node.downcast::<HTMLEmbedElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLFieldSetElement)) => {
+            let node_ = node.downcast::<HTMLFieldSetElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLFontElement)) => {
+            let node_ = node.downcast::<HTMLFontElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLFormElement)) => {
+            let node_ = node.downcast::<HTMLFormElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLFrameElement)) => {
+            let node_ = node.downcast::<HTMLFrameElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLFrameSetElement)) => {
+            let node_ = node.downcast::<HTMLFrameSetElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLHRElement)) => {
+            let node_ = node.downcast::<HTMLHRElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLHeadElement)) => {
+            let node_ = node.downcast::<HTMLHeadElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLHeadingElement)) => {
+            let node_ = node.downcast::<HTMLHeadingElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLHtmlElement)) => {
+            let node_ = node.downcast::<HTMLHtmlElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLIFrameElement)) => {
+            let node_ = node.downcast::<HTMLIFrameElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLImageElement)) => {
+            let node_ = node.downcast::<HTMLImageElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLInputElement)) => {
+            let node_ = node.downcast::<HTMLInputElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLLIElement)) => {
+            let node_ = node.downcast::<HTMLLIElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLLabelElement)) => {
+            let node_ = node.downcast::<HTMLLabelElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLLegendElement)) => {
+            let node_ = node.downcast::<HTMLLegendElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLLinkElement)) => {
+            let node_ = node.downcast::<HTMLLinkElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLMapElement)) => {
+            let node_ = node.downcast::<HTMLMapElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLMediaElement(HTMLMediaElementTypeId))) => {
+            let node_ = node.downcast::<HTMLMediaElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLMenuElement)) => {
+            let node_ = node.downcast::<HTMLMenuElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLMetaElement)) => {
+            let node_ = node.downcast::<HTMLMetaElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLMeterElement)) => {
+            let node_ = node.downcast::<HTMLMeterElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLModElement)) => {
+            let node_ = node.downcast::<HTMLModElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLOListElement)) => {
+            let node_ = node.downcast::<HTMLOListElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLObjectElement)) => {
+            let node_ = node.downcast::<HTMLObjectElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLOptGroupElement)) => {
+            let node_ = node.downcast::<HTMLOptGroupElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLOptionElement)) => {
+            let node_ = node.downcast::<HTMLOptionElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLOutputElement)) => {
+            let node_ = node.downcast::<HTMLOutputElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLParagraphElement)) => {
+            let node_ = node.downcast::<HTMLParagraphElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLParamElement)) => {
+            let node_ = node.downcast::<HTMLParamElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLPictureElement)) => {
+            let node_ = node.downcast::<HTMLPictureElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLPreElement)) => {
+            let node_ = node.downcast::<HTMLPreElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLProgressElement)) => {
+            let node_ = node.downcast::<HTMLProgressElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLQuoteElement)) => {
+            let node_ = node.downcast::<HTMLQuoteElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLScriptElement)) => {
+            let node_ = node.downcast::<HTMLScriptElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLSelectElement)) => {
+            let node_ = node.downcast::<HTMLSelectElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLSourceElement)) => {
+            let node_ = node.downcast::<HTMLSourceElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLSpanElement)) => {
+            let node_ = node.downcast::<HTMLSpanElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLStyleElement)) => {
+            let node_ = node.downcast::<HTMLStyleElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableCaptionElement)) => {
+            let node_ = node.downcast::<HTMLTableCaptionElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableCellElement)) => {
+            let node_ = node.downcast::<HTMLTableCellElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableColElement)) => {
+            let node_ = node.downcast::<HTMLTableColElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableElement)) => {
+            let node_ = node.downcast::<HTMLTableElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableRowElement)) => {
+            let node_ = node.downcast::<HTMLTableRowElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableSectionElement)) => {
+            let node_ = node.downcast::<HTMLTableSectionElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTemplateElement)) => {
+            let node_ = node.downcast::<HTMLTemplateElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTextAreaElement)) => {
+            let node_ = node.downcast::<HTMLTextAreaElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTimeElement)) => {
+            let node_ = node.downcast::<HTMLTimeElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTitleElement)) => {
+            let node_ = node.downcast::<HTMLTitleElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTrackElement)) => {
+            let node_ = node.downcast::<HTMLTrackElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLUListElement)) => {
+            let node_ = node.downcast::<HTMLUListElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLUnknownElement)) => {
+            let node_ = node.downcast::<HTMLUnknownElement>().unwrap();
+            node_.new_template(scope)
+        },
+        _ => {
+            log::error!("====================== node_downcast_template {:?} fail ======================", node.type_id());
+            node.new_template(scope)
+        },
+    }
+}
+
+pub fn node_downcast_template<'s>(element: &Element, scope: &mut v8::HandleScope<'s>) -> v8::Local<'s, v8::ObjectTemplate> {
+    let node = element.upcast::<Node>();
+    match node.type_id() {
+        NodeTypeId::CharacterData(CharacterDataTypeId) => {
+            let node_ = node.downcast::<CharacterData>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::DocumentType => {
+            let node_ = node.downcast::<Document>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLElement)) => {
+            let node_ = node.downcast::<HTMLElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLAnchorElement)) => {
+            let node_ = node.downcast::<HTMLAnchorElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLAreaElement)) => {
+            let node_ = node.downcast::<HTMLAreaElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLBRElement)) => {
+            let node_ = node.downcast::<HTMLBRElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLBaseElement)) => {
+            let node_ = node.downcast::<HTMLBaseElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLBodyElement)) => {
+            let node_ = node.downcast::<HTMLBodyElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLButtonElement)) => {
+            let node_ = node.downcast::<HTMLButtonElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLCanvasElement)) => {
+            let node_ = node.downcast::<HTMLCanvasElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDListElement)) => {
+            let node_ = node.downcast::<HTMLDListElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDataElement)) => {
+            let node_ = node.downcast::<HTMLDataElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDataListElement)) => {
+            let node_ = node.downcast::<HTMLDataListElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDetailsElement)) => {
+            let node_ = node.downcast::<HTMLDetailsElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDialogElement)) => {
+            let node_ = node.downcast::<HTMLDialogElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDirectoryElement)) => {
+            let node_ = node.downcast::<HTMLDirectoryElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDivElement)) => {
+            let node_ = node.downcast::<HTMLDivElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLEmbedElement)) => {
+            let node_ = node.downcast::<HTMLEmbedElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLFieldSetElement)) => {
+            let node_ = node.downcast::<HTMLFieldSetElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLFontElement)) => {
+            let node_ = node.downcast::<HTMLFontElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLFormElement)) => {
+            let node_ = node.downcast::<HTMLFormElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLFrameElement)) => {
+            let node_ = node.downcast::<HTMLFrameElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLFrameSetElement)) => {
+            let node_ = node.downcast::<HTMLFrameSetElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLHRElement)) => {
+            let node_ = node.downcast::<HTMLHRElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLHeadElement)) => {
+            let node_ = node.downcast::<HTMLHeadElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLHeadingElement)) => {
+            let node_ = node.downcast::<HTMLHeadingElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLHtmlElement)) => {
+            let node_ = node.downcast::<HTMLHtmlElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLIFrameElement)) => {
+            let node_ = node.downcast::<HTMLIFrameElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLImageElement)) => {
+            let node_ = node.downcast::<HTMLImageElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLInputElement)) => {
+            let node_ = node.downcast::<HTMLInputElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLLIElement)) => {
+            let node_ = node.downcast::<HTMLLIElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLLabelElement)) => {
+            let node_ = node.downcast::<HTMLLabelElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLLegendElement)) => {
+            let node_ = node.downcast::<HTMLLegendElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLLinkElement)) => {
+            let node_ = node.downcast::<HTMLLinkElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLMapElement)) => {
+            let node_ = node.downcast::<HTMLMapElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLMediaElement(HTMLMediaElementTypeId))) => {
+            let node_ = node.downcast::<HTMLMediaElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLMenuElement)) => {
+            let node_ = node.downcast::<HTMLMenuElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLMetaElement)) => {
+            let node_ = node.downcast::<HTMLMetaElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLMeterElement)) => {
+            let node_ = node.downcast::<HTMLMeterElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLModElement)) => {
+            let node_ = node.downcast::<HTMLModElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLOListElement)) => {
+            let node_ = node.downcast::<HTMLOListElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLObjectElement)) => {
+            let node_ = node.downcast::<HTMLObjectElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLOptGroupElement)) => {
+            let node_ = node.downcast::<HTMLOptGroupElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLOptionElement)) => {
+            let node_ = node.downcast::<HTMLOptionElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLOutputElement)) => {
+            let node_ = node.downcast::<HTMLOutputElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLParagraphElement)) => {
+            let node_ = node.downcast::<HTMLParagraphElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLParamElement)) => {
+            let node_ = node.downcast::<HTMLParamElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLPictureElement)) => {
+            let node_ = node.downcast::<HTMLPictureElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLPreElement)) => {
+            let node_ = node.downcast::<HTMLPreElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLProgressElement)) => {
+            let node_ = node.downcast::<HTMLProgressElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLQuoteElement)) => {
+            let node_ = node.downcast::<HTMLQuoteElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLScriptElement)) => {
+            let node_ = node.downcast::<HTMLScriptElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLSelectElement)) => {
+            let node_ = node.downcast::<HTMLSelectElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLSourceElement)) => {
+            let node_ = node.downcast::<HTMLSourceElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLSpanElement)) => {
+            let node_ = node.downcast::<HTMLSpanElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLStyleElement)) => {
+            let node_ = node.downcast::<HTMLStyleElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableCaptionElement)) => {
+            let node_ = node.downcast::<HTMLTableCaptionElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableCellElement)) => {
+            let node_ = node.downcast::<HTMLTableCellElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableColElement)) => {
+            let node_ = node.downcast::<HTMLTableColElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableElement)) => {
+            let node_ = node.downcast::<HTMLTableElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableRowElement)) => {
+            let node_ = node.downcast::<HTMLTableRowElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTableSectionElement)) => {
+            let node_ = node.downcast::<HTMLTableSectionElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTemplateElement)) => {
+            let node_ = node.downcast::<HTMLTemplateElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTextAreaElement)) => {
+            let node_ = node.downcast::<HTMLTextAreaElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTimeElement)) => {
+            let node_ = node.downcast::<HTMLTimeElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTitleElement)) => {
+            let node_ = node.downcast::<HTMLTitleElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTrackElement)) => {
+            let node_ = node.downcast::<HTMLTrackElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLUListElement)) => {
+            let node_ = node.downcast::<HTMLUListElement>().unwrap();
+            node_.new_template(scope)
+        },
+        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLUnknownElement)) => {
+            let node_ = node.downcast::<HTMLUnknownElement>().unwrap();
+            node_.new_template(scope)
+        },
+        _ => {
+            log::error!("====================== node_downcast_template {:?} fail ======================", node.type_id());
+            element.new_template(scope)
+        },
     }
 }
 

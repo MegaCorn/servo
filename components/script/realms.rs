@@ -31,6 +31,7 @@ impl AlreadyInRealm {
 pub(crate) enum InRealm<'a> {
     Already(&'a AlreadyInRealm),
     Entered(&'a JSAutoRealm),
+    Mock,
 }
 
 impl InRealm<'_> {
@@ -40,6 +41,10 @@ impl InRealm<'_> {
 
     pub(crate) fn entered(token: &JSAutoRealm) -> InRealm {
         InRealm::Entered(token)
+    }
+
+    pub fn mock() -> InRealm<'static> {
+        InRealm::Mock
     }
 }
 
