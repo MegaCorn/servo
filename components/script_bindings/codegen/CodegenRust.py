@@ -3061,12 +3061,14 @@ class CGIDLInterface(CGThing):
             depth = self.descriptor.prototypeDepth
             check = f"class[{depth}] == PrototypeList::ID::{name}"
         # elif self.descriptor.proxy:
-        #     check = "ptr::eq(class, &Class)"
-        # else:
-        #     check = "ptr::eq(class, unsafe { &Class.get().dom_class })"
+        #     depth = self.descriptor.prototypeDepth
+        #     check = f"class[{depth}] == PrototypeList::ID::{name}"
+        elif "IterableIterator" in name:
+            check = f"""println!("todo IterableIterator");
+        class[2] == PrototypeList::ID::Document"""
         else:
-            check = f"""println!("TODO TODO TODO");
-        true"""
+            depth = self.descriptor.prototypeDepth
+            check = f"class[{depth}] == PrototypeList::ID::{name}"
         return f"""
 impl IDLInterface for {name} {{
     #[inline]

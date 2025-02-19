@@ -29,9 +29,7 @@ pub trait Castable: IDLInterface + DomObject + Sized {
         // let class = unsafe { get_dom_class(self.reflector().get_jsobject().get()).unwrap() };
         // T::derives(class)
         let chain = self.get_interface_chain();
-        let ret = T::derives(chain);
-        println!("fn is<T> {}", ret);
-        ret
+        T::derives(chain)
     }
 
     /// Cast a DOM object upwards to one of the interfaces it derives from.
