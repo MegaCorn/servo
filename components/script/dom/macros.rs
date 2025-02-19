@@ -2,6 +2,71 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+
+#[macro_export]
+macro_rules! v8_new_global {
+    ($scope:ident, $template:ident, $context:ident, $dom:ident, $name:tt) => {
+        $template.set_internal_field_count(1);
+        let object = $template.new_instance($scope).unwrap();
+        let raw = $dom.value.ptr.as_ptr() as *mut std::ffi::c_void;
+        object.set_internal_field(0, v8::External::new($scope, raw).into());
+        let key = v8::String::new($scope, stringify!($name)).unwrap();
+        let global = $context.global($scope);
+        global.set($scope, key.into(), object.into());
+        println!("new global object: {}", stringify!($name));
+    };
+
+    ($scope:ident, $template:ident, $context:ident, $dom:ident, $name:tt, $($alias:tt),*) => {
+        $template.set_internal_field_count(1);
+        let object = $template.new_instance($scope).unwrap();
+        let raw = $dom.value.ptr.as_ptr() as *mut std::ffi::c_void;
+        object.set_internal_field(0, v8::External::new($scope, raw).into());
+        let key = v8::String::new($scope, stringify!($name)).unwrap();
+        let global = $context.global($scope);
+        global.set($scope, key.into(), object.into());
+        println!("new global object: {}", stringify!($name));
+
+        $(
+            let alias_key = v8::String::new($scope, stringify!($alias)).unwrap();
+            global.set($scope, alias_key.into(), object.into());
+            println!("new alias for global object: {}", stringify!($alias));
+        )*
+    };
+}
+
+#[macro_export]
+macro_rules! v8_template_add_fn {
+    ($scope:ident, $template:ident, $fn:ident, $name:tt) => {
+        $template.set(
+            v8::String::new($scope, stringify!($name)).unwrap().into(),
+            $fn.into(),
+        );
+    };
+}
+
+#[macro_export]
+macro_rules! v8_template_add_getter {
+    ($scope:ident, $template:ident, $fn:ident, $name:tt) => {
+        $template.set_accessor(v8::String::new($scope, stringify!($name)).unwrap().into(), $fn);
+    };
+}
+
+#[macro_export]
+macro_rules! v8_template_add_getter_and_setter {
+    ($scope:ident, $template:ident, $getter:ident, $setter:ident, $name:tt) => {
+        $template.set_accessor_with_setter(v8::String::new($scope, stringify!($name)).unwrap().into(), $getter, $setter);
+    };
+}
+
+#[macro_export]
+macro_rules! v8_global_add_fn {
+    ($scope:ident, $context:ident, $fn:ident, $name:tt) => {
+        let global = $context.global($scope);
+        let key = v8::String::new($scope, stringify!($name)).unwrap();
+        global.set($scope, key.into(), $fn.into());
+    };
+}
+
 #[macro_export]
 macro_rules! make_getter(
     ( $attr:ident, $htmlname:tt ) => (

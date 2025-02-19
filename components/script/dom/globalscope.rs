@@ -371,6 +371,18 @@ pub(crate) struct GlobalScope {
     /// <https://streams.spec.whatwg.org/#count-queuing-strategy-size-function>
     #[ignore_malloc_size_of = "Rc<T> is hard"]
     count_queuing_strategy_size_function: OnceCell<Rc<Function>>,
+
+    #[ignore_malloc_size_of = "mozjs"]
+    #[no_trace]
+    isolate: v8::OwnedIsolate,
+
+    #[ignore_malloc_size_of = "mozjs"]
+    #[no_trace]
+    isolate_ptr: *mut v8::Isolate,
+
+    #[ignore_malloc_size_of = "mozjs"]
+    #[no_trace]
+    context_global: Rc<v8::Global<v8::Context>>,
 }
 
 /// A wrapper for glue-code between the ipc router and the event-loop.
@@ -722,6 +734,36 @@ impl GlobalScope {
         inherited_secure_context: Option<bool>,
         unminify_js: bool,
     ) -> Self {
+        let mut isolate = v8::Isolate::new(v8::CreateParams::default());
+        let isolate_ptr = isolate.as_mut() as *mut v8::Isolate;
+        let context_global = {
+            let scope = &mut v8::HandleScope::new(&mut isolate);
+            let context = v8::Context::new(scope, Default::default());
+
+            {
+                let scope = &mut v8::ContextScope::new(scope, context);
+                let template  = v8::ObjectTemplate::new(scope);
+
+                let fn_log = v8::FunctionTemplate::new(
+                    scope,
+                    |scope: &mut v8::HandleScope,
+                    args: v8::FunctionCallbackArguments,
+                    mut rv: v8::ReturnValue<v8::Value>| {
+                        let message = args.get(0).to_string(scope).unwrap().to_rust_string_lossy(scope);
+                        println!("===== console log: {} =====", message);
+                    },
+                );
+                v8_template_add_fn!(scope, template, fn_log, log);
+                v8_template_add_fn!(scope, template, fn_log, info);
+                let object = template.new_instance(scope).unwrap();
+                let key = v8::String::new(scope, "console").unwrap();
+                let global = context.global(scope);
+                global.set(scope, key.into(), object.into());
+            }
+
+            v8::Global::new(scope, context)
+        };
+
         Self {
             task_manager: Default::default(),
             message_port_state: DomRefCell::new(MessagePortState::UnManaged),
@@ -766,7 +808,30 @@ impl GlobalScope {
             unminified_js_dir: unminify_js.then(|| unminified_path("unminified-js")),
             byte_length_queuing_strategy_size_function: OnceCell::new(),
             count_queuing_strategy_size_function: OnceCell::new(),
+            isolate,
+            isolate_ptr,
+            context_global: context_global.into(),
         }
+    }
+
+    #[allow(unsafe_code)]
+    pub fn handle_scope<'s>(&self) -> v8::HandleScope<'s> {
+        v8::HandleScope::with_context(unsafe { &mut *self.isolate_ptr }, &*self.context_global)
+    }
+
+    pub fn context_global(&self) -> &v8::Global<v8::Context> {
+        &self.context_global
+    }
+
+    pub fn isolate_ptr(&self) -> *mut v8::Isolate {
+        self.isolate_ptr
+    }
+
+    pub fn exeute_script_on_v8(&self, text_code: &str) {
+        let scope = &mut self.handle_scope();
+        let code = v8::String::new(scope, text_code).unwrap();
+        let script = v8::Script::compile(scope, code, None).unwrap();
+        script.run(scope);
     }
 
     /// The message-port router Id of the global, if any
@@ -2543,6 +2608,9 @@ impl GlobalScope {
             rooted!(in(*cx) let mut compiled_script = std::ptr::null_mut::<JSScript>());
             match code {
                 SourceCode::Text(text_code) => {
+                    self.exeute_script_on_v8(text_code.str());
+                    return true;
+
                     let options = CompileOptionsWrapper::new(*cx, filename, line_number);
 
                     debug!("compiling dom string");
