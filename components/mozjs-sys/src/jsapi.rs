@@ -4830,8 +4830,12 @@ pub mod root {
             pub fn EnterRealm(
                 cx: *mut root::JSContext,
                 target: *mut root::JSObject,
-            ) -> *mut root::JS::Realm { println!("EnterRealm called"); ::std::ptr::null_mut() }
-            pub fn LeaveRealm(cx: *mut root::JSContext, oldRealm: *mut root::JS::Realm) { println!("LeaveRealm called");}
+            ) -> *mut root::JS::Realm {
+                // println!("EnterRealm called");
+                ::std::ptr::null_mut() }
+            pub fn LeaveRealm(cx: *mut root::JSContext, oldRealm: *mut root::JS::Realm) {
+                // println!("LeaveRealm called");
+            }
         #[repr(i32)]
         #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub enum RuntimeCode {

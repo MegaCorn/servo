@@ -2397,6 +2397,7 @@ impl Document {
     // https://html.spec.whatwg.org/multipage/#the-end
     // https://html.spec.whatwg.org/multipage/#delay-the-load-event
     pub(crate) fn finish_load(&self, load: LoadType, can_gc: CanGc) {
+        println!("v8_log finish_load");
         // This does not delay the load event anymore.
         debug!("Document got finish_load: {:?}", load);
         self.loader.borrow_mut().finish_load(&load);
@@ -2832,34 +2833,42 @@ impl Document {
 
     // https://html.spec.whatwg.org/multipage/#list-of-scripts-that-will-execute-when-the-document-has-finished-parsing
     pub(crate) fn add_deferred_script(&self, script: &HTMLScriptElement) {
+        println!("v8_log add_deferred_script");
         self.deferred_scripts.push(script);
     }
 
     /// <https://html.spec.whatwg.org/multipage/#the-end> step 3.
     /// <https://html.spec.whatwg.org/multipage/#prepare-a-script> step 22.d.
     pub(crate) fn deferred_script_loaded(&self, element: &HTMLScriptElement, result: ScriptResult) {
+        println!("v8_log deferred_script_loaded");
         self.deferred_scripts.loaded(element, result);
         self.process_deferred_scripts();
     }
 
     /// <https://html.spec.whatwg.org/multipage/#the-end> step 3.
     fn process_deferred_scripts(&self) {
+        println!("v8_log process_deferred_scripts");
         if self.ready_state.get() != DocumentReadyState::Interactive {
+            println!("v8_log process_deferred_scripts 1");
             return;
         }
         // Part of substep 1.
         loop {
             if self.script_blocking_stylesheets_count.get() > 0 {
+                println!("v8_log process_deferred_scripts 2");
                 return;
             }
             if let Some((element, result)) = self.deferred_scripts.take_next_ready_to_be_executed()
             {
+                println!("v8_log process_deferred_scripts 3");
                 element.execute(result);
             } else {
+                println!("v8_log process_deferred_scripts 4");
                 break;
             }
         }
         if self.deferred_scripts.is_empty() {
+            println!("v8_log process_deferred_scripts 5");
             // https://html.spec.whatwg.org/multipage/#the-end step 4.
             self.maybe_dispatch_dom_content_loaded();
         }
@@ -4368,6 +4377,7 @@ impl Document {
     }
 
     pub(crate) fn update_animations_post_reflow(&self) {
+        return;
         self.animations
             .borrow()
             .do_post_reflow_update(&self.window, self.current_animation_timeline_value());

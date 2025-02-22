@@ -78,8 +78,6 @@ impl EventListener {
     }
 
     pub fn handle_event_v8(&self, obj: &EventTarget) -> Fallible<()> {
-        log::error!("jinguoen EventListener::handle_event_v8");
-
         let element = obj.downcast::<Element>();
         let document = match element {
             Some(element) => element.owner_document(),

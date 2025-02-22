@@ -345,6 +345,7 @@ impl ModuleTree {
         fetch_options: ScriptFetchOptions,
         can_gc: CanGc,
     ) {
+        println!("v8_log append_handler");
         let this = owner.clone();
         let identity = module_identity.clone();
         let options = fetch_options.clone();
@@ -353,6 +354,7 @@ impl ModuleTree {
             &owner.global(),
             Some(ModuleHandler::new_boxed(Box::new(
                 task!(fetched_resolve: move || {
+                    println!("v8_log append_handler prmoise called");
                     this.notify_owner_to_finish(identity, options);
                 }),
             ))),
@@ -361,15 +363,16 @@ impl ModuleTree {
 
         let realm = enter_realm(&*owner.global());
         let comp = InRealm::Entered(&realm);
-        let _ais = AutoIncumbentScript::new(&owner.global());
+        // let _ais = AutoIncumbentScript::new(&owner.global());
 
-        if let Some(promise) = self.promise.borrow().as_ref() {
-            promise.append_native_handler(&handler, comp, can_gc);
-            return;
-        }
+        // if let Some(promise) = self.promise.borrow().as_ref() {
+        //     promise.append_native_handler(&handler, comp, can_gc);
+        //     return;
+        // }
 
-        let new_promise = Promise::new_in_current_realm(comp, can_gc);
-        new_promise.append_native_handler(&handler, comp, can_gc);
+        // let new_promise = Promise::new_in_current_realm(comp, can_gc);
+        // new_promise.append_native_handler(&handler, comp, can_gc);
+        let new_promise = Promise::my_new(handler);
         *self.promise.borrow_mut() = Some(new_promise);
     }
 
@@ -380,6 +383,7 @@ impl ModuleTree {
         dynamic_module: RootedTraceableBox<DynamicModule>,
         can_gc: CanGc,
     ) {
+        println!("v8_log append_dynamic_module_handler");
         let this = owner.clone();
         let identity = module_identity.clone();
 
@@ -483,17 +487,17 @@ impl ModuleTree {
                 &mut transform_str_to_source_text(&module_source.source),
             ));
 
-            if module_script.is_null() {
-                warn!("fail to compile module script of {}", url);
+            // if module_script.is_null() {
+            //     warn!("fail to compile module script of {}", url);
 
-                rooted!(in(*cx) let mut exception = UndefinedValue());
-                assert!(JS_GetPendingException(*cx, &mut exception.handle_mut()));
-                JS_ClearPendingException(*cx);
+            //     rooted!(in(*cx) let mut exception = UndefinedValue());
+            //     assert!(JS_GetPendingException(*cx, &mut exception.handle_mut()));
+            //     JS_ClearPendingException(*cx);
 
-                return Err(RethrowError(RootedTraceableBox::from_box(Heap::boxed(
-                    exception.get(),
-                ))));
-            }
+            //     return Err(RethrowError(RootedTraceableBox::from_box(Heap::boxed(
+            //         exception.get(),
+            //     ))));
+            // }
 
             let module_script_data = Rc::new(ModuleScript::new(url.clone(), options, Some(owner)));
 
@@ -554,6 +558,7 @@ impl ModuleTree {
         eval_result: MutableHandleValue,
         _can_gc: CanGc,
     ) -> Result<(), RethrowError> {
+        println!("v8_log execute_module");
         let cx = GlobalScope::get_cx();
         let _ac = JSAutoRealm::new(*cx, *global.reflector().get_jsobject());
 
@@ -749,6 +754,7 @@ impl ModuleTree {
         parent_identity: ModuleIdentity,
         can_gc: CanGc,
     ) {
+        println!("v8_log fetch_module_descendants");
         debug!("Start to load dependencies of {}", self.url);
 
         let global = owner.global();
@@ -849,6 +855,7 @@ impl ModuleTree {
     /// <https://html.spec.whatwg.org/multipage/#fetch-the-descendants-of-and-link-a-module-script>
     /// step 4-7.
     fn advance_finished_and_link(&self, global: &GlobalScope) {
+        println!("v8_log advance_finished_and_link");
         {
             if !self.has_all_ready_descendants(global) {
                 return;
@@ -955,6 +962,7 @@ impl ModuleOwner {
         module_identity: ModuleIdentity,
         fetch_options: ScriptFetchOptions,
     ) {
+        println!("v8_log notify_owner_to_finish");
         match &self {
             ModuleOwner::Worker(_) => unimplemented!(),
             ModuleOwner::DynamicModule(_) => unimplemented!(),
@@ -1012,6 +1020,7 @@ impl ModuleOwner {
         dynamic_module_id: DynamicModuleId,
         can_gc: CanGc,
     ) {
+        println!("v8_log finish_dynamic_module");
         let global = self.global();
 
         let module = global.dynamic_module_list().remove(dynamic_module_id);
@@ -1155,6 +1164,7 @@ impl FetchResponseListener for ModuleContext {
         _: RequestId,
         response: Result<ResourceFetchTiming, NetworkError>,
     ) {
+        println!("v8_log process_response_eof");
         let global = self.owner.global();
 
         if let Some(window) = global.downcast::<Window>() {
@@ -1426,6 +1436,7 @@ fn fetch_an_import_module_script_graph(
     promise: Rc<Promise>,
     can_gc: CanGc,
 ) -> Result<(), RethrowError> {
+    println!("v8_log fetch_an_import_module_script_graph");
     // Step 1.
     let cx = GlobalScope::get_cx();
     rooted!(in(*cx) let specifier = unsafe { GetModuleRequestSpecifier(*cx, module_request) });
@@ -1575,6 +1586,7 @@ pub(crate) fn fetch_external_module_script(
     options: ScriptFetchOptions,
     can_gc: CanGc,
 ) {
+    println!("v8_log fetch_external_module_script");
     let mut visited_urls = HashSet::new();
     visited_urls.insert(url.clone());
 
@@ -1653,6 +1665,7 @@ fn fetch_single_module_script(
     dynamic_module: Option<RootedTraceableBox<DynamicModule>>,
     can_gc: CanGc,
 ) {
+    println!("v8_log fetch_single_module_script");
     {
         // Step 1.
         let global = owner.global();
@@ -1795,6 +1808,7 @@ pub(crate) fn fetch_inline_module_script(
     options: ScriptFetchOptions,
     can_gc: CanGc,
 ) {
+    println!("v8_log fetch_inline_module_script");
     let global = owner.global();
     let is_external = false;
     let module_tree = ModuleTree::new(url.clone(), is_external, HashSet::new());

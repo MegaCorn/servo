@@ -549,7 +549,7 @@ impl CompileOptionsWrapper {
     pub unsafe fn new(cx: *mut JSContext, filename: &str, line: u32) -> Self {
         let filename_cstr = ffi::CString::new(filename.as_bytes()).unwrap();
         let ptr = NewCompileOptions(cx, filename_cstr.as_ptr(), line);
-        assert!(!ptr.is_null());
+        // assert!(!ptr.is_null());
         Self { ptr }
     }
 }

@@ -2889,7 +2889,71 @@ impl Window {
             root.set_type_id(type_id);
             let chain = [ PrototypeList::ID::EventTarget, PrototypeList::ID::GlobalScope, PrototypeList::ID::Window, PrototypeList::ID::Last, PrototypeList::ID::Last, PrototypeList::ID::Last ];
             root.set_interface_chain(chain);
-            DomRoot::from_ref(&*root)
+            let win = DomRoot::from_ref(&*root);
+
+            {
+                let global_scope: &GlobalScope = win.upcast();
+                let scope = &mut global_scope.handle_scope();
+                let context = v8::Local::new(scope, global_scope.context_global());
+                let scope = &mut v8::ContextScope::new(scope, context);
+                let template  = win.new_template(scope);
+
+                let intercept_getter =
+                        |scope: &mut v8::HandleScope,
+                        key: v8::Local<v8::Name>,
+                        args: v8::PropertyCallbackArguments,
+                        mut rv: v8::ReturnValue<v8::Value>| {
+                            let arg0 = key.to_string(scope).unwrap().to_rust_string_lossy(scope);
+                            log::error!("window intercepted getter {}", arg0);
+
+                            let this = args.this();
+                            let data = this.get_internal_field(scope, 0).unwrap();
+                            let value_: v8::Local<v8::External> = data.try_into().unwrap();
+                            let raw = value_.value() as *const crate::dom::types::Window;
+                            let global_scope: &GlobalScope = unsafe { (*raw).upcast() };
+                            let context = v8::Local::new(scope, global_scope.context_global());
+                            let global = context.global(scope);
+                            let key_ = v8::String::new(scope, arg0.as_str()).unwrap();
+                            let ret = global.get(scope, key_.into()).unwrap();
+                            if ret.is_undefined() {
+                                log::error!("window intercepted getter {} fail, try accessor", arg0);
+                                return v8::Intercepted::No;
+                            }
+
+                            rv.set(ret.into());
+                            v8::Intercepted::Yes
+                        };
+
+                let intercept_setter =
+                        |scope: &mut v8::HandleScope,
+                        key: v8::Local<v8::Name>,
+                        value: v8::Local<v8::Value>,
+                        args: v8::PropertyCallbackArguments,
+                        mut rv: v8::ReturnValue<()>| {
+                            let arg0 = key.to_string(scope).unwrap().to_rust_string_lossy(scope);
+                            log::error!("window intercepted setter {}", arg0);
+
+                            let this = args.this();
+                            let data = this.get_internal_field(scope, 0).unwrap();
+                            let value_: v8::Local<v8::External> = data.try_into().unwrap();
+                            let raw = value_.value() as *const crate::dom::types::Window;
+                            let global_scope: &GlobalScope = unsafe { (*raw).upcast() };
+                            let context = v8::Local::new(scope, global_scope.context_global());
+                            let global = context.global(scope);
+                            let key_ = v8::String::new(scope, arg0.as_str()).unwrap();
+                            global.set(scope, key_.into(), value.into());
+                            v8::Intercepted::Yes
+                        };
+
+                template.set_named_property_handler(
+                    v8::NamedPropertyHandlerConfiguration::new()
+                      .getter(intercept_getter)
+                      .setter(intercept_setter),
+                );
+
+                v8_new_global!(scope, template, context, win, window, self, this);
+            }
+            win
         }
     }
 

@@ -828,6 +828,7 @@ impl GlobalScope {
     }
 
     pub fn exeute_script_on_v8(&self, text_code: &str) {
+        println!("exeute_script_on_v8 {}", text_code);
         let scope = &mut self.handle_scope();
         let code = v8::String::new(scope, text_code).unwrap();
         let script = v8::Script::compile(scope, code, None).unwrap();
