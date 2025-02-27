@@ -69,12 +69,15 @@ def v8Setter(attr, descriptor, member):
         trans = f"""let val = value.number_value(scope).unwrap();"""
     # callback
     elif argType == "Rc<EventHandlerNonNull>":
-        trans = f"""use crate::dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
-            let val_ = v8::Local::<v8::Function>::try_from(value).unwrap();
-            let global_ = v8::Global::new(scope, val_);
-            let global_raw = global_.into_raw();
-            log::error!("====================jignuoen setter todo========================");
-            let val = unsafe {{ EventHandlerNonNull::new_v8(global_raw) }};"""
+        trans = f"""
+            log::error!("==================== setter todo========================");"""
+        # trans = f"""use crate::dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
+        #     let val_ = v8::Local::<v8::Function>::try_from(value).unwrap();
+        #     let global_ = v8::Global::new(scope, val_);
+        #     let global_raw = global_.into_raw();
+        #     log::error!("==================== setter todo========================");
+        #     let val = unsafe {{ EventHandlerNonNull::new_v8(global_raw) }};"""
+        funcCall = ""
     # 枚举类型
     elif member.type.isEnum():
         prefix = ""

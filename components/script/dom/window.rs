@@ -14,6 +14,10 @@ use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
+use crate::dom::htmlimageelement::HTMLImageElement;
+use crate::dom::url::URL;
+use crate::dom::xmlhttprequest::XMLHttpRequest;
+use crate::dom::urlsearchparams::URLSearchParams;
 use app_units::Au;
 use backtrace::Backtrace;
 use base::cross_process_instant::CrossProcessInstant;
@@ -80,6 +84,7 @@ use style::str::HTML_SPACE_CHARACTERS;
 use style::stylesheets::{CssRuleType, Origin, UrlExtraData};
 use style_traits::{CSSPixel, ParsingMode};
 use url::Position;
+use crate::dom::bindings::codegen::Bindings::FunctionBinding::Function;
 use webrender_api::units::{DevicePixel, LayoutPixel};
 use webrender_api::{DocumentId, ExternalScrollId};
 use webrender_traits::CrossProcessCompositorApi;
@@ -241,6 +246,7 @@ pub(crate) struct Window {
     screen: MutNullableDom<Screen>,
     session_storage: MutNullableDom<Storage>,
     local_storage: MutNullableDom<Storage>,
+    xml_request: MutNullableDom<XMLHttpRequest>,
     status: DomRefCell<DOMString>,
 
     /// For sending timeline markers. Will be ignored if
@@ -2745,6 +2751,11 @@ impl Window {
 }
 
 impl Window {
+    pub fn XMLHttpRequest(&self) -> DomRoot<XMLHttpRequest> {
+        self.xml_request
+            .or_init(|| XMLHttpRequest::new(self.upcast(), None, CanGc::note()))
+    }
+
     #[allow(unsafe_code)]
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
@@ -2831,6 +2842,7 @@ impl Window {
             screen: Default::default(),
             session_storage: Default::default(),
             local_storage: Default::default(),
+            xml_request: Default::default(),
             status: DomRefCell::new(DOMString::new()),
             parent_info,
             dom_static: GlobalStaticData::new(),
@@ -2898,6 +2910,32 @@ impl Window {
                 let scope = &mut v8::ContextScope::new(scope, context);
                 let template  = win.new_template(scope);
 
+                let getter_Intl =
+                    |scope: &mut v8::HandleScope,
+                    key: v8::Local<v8::Name>,
+                    args: v8::PropertyCallbackArguments,
+                    mut rv: v8::ReturnValue<v8::Value>| {
+                        log::error!("getter getter_Intl");
+                        // let templ = v8::FunctionTemplate::new(scope, XMLHttpRequest_callback);
+                        // let value = templ.get_function(scope).unwrap();
+                        // rv.set(value.into());
+                    };
+
+                v8_template_add_getter!(scope, template, getter_Intl, Intl);
+
+                let getter_XMLHttpRequest =
+                    |scope: &mut v8::HandleScope,
+                    key: v8::Local<v8::Name>,
+                    args: v8::PropertyCallbackArguments,
+                    mut rv: v8::ReturnValue<v8::Value>| {
+                        log::error!("getter XMLHttpRequest constructor");
+                        let templ = v8::FunctionTemplate::new(scope, XMLHttpRequest_callback);
+                        let value = templ.get_function(scope).unwrap();
+                        rv.set(value.into());
+                    };
+
+                v8_template_add_getter!(scope, template, getter_XMLHttpRequest, XMLHttpRequest);
+
                 let intercept_getter =
                         |scope: &mut v8::HandleScope,
                         key: v8::Local<v8::Name>,
@@ -2905,6 +2943,10 @@ impl Window {
                         mut rv: v8::ReturnValue<v8::Value>| {
                             let arg0 = key.to_string(scope).unwrap().to_rust_string_lossy(scope);
                             log::error!("window intercepted getter {}", arg0);
+                            if (arg0 == "Intl") {
+                                log::error!("window intercepted getter {} fail, try accessor", arg0);
+                                return v8::Intercepted::No;
+                            }
 
                             let this = args.this();
                             let data = this.get_internal_field(scope, 0).unwrap();
@@ -2952,7 +2994,64 @@ impl Window {
                 );
 
                 v8_new_global!(scope, template, context, win, window, self, this);
+
+                let global = context.global(scope);
+                {
+                    let templ = v8::FunctionTemplate::new(scope, URLSearchParams_callback);
+                    let name = v8::String::new(scope, "URLSearchParams").unwrap();
+                    let value = templ.get_function(scope).unwrap();
+                    global.set(scope, name.into(), value.into());
+                }
+
+                {
+                    let templ = v8::FunctionTemplate::new(scope, URL_callback);
+                    let name = v8::String::new(scope, "URL").unwrap();
+                    let value = templ.get_function(scope).unwrap();
+                    global.set(scope, name.into(), value.into());
+                }
+
+                {
+                    let templ = v8::FunctionTemplate::new(scope, IMAGE_callback);
+                    let name = v8::String::new(scope, "Image").unwrap();
+                    let value = templ.get_function(scope).unwrap();
+                    global.set(scope, name.into(), value.into());
+                }
+
+                let fn_setTimeout = v8::Function::new(
+                    scope,
+                    |scope: &mut v8::HandleScope,
+                    args: v8::FunctionCallbackArguments,
+                    mut rv: v8::ReturnValue<v8::Value>| {
+                        let message = args.get(0).to_string(scope).unwrap().to_rust_string_lossy(scope);
+                        log::error!("v8_log fn setTimeout {}", message);
+                        let context = scope.get_current_context();
+                        let global = context.global(scope);
+                        let val_ = v8::Local::<v8::Function>::try_from(args.get(0)).unwrap();
+                        let global_ = v8::Global::new(scope, val_);
+                        let global_raw = global_.into_raw();
+
+                        let key = v8::String::new(scope, "window").unwrap();
+                        let obj = global.get(scope, key.into()).unwrap().to_object(scope).unwrap();
+                        let data = obj.get_internal_field(scope, 0).unwrap();
+                        let value: v8::Local<v8::External> = data.try_into().unwrap();
+                        let raw = value.value() as *const crate::dom::types::Window;
+                        let arg0 = JSContext::from_ptr(std::ptr::null_mut());
+
+                        let mut func = Function::new_v8(JSContext::from_ptr(std::ptr::null_mut()), std::ptr::null_mut(), global_raw);
+                        let arg1 = StringOrFunction::Function(func);
+                        let arg2 = 0;
+                        let arg3 = vec![];
+                        let ret = unsafe { (*raw).SetTimeout(arg0, arg1, arg2, arg3) };
+                    },
+                ).unwrap();
+                v8_global_add_fn!(scope, context, fn_setTimeout, setTimeout);
             }
+            let navigator = win.Navigator(); // 部分网页会直接调用navigator.userAgent, 而不是window.navigator.userAgent
+            let storage1 = win.LocalStorage();
+            let storage2 = win.SessionStorage();
+            let history = win.History();
+            let location = win.Location();
+            let screen = win.Screen();
             win
         }
     }
@@ -2968,7 +3067,120 @@ impl Window {
     {
         LayoutValue::new(self.layout_marker.borrow().clone(), value)
     }
+
+    pub(crate) fn new_URLSearchParams(&self, url: DOMString) -> DomRoot<URLSearchParams> {
+        let URL = URL::new(self.as_global_scope(), None, self.get_url(), CanGc::note());
+        URLSearchParams::new(self.as_global_scope(), None, CanGc::note())
+    }
+
+    pub(crate) fn new_URL(&self, url: DOMString) -> DomRoot<URL> {
+        URL::new(self.as_global_scope(), None, self.get_url(), CanGc::note())
+    }
+
+    pub(crate) fn new_IMAGE(&self) -> DomRoot<HTMLImageElement> {
+        HTMLImageElement::new(html5ever::local_name!("img"), None, &self.Document(), None, CanGc::note())
+    }
 }
+
+pub fn XMLHttpRequest_callback(
+    scope: &mut v8::HandleScope,
+    args: v8::FunctionCallbackArguments,
+    mut rv: v8::ReturnValue<v8::Value>,
+  ) {
+    println!("v8_log XMLHttpRequest_callback");
+    let context = scope.get_current_context();
+    let global = context.global(scope);
+    let key = v8::String::new(scope, "window").unwrap();
+    let obj = global.get(scope, key.into()).unwrap().to_object(scope).unwrap();
+    let data = obj.get_internal_field(scope, 0).unwrap();
+    let value: v8::Local<v8::External> = data.try_into().unwrap();
+    let raw = value.value() as *const crate::dom::types::Window;
+
+    let ret = unsafe { (*raw).XMLHttpRequest() };
+
+    let template = ret.new_template(scope);
+    template.set_internal_field_count(1);
+    let object = template.new_instance(scope).unwrap();
+    let raw_ = ret.value.ptr.as_ptr() as *mut std::ffi::c_void;
+    object.set_internal_field(0, v8::External::new(scope, raw_).into());
+    rv.set(object.into());
+  }
+
+pub fn URLSearchParams_callback(
+    scope: &mut v8::HandleScope,
+    args: v8::FunctionCallbackArguments,
+    mut rv: v8::ReturnValue<v8::Value>,
+  ) {
+    println!("v8_log URLSearchParams_callback");
+    let context = scope.get_current_context();
+    let global = context.global(scope);
+    let key = v8::String::new(scope, "window").unwrap();
+    let obj = global.get(scope, key.into()).unwrap().to_object(scope).unwrap();
+    let data = obj.get_internal_field(scope, 0).unwrap();
+    let value: v8::Local<v8::External> = data.try_into().unwrap();
+    let raw = value.value() as *const crate::dom::types::Window;
+
+    let this = args.this();
+    let arg0 = DOMString::from(args.get(0).to_rust_string_lossy(scope));
+    let ret = unsafe { (*raw).new_URLSearchParams(arg0) };
+
+    let template = ret.new_template(scope);
+    template.set_internal_field_count(1);
+    let object = template.new_instance(scope).unwrap();
+    let raw_ = ret.value.ptr.as_ptr() as *mut std::ffi::c_void;
+    object.set_internal_field(0, v8::External::new(scope, raw_).into());
+    rv.set(object.into());
+  }
+
+  pub fn URL_callback(
+    scope: &mut v8::HandleScope,
+    args: v8::FunctionCallbackArguments,
+    mut rv: v8::ReturnValue<v8::Value>,
+  ) {
+    println!("v8_log URL_callback");
+    let context = scope.get_current_context();
+    let global = context.global(scope);
+    let key = v8::String::new(scope, "window").unwrap();
+    let obj = global.get(scope, key.into()).unwrap().to_object(scope).unwrap();
+    let data = obj.get_internal_field(scope, 0).unwrap();
+    let value: v8::Local<v8::External> = data.try_into().unwrap();
+    let raw = value.value() as *const crate::dom::types::Window;
+
+    let this = args.this();
+    let arg0 = DOMString::from(args.get(0).to_rust_string_lossy(scope));
+    let ret = unsafe { (*raw).new_URL(arg0) };
+
+    let template = ret.new_template(scope);
+    template.set_internal_field_count(1);
+    let object = template.new_instance(scope).unwrap();
+    let raw_ = ret.value.ptr.as_ptr() as *mut std::ffi::c_void;
+    object.set_internal_field(0, v8::External::new(scope, raw_).into());
+    rv.set(object.into());
+  }
+
+  pub fn IMAGE_callback(
+    scope: &mut v8::HandleScope,
+    args: v8::FunctionCallbackArguments,
+    mut rv: v8::ReturnValue<v8::Value>,
+  ) {
+    println!("v8_log IMAGE_callback");
+    let context = scope.get_current_context();
+    let global = context.global(scope);
+    let key = v8::String::new(scope, "window").unwrap();
+    let obj = global.get(scope, key.into()).unwrap().to_object(scope).unwrap();
+    let data = obj.get_internal_field(scope, 0).unwrap();
+    let value: v8::Local<v8::External> = data.try_into().unwrap();
+    let raw = value.value() as *const crate::dom::types::Window;
+
+    let ret = unsafe { (*raw).new_IMAGE() };
+
+    let template = ret.new_template(scope);
+    template.set_internal_field_count(1);
+    let object = template.new_instance(scope).unwrap();
+    let raw_ = ret.value.ptr.as_ptr() as *mut std::ffi::c_void;
+    object.set_internal_field(0, v8::External::new(scope, raw_).into());
+    rv.set(object.into());
+  }
 
 /// An instance of a value associated with a particular snapshot of layout. This stored
 /// value can only be read as long as the associated layout marker that is considered

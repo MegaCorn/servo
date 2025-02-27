@@ -181,6 +181,7 @@ impl OneshotTimers {
     }
 
     pub(crate) fn fire_timer(&self, id: TimerEventId, global: &GlobalScope, can_gc: CanGc) {
+        println!("v8_log JsTimerTask fire_timer");
         let expected_id = self.expected_event_id.get();
         if expected_id != id {
             debug!(
@@ -532,6 +533,7 @@ fn clamp_duration(nesting_level: u32, unclamped: Duration) -> Duration {
 impl JsTimerTask {
     // see https://html.spec.whatwg.org/multipage/#timer-initialisation-steps
     pub(crate) fn invoke<T: DomObject>(self, this: &T, timers: &JsTimers, can_gc: CanGc) {
+        println!("v8_log JsTimerTask invoke");
         // step 4.1 can be ignored, because we proactively prevent execution
         // of this task when its scheduled execution is canceled.
 
@@ -556,9 +558,17 @@ impl JsTimerTask {
                 );
             },
             InternalTimerCallback::FunctionTimerCallback(ref function, ref arguments) => {
+                println!("v8_log JsTimerTask invoke FunctionTimerCallback");
                 let arguments = self.collect_heap_args(arguments);
                 rooted!(in(*GlobalScope::get_cx()) let mut value: JSVal);
                 let _ = function.Call_(this, arguments, value.handle_mut(), Report);
+                let global_scope = this.global();
+                let scope = &mut global_scope.handle_scope();
+                let func = unsafe { v8::Global::from_raw(&mut *global_scope.isolate_ptr(), std::ptr::NonNull::new(function.parent.v8_func).unwrap()) };
+                let func_ = v8::Local::new(scope, &func);
+                let recv = scope.get_current_context().global(scope).into();
+                func_.call(scope, recv, &[]);
+
             },
         };
         ScriptThread::set_user_interacting(was_user_interacting);

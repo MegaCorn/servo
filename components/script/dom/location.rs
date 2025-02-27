@@ -18,6 +18,8 @@ use crate::dom::globalscope::GlobalScope;
 use crate::dom::urlhelper::UrlHelper;
 use crate::dom::window::Window;
 use crate::script_runtime::CanGc;
+use script_bindings::inheritance::Castable;
+use crate::dom::bindings::reflector::DomGlobal;
 
 #[derive(PartialEq)]
 pub(crate) enum NavigationType {
@@ -58,11 +60,16 @@ impl Location {
     }
 
     pub(crate) fn new(window: &Window) -> DomRoot<Location> {
-        reflect_dom_object(
-            Box::new(Location::new_inherited(window)),
-            window,
-            CanGc::note(),
-        )
+        let obj = reflect_dom_object(Box::new(Location::new_inherited(window)), window, CanGc::note());
+        {
+            let global_scope: &GlobalScope = window.upcast();
+            let scope = &mut global_scope.handle_scope();
+            let context = v8::Local::new(scope, global_scope.context_global());
+            let scope = &mut v8::ContextScope::new(scope, context);
+            let template  = obj.new_template(scope);
+            v8_new_global!(scope, template, context, obj, location);
+        }
+        obj
     }
 
     /// Navigate the relevant `Document`'s browsing context.
@@ -181,15 +188,17 @@ impl Location {
             // FIXME: We should still return the active document if it's same
             //        origin but not fully active. `WindowProxy::document`
             //        currently returns `None` in this case.
-            if let Some(document) = window_proxy.document().filter(|document| {
-                self.entry_settings_object()
-                    .origin()
-                    .same_origin_domain(document.origin())
-            }) {
-                Ok(Some(document))
-            } else {
-                Err(Error::Security)
-            }
+            // if let Some(document) = window_proxy.document().filter(|document| {
+            //     self.entry_settings_object()
+            //         .origin()
+            //         .same_origin_domain(document.origin())
+            // }) {
+            //     Ok(Some(document))
+            // } else {
+            //     Err(Error::Security)
+            // }
+            let document = self.global().as_window().Document();
+            Ok(Some(document))
         } else {
             // The browsing context is null
             Ok(None)

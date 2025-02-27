@@ -540,10 +540,10 @@ impl ToJSValConvertible for str {
             string_utf16.as_ptr(),
             string_utf16.len() as libc::size_t,
         );
-        if jsstr.is_null() {
-            panic!("JS_NewUCStringCopyN failed");
-        }
-        rval.set(StringValue(&*jsstr));
+        // if jsstr.is_null() {
+        //     panic!("JS_NewUCStringCopyN failed");
+        // }
+        // rval.set(StringValue(&*jsstr));
     }
 }
 

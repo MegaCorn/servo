@@ -127,7 +127,7 @@ def v8Getter(attr, descriptor, member):
         trans = f"""let func_ = ret.get_v8();
             let global_ = unsafe {{ v8::Global::from_raw(&mut *((*raw).global()).isolate_ptr(), func_) }};
             let ret = v8::Local::new(scope, global_);
-            log::error!("====================jignuoen getter todo========================");"""
+            log::error!("==================== getter todo========================");"""
     else:
         match = False
         trans = ""
@@ -135,6 +135,15 @@ def v8Getter(attr, descriptor, member):
     tmp = ""
     if match:
         tmp = "rv.set(ret.into());"
+
+    aa = CGSpecializedGetter.makeNativeName(descriptor, member)
+    if aa == "Languages" and descriptor.name == "Navigator":
+        tmp = f"""
+            let array = v8::Array::new(scope, 1);
+            let s1 = v8::String::new(scope, "zh-CN").unwrap();
+            array.set_index(scope, 0, s1.into());
+            rv.set(array.into());
+        """
 
     # 构造代码段
     getterCode = CGGeneric(f"""

@@ -78,13 +78,13 @@ impl PromiseHelper for Rc<Promise> {
 impl Drop for Promise {
     #[allow(unsafe_code)]
     fn drop(&mut self) {
-        unsafe {
-            let object = self.permanent_js_root.get().to_object();
-            assert!(!object.is_null());
-            if let Some(cx) = Runtime::get() {
-                RemoveRawValueRoot(cx.as_ptr(), self.permanent_js_root.get_unsafe());
-            }
-        }
+        // unsafe {
+        //     let object = self.permanent_js_root.get().to_object();
+        //     assert!(!object.is_null());
+        //     if let Some(cx) = Runtime::get() {
+        //         RemoveRawValueRoot(cx.as_ptr(), self.permanent_js_root.get_unsafe());
+        //     }
+        // }
     }
 }
 

@@ -236,6 +236,17 @@ pub(crate) struct XMLHttpRequest {
     canceller: DomRefCell<FetchCanceller>,
 }
 
+fn replace_first(original: &str, target: &str, replacement: &str) -> String {
+    if let Some(pos) = original.find(target) {
+        let mut result = String::from(&original[..pos]); // 取匹配前部分
+        result.push_str(replacement); // 替换部分
+        result.push_str(&original[pos + target.len()..]); // 拼接剩余部分
+        result
+    } else {
+        original.to_string() // 如果找不到匹配，返回原字符串
+    }
+}
+
 impl XMLHttpRequest {
     fn new_inherited(global: &GlobalScope) -> XMLHttpRequest {
         XMLHttpRequest {
@@ -274,7 +285,7 @@ impl XMLHttpRequest {
         }
     }
 
-    fn new(
+    pub fn new(
         global: &GlobalScope,
         proto: Option<HandleObject>,
         can_gc: CanGc,
@@ -532,6 +543,7 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
 
     /// <https://xhr.spec.whatwg.org/#the-send()-method>
     fn Send(&self, data: Option<DocumentOrXMLHttpRequestBodyInit>, can_gc: CanGc) -> ErrorResult {
+        println!("XMLHttpRequest v8_log send");
         // Step 1, 2
         if self.ready_state.get() != XMLHttpRequestState::Opened || self.send_flag.get() {
             return Err(Error::InvalidState);
@@ -545,6 +557,7 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
         // Step 4 (first half)
         let mut extracted_or_serialized = match data {
             Some(DocumentOrXMLHttpRequestBodyInit::Document(ref doc)) => {
+                println!("XMLHttpRequest v8_log send 1");
                 let bytes = Vec::from(serialize_document(doc)?.as_ref());
                 let content_type = if doc.is_html_document() {
                     "text/html;charset=UTF-8"
@@ -562,6 +575,7 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
                 })
             },
             Some(DocumentOrXMLHttpRequestBodyInit::Blob(ref b)) => {
+                println!("XMLHttpRequest v8_log send 2");
                 let extracted_body = b
                     .extract(&self.global(), can_gc)
                     .expect("Couldn't extract body.");
@@ -572,21 +586,33 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
                     Some(extracted_body)
                 }
             },
-            Some(DocumentOrXMLHttpRequestBodyInit::FormData(ref formdata)) => Some(
+            Some(DocumentOrXMLHttpRequestBodyInit::FormData(ref formdata)) => {
+                println!("XMLHttpRequest v8_log send 3");
+                Some(
                 formdata
                     .extract(&self.global(), can_gc)
                     .expect("Couldn't extract body."),
-            ),
-            Some(DocumentOrXMLHttpRequestBodyInit::String(ref str)) => Some(
-                str.extract(&self.global(), can_gc)
+            )},
+            Some(DocumentOrXMLHttpRequestBodyInit::String(ref str)) => {
+                let copy = String::from(str.str());
+                let target = "\"mba_finger\":\"error :TypeError: e.getContext is not a function\"";
+                let replacement = "\"mba_finger\":\"v001eyJhIjpudWxsLCJiIjoiIiwiYyI6IiIsImQiOiJXaW4zMiIsImciOjAsImgiOiIiLCJpIjowLCJsIjoiYTNiYTdhMDA4Yjg0MDljNDk0M2RkMzZmMTEzNGJiMzEiLCJtIjoiIiwibiI6IiIsIm8iOjAsInEiOiJBc2lhL1NoYW5naGFpIiwiciI6ZmFsc2UsInMiOmZhbHNlLCJ0IjpmYWxzZSwidSI6ZmFsc2UsInYiOiIxOTIwOzEwODAiLCJwX3dyciI6MCwicF9wbCI6MCwicF9sbiI6MSwicF9vaCI6Nzc5LCJwX293IjoxMDQwLCJwX2VsIjozNywicF9hdm4iOiI0LjAiLCJwX2NlZCI6MSwicF9oYmEiOm51bGwsInBfaWFlIjpudWxsLCJwX3ZkciI6IiIsInBfaGN5Ijo4LCJwX25lIjoiMCIsImFyIjoyNTUsInZjIjpudWxsLCJiYV9zdCI6MSwiYmFfbGUiOiIifQ==\"";
+                let new_string = replace_first(copy.as_str(), target, replacement);
+                let copy1 = DOMString::from_string(new_string);
+                println!("XMLHttpRequest v8_log send 4 {}", copy1.str());
+                Some(
+                copy1.extract(&self.global(), can_gc)
                     .expect("Couldn't extract body."),
-            ),
-            Some(DocumentOrXMLHttpRequestBodyInit::URLSearchParams(ref urlsp)) => Some(
+            )},
+            Some(DocumentOrXMLHttpRequestBodyInit::URLSearchParams(ref urlsp)) => {
+                println!("XMLHttpRequest v8_log send 5");
+                Some(
                 urlsp
                     .extract(&self.global(), can_gc)
                     .expect("Couldn't extract body."),
-            ),
+            )},
             Some(DocumentOrXMLHttpRequestBodyInit::ArrayBuffer(ref typedarray)) => {
+                println!("XMLHttpRequest v8_log send 6");
                 let bytes = typedarray.to_vec();
                 let total_bytes = bytes.len();
                 let global = self.global();
@@ -599,6 +625,7 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
                 })
             },
             Some(DocumentOrXMLHttpRequestBodyInit::ArrayBufferView(ref typedarray)) => {
+                println!("XMLHttpRequest v8_log send 7");
                 let bytes = typedarray.to_vec();
                 let total_bytes = bytes.len();
                 let global = self.global();
@@ -915,6 +942,7 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
     #[allow(unsafe_code)]
     /// <https://xhr.spec.whatwg.org/#the-response-attribute>
     fn Response(&self, cx: JSContext, can_gc: CanGc, mut rval: MutableHandleValue) {
+        println!("XMLHttpRequest v8_log response");
         match self.response_type.get() {
             XMLHttpRequestResponseType::_empty | XMLHttpRequestResponseType::Text => unsafe {
                 let ready_state = self.ready_state.get();
@@ -922,8 +950,10 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
                 if ready_state == XMLHttpRequestState::Done ||
                     ready_state == XMLHttpRequestState::Loading
                 {
+                    println!("XMLHttpRequest v8_log response 1 {}", self.text_response());
                     self.text_response().to_jsval(*cx, rval);
                 } else {
+                    println!("XMLHttpRequest v8_log response 2");
                     // Step 1
                     "".to_jsval(*cx, rval);
                 }

@@ -84,6 +84,9 @@ def makeFuncArgs(descriptor, arguments, nativeName):
         elif argument == "DOMString":
             funcCall += f"""
             let arg{idx} = {optionPre}{finitePre}DOMString::from(args.get({idx}).to_rust_string_lossy(scope)){finiteTail}{optionTail};"""
+        elif argument == "ByteString":
+            funcCall += f"""
+            let arg{idx} = {optionPre}{finitePre}ByteString::new(args.get({idx}).to_rust_string_lossy(scope).into()){finiteTail}{optionTail};"""
         elif argument == "bool":
             funcCall += f"""
             let arg{idx} = {optionPre}{finitePre}args.get({idx}).boolean_value(scope){finiteTail}{optionTail};"""
@@ -125,6 +128,13 @@ def makeFuncArgs(descriptor, arguments, nativeName):
             if arg{idx}.is_none() {{
                 return
             }}"""
+        elif argument.startswith("UnionTypes::"):
+            argument = argument[12:]
+            if argument == "StringOrElementCreationOptions":
+                funcCall += f"""
+            let arg{idx} = crate::dom::bindings::codegen::UnionTypes::StringOrElementCreationOptions::String(DOMString::from(""));"""
+            else:
+                support = False
         elif argument == "CanGc":
             funcCall += f"""
             let arg{idx} = crate::script_runtime::CanGc::note();"""
@@ -239,7 +249,6 @@ def v8Function(descriptor, cgthings):
             if nativeName == "Open" and descriptor.name == "Document":
                 nativeName = "Open_"
 
-
             if support:
                 funcCall += f"""
             let ret = unsafe {{ (*raw).{nativeName}({stub})}};"""
@@ -250,6 +259,19 @@ def v8Function(descriptor, cgthings):
             else:
                 unwrap1 = ""
                 unwrap2 = ""
+
+            if nativeName == "Open" and descriptor.name == "XMLHttpRequest":
+                trans_ = f"""
+            log::error!("fn open {{}} {{}}", args.get(0).to_rust_string_lossy(scope), args.get(1).to_rust_string_lossy(scope));
+            let arg0 = ByteString::new(args.get(0).to_rust_string_lossy(scope).into());
+            let arg1 = USVString::from(args.get(1).to_rust_string_lossy(scope));
+            let ret = unsafe {{ (*raw).Open(arg0, arg1)}};
+                """
+            if nativeName == "Send" and descriptor.name == "XMLHttpRequest":
+                trans_ = f"""
+            log::error!("fn send {{}}", args.get(0).to_rust_string_lossy(scope));
+            let ret = unsafe {{ (*raw).Send(Some(crate::dom::bindings::codegen::UnionTypes::DocumentOrBlobOrArrayBufferViewOrArrayBufferOrFormDataOrStringOrURLSearchParams::String(DOMString::from(args.get(0).to_rust_string_lossy(scope)))), crate::script_runtime::CanGc::note())}};
+                """
 
             code = CGGeneric(f"""
     let fn_{method} = v8::FunctionTemplate::new(

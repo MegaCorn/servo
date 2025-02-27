@@ -753,8 +753,36 @@ impl GlobalScope {
                         println!("===== console log: {} =====", message);
                     },
                 );
+                let fn_info = v8::FunctionTemplate::new(
+                    scope,
+                    |scope: &mut v8::HandleScope,
+                    args: v8::FunctionCallbackArguments,
+                    mut rv: v8::ReturnValue<v8::Value>| {
+                        let message = args.get(0).to_string(scope).unwrap().to_rust_string_lossy(scope);
+                        println!("===== console info: {} =====", message);
+                    },
+                );
+                let fn_error = v8::FunctionTemplate::new(
+                    scope,
+                    |scope: &mut v8::HandleScope,
+                    args: v8::FunctionCallbackArguments,
+                    mut rv: v8::ReturnValue<v8::Value>| {
+                        if args.length() == 1 {
+                            let message = args.get(0).to_string(scope).unwrap().to_rust_string_lossy(scope);
+                            println!("===== console error: {} =====", message);
+                        }
+
+                        if args.length() == 2 {
+                            let message1 = args.get(0).to_string(scope).unwrap().to_rust_string_lossy(scope);
+                            let message2 = args.get(1).to_string(scope).unwrap().to_rust_string_lossy(scope);
+                            println!("===== console error: {}, {} =====", message1, message2);
+
+                        }
+                    },
+                );
                 v8_template_add_fn!(scope, template, fn_log, log);
-                v8_template_add_fn!(scope, template, fn_log, info);
+                v8_template_add_fn!(scope, template, fn_info, info);
+                v8_template_add_fn!(scope, template, fn_error, error);
                 let object = template.new_instance(scope).unwrap();
                 let key = v8::String::new(scope, "console").unwrap();
                 let global = context.global(scope);
@@ -828,7 +856,8 @@ impl GlobalScope {
     }
 
     pub fn exeute_script_on_v8(&self, text_code: &str) {
-        println!("exeute_script_on_v8 {}", text_code);
+        // println!("exeute_script_on_v8 {}", text_code);
+        println!("exeute_script_on_v8");
         let scope = &mut self.handle_scope();
         let code = v8::String::new(scope, text_code).unwrap();
         let script = v8::Script::compile(scope, code, None).unwrap();
@@ -2599,6 +2628,7 @@ impl GlobalScope {
         script_base_url: ServoUrl,
         can_gc: CanGc,
     ) -> bool {
+        println!("evaluate_script_on_global_with_result");
         let cx = GlobalScope::get_cx();
 
         let ar = enter_realm(self);

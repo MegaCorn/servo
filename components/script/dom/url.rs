@@ -48,7 +48,7 @@ impl URL {
         }
     }
 
-    fn new(
+    pub fn new(
         global: &GlobalScope,
         proto: Option<HandleObject>,
         url: ServoUrl,

@@ -15,6 +15,8 @@ use crate::dom::bindings::reflector::{reflect_dom_object, DomGlobal, Reflector};
 use crate::dom::bindings::root::{Dom, DomRoot};
 use crate::dom::window::Window;
 use crate::script_runtime::CanGc;
+use crate::dom::globalscope::GlobalScope;
+use script_bindings::inheritance::Castable;
 
 #[dom_struct]
 pub(crate) struct Screen {
@@ -31,11 +33,20 @@ impl Screen {
     }
 
     pub(crate) fn new(window: &Window) -> DomRoot<Screen> {
-        reflect_dom_object(
+        let obj = reflect_dom_object(
             Box::new(Screen::new_inherited(window)),
             window,
             CanGc::note(),
-        )
+        );
+        {
+            let global_scope: &GlobalScope = window.upcast();
+            let scope = &mut global_scope.handle_scope();
+            let context = v8::Local::new(scope, global_scope.context_global());
+            let scope = &mut v8::ContextScope::new(scope, context);
+            let template  = obj.new_template(scope);
+            v8_new_global!(scope, template, context, obj, screen);
+        }
+        obj
     }
 
     fn screen_size(&self) -> Size2D<u32, CSSPixel> {

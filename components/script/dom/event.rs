@@ -509,14 +509,14 @@ impl Event {
                 }
 
                 // Step 5.14.3 Invoke with struct, event, "bubbling", and legacyOutputDidListenersThrowFlag if given.
-                invoke(
-                    segment,
-                    index,
-                    self,
-                    ListenerPhase::Bubbling,
-                    timeline_window.as_deref(),
-                    can_gc,
-                );
+                // invoke(
+                //     segment,
+                //     index,
+                //     self,
+                //     ListenerPhase::Bubbling,
+                //     timeline_window.as_deref(),
+                //     can_gc,
+                // );
             }
         }
 

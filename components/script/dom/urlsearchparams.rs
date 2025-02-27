@@ -43,6 +43,7 @@ impl URLSearchParams {
         url: Option<&URL>,
         can_gc: CanGc,
     ) -> DomRoot<URLSearchParams> {
+        println!("v8_log URLSearchParams new");
         Self::new_with_proto(global, None, url, can_gc)
     }
 

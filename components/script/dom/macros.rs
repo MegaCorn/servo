@@ -22,10 +22,31 @@ impl EventHandlerNonNull {
     }
 }
 
+use crate::dom::bindings::codegen::Bindings::FunctionBinding::Function;
+use crate::dom::bindings::import::module::SafeJSContext;
+use js::jsapi::JSObject;
+use std::rc::Rc;
+use crate::dom::bindings::import::module::CallbackFunction;
+
+impl Function {
+    pub(crate) unsafe fn new_v8(aCx: SafeJSContext, aCallback: *mut JSObject, v8_callback: std::ptr::NonNull<v8::Function>) -> Rc<Function> {
+        let mut ret = Rc::new(Function {
+            parent: CallbackFunction::new()
+        });
+        // Note: callback cannot be moved after calling init.
+        match Rc::get_mut(&mut ret) {
+            Some(ref mut callback) => callback.parent.init_v8(v8_callback),
+            None => unreachable!(),
+        };
+        ret
+    }
+}
+
 #[macro_export]
 macro_rules! return_if_none {
     ($option:expr) => {
         if $option.is_none() {
+            println!("v8_log return_if_err is_none");
             return;
         }
     };
@@ -35,6 +56,7 @@ macro_rules! return_if_none {
 macro_rules! return_if_err {
     ($option:expr) => {
         if $option.is_err() {
+            println!("v8_log return_if_err is_err");
             return;
         }
     };

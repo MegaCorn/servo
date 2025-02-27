@@ -17,6 +17,7 @@ use crate::dom::bindings::refcounted::Trusted;
 use crate::dom::bindings::reflector::{reflect_dom_object, DomGlobal, Reflector};
 use crate::dom::bindings::root::DomRoot;
 use crate::dom::bindings::str::DOMString;
+use crate::dom::globalscope::GlobalScope;
 use crate::dom::event::{Event, EventBubbles, EventCancelable};
 use crate::dom::storageevent::StorageEvent;
 use crate::dom::window::Window;
@@ -38,11 +39,21 @@ impl Storage {
     }
 
     pub(crate) fn new(global: &Window, storage_type: StorageType) -> DomRoot<Storage> {
-        reflect_dom_object(
-            Box::new(Storage::new_inherited(storage_type)),
-            global,
-            CanGc::note(),
-        )
+        let obj = reflect_dom_object(Box::new(Storage::new_inherited(storage_type)), global, CanGc::note());
+        {
+            let global_scope: &GlobalScope = global.upcast();
+            let scope = &mut global_scope.handle_scope();
+            let context = v8::Local::new(scope, global_scope.context_global());
+            let scope = &mut v8::ContextScope::new(scope, context);
+            let template  = obj.new_template(scope);
+            // v8_new_global!(scope, template, context, obj, localStorage);
+            if storage_type == StorageType::Session {
+                v8_new_global!(scope, template, context, obj, sessionStorage);
+            } else {
+                v8_new_global!(scope, template, context, obj, localStorage);
+            }
+        }
+        obj
     }
 
     fn get_url(&self) -> ServoUrl {
@@ -96,6 +107,7 @@ impl StorageMethods<crate::DomTypeHolder> for Storage {
 
     // https://html.spec.whatwg.org/multipage/#dom-storage-setitem
     fn SetItem(&self, name: DOMString, value: DOMString) -> ErrorResult {
+        println!("v8_log SetItem {} {}", name.str(),value.str());
         let (sender, receiver) = ipc::channel(self.global().time_profiler_chan().clone()).unwrap();
         let name = String::from(name);
         let value = String::from(value);
