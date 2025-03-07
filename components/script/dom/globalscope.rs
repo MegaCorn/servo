@@ -8,12 +8,12 @@ use std::collections::hash_map::Entry;
 use std::collections::{HashMap, VecDeque};
 use std::ops::Index;
 use std::rc::Rc;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use std::{mem, ptr};
-
+use std::thread;
 use base::id::{
     BlobId, BroadcastChannelRouterId, MessagePortId, MessagePortRouterId, PipelineId,
     ServiceWorkerId, ServiceWorkerRegistrationId, WebViewId,
@@ -143,6 +143,8 @@ use crate::timers::{
     IsInterval, OneshotTimerCallback, OneshotTimerHandle, OneshotTimers, TimerCallback,
 };
 use crate::unminify::unminified_path;
+
+static COUNTER: AtomicU64 = AtomicU64::new(1);
 
 #[derive(JSTraceable)]
 pub(crate) struct AutoCloseWorker {
@@ -383,6 +385,8 @@ pub(crate) struct GlobalScope {
     #[ignore_malloc_size_of = "mozjs"]
     #[no_trace]
     context_global: Rc<v8::Global<v8::Context>>,
+
+    my_id: u64,
 }
 
 /// A wrapper for glue-code between the ipc router and the event-loop.
@@ -753,8 +757,36 @@ impl GlobalScope {
                         println!("===== console log: {} =====", message);
                     },
                 );
+                let fn_info = v8::FunctionTemplate::new(
+                    scope,
+                    |scope: &mut v8::HandleScope,
+                    args: v8::FunctionCallbackArguments,
+                    mut rv: v8::ReturnValue<v8::Value>| {
+                        let message = args.get(0).to_string(scope).unwrap().to_rust_string_lossy(scope);
+                        println!("===== console info: {} =====", message);
+                    },
+                );
+                let fn_error = v8::FunctionTemplate::new(
+                    scope,
+                    |scope: &mut v8::HandleScope,
+                    args: v8::FunctionCallbackArguments,
+                    mut rv: v8::ReturnValue<v8::Value>| {
+                        if args.length() == 1 {
+                            let message = args.get(0).to_string(scope).unwrap().to_rust_string_lossy(scope);
+                            println!("===== console error: {} =====", message);
+                        }
+
+                        if args.length() == 2 {
+                            let message1 = args.get(0).to_string(scope).unwrap().to_rust_string_lossy(scope);
+                            let message2 = args.get(1).to_string(scope).unwrap().to_rust_string_lossy(scope);
+                            println!("===== console error: {}, {} =====", message1, message2);
+
+                        }
+                    },
+                );
                 v8_template_add_fn!(scope, template, fn_log, log);
-                v8_template_add_fn!(scope, template, fn_log, info);
+                v8_template_add_fn!(scope, template, fn_info, info);
+                v8_template_add_fn!(scope, template, fn_error, error);
                 let object = template.new_instance(scope).unwrap();
                 let key = v8::String::new(scope, "console").unwrap();
                 let global = context.global(scope);
@@ -811,7 +843,12 @@ impl GlobalScope {
             isolate,
             isolate_ptr,
             context_global: context_global.into(),
+            my_id: COUNTER.fetch_add(1, Ordering::Relaxed),
         }
+    }
+
+    pub fn my_id(&self)-> u64 {
+        self.my_id
     }
 
     #[allow(unsafe_code)]
@@ -828,7 +865,8 @@ impl GlobalScope {
     }
 
     pub fn exeute_script_on_v8(&self, text_code: &str) {
-        println!("exeute_script_on_v8 {}", text_code);
+        // println!("exeute_script_on_v8 {}", text_code);
+        println!("exeute_script_on_v8");
         let scope = &mut self.handle_scope();
         let code = v8::String::new(scope, text_code).unwrap();
         let script = v8::Script::compile(scope, code, None).unwrap();
@@ -2599,6 +2637,7 @@ impl GlobalScope {
         script_base_url: ServoUrl,
         can_gc: CanGc,
     ) -> bool {
+        println!("evaluate_script_on_global_with_result {:?}", thread::current().id());
         let cx = GlobalScope::get_cx();
 
         let ar = enter_realm(self);
@@ -2610,6 +2649,7 @@ impl GlobalScope {
             match code {
                 SourceCode::Text(text_code) => {
                     self.exeute_script_on_v8(text_code.str());
+                    println!("evaluate_script_on_global_with_result end {:?}", thread::current().id());
                     return true;
 
                     let options = CompileOptionsWrapper::new(*cx, filename, line_number);

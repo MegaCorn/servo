@@ -34,7 +34,9 @@ where
         root.set_type_id(type_id);
         let chain = T::get_interface_chain_from_wrap();
         root.set_interface_chain(chain);
-        DomRoot::from_ref(&*root)
+        let global_raw = DomRoot::from_ref(global.upcast());
+        root.reflector().init_reflector(global_raw.value.ptr.as_ptr() as *mut js::jsapi::JSObject);
+        root
     }
 }
 
@@ -59,21 +61,10 @@ where
         root.set_type_id(type_id);
         let chain = T::get_interface_chain_from_wrap();
         root.set_interface_chain(chain);
-        DomRoot::from_ref(&*root)
+        let global_raw = DomRoot::from_ref(global.upcast());
+        root.reflector().init_reflector(global_raw.value.ptr.as_ptr() as *mut js::jsapi::JSObject);
+        root
     }
-}
-
-pub trait V8Template: {
-    fn new_template<'s>(scope: &mut v8::HandleScope<'s>) -> v8::Local<'s, v8::ObjectTemplate>;
-}
-
-pub fn new_template<'s, T>(
-    scope: &mut v8::HandleScope<'s>
-) -> v8::Local<'s, v8::ObjectTemplate>
-where
-    T: V8Template
-{
-    T::new_template(scope)
 }
 
 pub trait DomGlobal: DomObject {
@@ -84,9 +75,10 @@ pub trait DomGlobal: DomObject {
     where
         Self: Sized,
     {
-        let ptr = js::rust::Runtime::my_get_window() as *const crate::dom::window::Window;
-        let global_scope = unsafe { (*ptr).as_global_scope() };
-        DomRoot::from_ref(global_scope)
+        // let ptr = js::rust::Runtime::my_get_window() as *const crate::dom::window::Window;
+        // let global_scope = unsafe { (*ptr).as_global_scope() };
+        let global_scope = self.reflector().object1.get() as *mut GlobalScope;
+        unsafe { DomRoot::from_ref(&*global_scope) }
         // let realm = AlreadyInRealm::assert_for_cx(GlobalScope::get_cx());
         // GlobalScope::from_reflector(self, &realm)
     }

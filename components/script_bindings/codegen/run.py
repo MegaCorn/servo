@@ -68,17 +68,17 @@ def main():
     make_dir(doc_servo)
     generate(config, "SupportedDomApis", os.path.join(doc_servo, "apis.html"))
 
-    for webidl in webidls:
-        filename = os.path.join(webidls_dir, webidl)
-        prefix = "Bindings/%sBinding" % webidl[:-len(".webidl")]
-        module = CGBindingRoot(config, prefix, filename).define()
-        if module:
-            with open(os.path.join(out_dir, prefix + ".rs"), "wb") as f:
-                f.write(module.encode("utf-8"))
-                if not webidl.startswith("Test"):
-                    module_v8 = CGBindingRootV8(config, prefix, filename).define()
-                    f.write(module_v8.encode("utf-8"))
-
+    # for webidl in webidls:
+    #     filename = os.path.join(webidls_dir, webidl)
+    #     prefix = "Bindings/%sBinding" % webidl[:-len(".webidl")]
+    #     module = CGBindingRoot(config, prefix, filename).define()
+    #     if module:
+    #         with open(os.path.join(out_dir, prefix + ".rs"), "wb") as f:
+    #             f.write(module.encode("utf-8"))
+    #             if not webidl.startswith("Test"):
+    #                 module_v8 = CGBindingRootV8(config, prefix, filename).define()
+    #                 f.write(module_v8.encode("utf-8"))
+# todo htmlcanvaselement  NodeBinding
 
 def make_dir(path):
     if not os.path.exists(path):

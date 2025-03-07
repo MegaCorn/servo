@@ -84,6 +84,9 @@ def makeFuncArgs(descriptor, arguments, nativeName):
         elif argument == "DOMString":
             funcCall += f"""
             let arg{idx} = {optionPre}{finitePre}DOMString::from(args.get({idx}).to_rust_string_lossy(scope)){finiteTail}{optionTail};"""
+        elif argument == "ByteString":
+            funcCall += f"""
+            let arg{idx} = {optionPre}{finitePre}ByteString::new(args.get({idx}).to_rust_string_lossy(scope).into()){finiteTail}{optionTail};"""
         elif argument == "bool":
             funcCall += f"""
             let arg{idx} = {optionPre}{finitePre}args.get({idx}).boolean_value(scope){finiteTail}{optionTail};"""
@@ -110,21 +113,47 @@ def makeFuncArgs(descriptor, arguments, nativeName):
             mut = "*mut"
             if nativeName == "AddEventListener":
                 funcCall += f"""
-            let val_ = v8::Local::<v8::Function>::try_from(args.get({idx})).unwrap();
+            let val_ = v8::Local::<v8::Function>::try_from(args.get({idx}));
+            return_if_err!(val_);
+            let val_ = val_.unwrap();
             let global_ = v8::Global::new(scope, val_);
-            let global_raw = global_.into_raw();
-            let listener = crate::dom::bindings::codegen::Bindings::EventListenerBinding::EventListener::new_v8(global_raw);
+            let global_scope = unsafe {{ (*raw).global() }};
+            let listener = crate::dom::bindings::codegen::Bindings::EventListenerBinding::EventListener::new_v8(global_, global_scope.value.ptr.as_ptr() as *mut js::jsapi::JSObject);
             unsafe {{ (*raw).add_cb_map(args.get(0).to_rust_string_lossy(scope), listener.clone()); }};
             let arg{idx} = {optionPre}{finitePre}listener{finiteTail}{optionTail};"""
             elif nativeName == "RemoveEventListener":
                 funcCall += f"""
             let val_ = v8::Local::<v8::Function>::try_from(args.get({idx})).unwrap();
             let global_ = v8::Global::new(scope, val_);
-            let global_raw = global_.into_raw();
             let arg{idx} = unsafe {{ (*raw).remove_cb_map(&args.get(0).to_rust_string_lossy(scope)) }};
             if arg{idx}.is_none() {{
                 return
             }}"""
+        elif argument.startswith("UnionTypes::"):
+            argument = argument[12:]
+
+            if (nativeName.endswith("getter") or
+                nativeName.endswith("deleter") or
+                nativeName == "Keys" or
+                nativeName == "Entries" or
+                nativeName == "Values" or
+                nativeName == "Alert" or
+                nativeName == "Has" or
+                nativeName == "Remove" or
+                nativeName.endswith("setter")): # todo
+                continue
+
+            if (argument == "StringOrElementCreationOptions" or
+               argument == "AddEventListenerOptionsOrBoolean" or
+               argument == "StringOrUnsignedLong" or
+               argument == "UnsignedLongOrBoolean"):
+               funcCall += f"""
+            let opt = v8_to_{argument}(scope, args.get({idx}));
+            return_if_none!(opt);
+            let opt = opt.unwrap();
+            let arg{idx} = {optionPre}{finitePre}opt{finiteTail}{optionTail};"""
+            else:
+                support = False
         elif argument == "CanGc":
             funcCall += f"""
             let arg{idx} = crate::script_runtime::CanGc::note();"""
@@ -141,6 +170,14 @@ def makeFuncArgs(descriptor, arguments, nativeName):
             let data{idx} = jsobj{idx}.get_internal_field(scope, 0).unwrap();
             let value{idx}: v8::Local<v8::External> = data{idx}.try_into().unwrap();
             let arg{idx} = value{idx}.value() as *const crate::dom::types::Node;
+            let arg{idx} = unsafe {{{optionPre}&*arg{idx}{optionTail}}};"""
+        # Event
+        elif argument == "&Event":
+            funcCall += f"""
+            let jsobj{idx} = args.get({idx}).to_object(scope).unwrap();
+            let data{idx} = jsobj{idx}.get_internal_field(scope, 0).unwrap();
+            let value{idx}: v8::Local<v8::External> = data{idx}.try_into().unwrap();
+            let arg{idx} = value{idx}.value() as *const crate::dom::types::Event;
             let arg{idx} = unsafe {{{optionPre}&*arg{idx}{optionTail}}};"""
         else:
             support = False
@@ -199,13 +236,15 @@ def v8Function(descriptor, cgthings):
             if support:
                 tmp = "rv.set(object.into());"
             else:
-                tmp = ""
+                tmp = f"""log::error!("============== unsupported function api {nativeName} ================");"""
             if support and returnType == "bool":
                 jsw = f"""let object = v8::Boolean::new(scope, ret);"""
             elif support and returnType == "USVString":
                 jsw = f"""let object = v8::String::new(scope, ret.as_ref()).unwrap();"""
             elif support and returnType == "DOMString":
                 jsw = f"""let object = v8::String::new(scope, ret.str()).unwrap();"""
+            elif support and returnType == "ByteString":
+                jsw = f"""let object = v8::String::new(scope, ret.as_str().unwrap()).unwrap();"""
             elif support and "DomRoot<Element>" in returnType:
                 jsw = f"""let template = crate::dom::virtualmethods::node_downcast_template(unsafe {{ ret.value.ptr.as_ref() }}, scope);
             template.set_internal_field_count(1);
@@ -239,7 +278,6 @@ def v8Function(descriptor, cgthings):
             if nativeName == "Open" and descriptor.name == "Document":
                 nativeName = "Open_"
 
-
             if support:
                 funcCall += f"""
             let ret = unsafe {{ (*raw).{nativeName}({stub})}};"""
@@ -251,13 +289,26 @@ def v8Function(descriptor, cgthings):
                 unwrap1 = ""
                 unwrap2 = ""
 
+            if nativeName == "Open" and descriptor.name == "XMLHttpRequest":
+                trans_ = f"""
+            //log::error!("fn open {{}} {{}}", args.get(0).to_rust_string_lossy(scope), args.get(1).to_rust_string_lossy(scope));
+            let arg0 = ByteString::new(args.get(0).to_rust_string_lossy(scope).into());
+            let arg1 = USVString::from(args.get(1).to_rust_string_lossy(scope));
+            let ret = unsafe {{ (*raw).Open(arg0, arg1)}};
+                """
+            if nativeName == "Send" and descriptor.name == "XMLHttpRequest":
+                trans_ = f"""
+            //log::error!("fn send {{}}", args.get(0).to_rust_string_lossy(scope));
+            let ret = unsafe {{ (*raw).Send(Some(crate::dom::bindings::codegen::UnionTypes::DocumentOrBlobOrArrayBufferViewOrArrayBufferOrFormDataOrStringOrURLSearchParams::String(DOMString::from(args.get(0).to_rust_string_lossy(scope)))), crate::script_runtime::CanGc::note())}};
+                """
+
             code = CGGeneric(f"""
     let fn_{method} = v8::FunctionTemplate::new(
         scope,
         |scope: &mut v8::HandleScope,
         args: v8::FunctionCallbackArguments,
         mut rv: v8::ReturnValue<v8::Value>| {{
-            log::error!("fn {method}");
+            //log::error!("fn {method}");
             let this = args.this();
             let data = this.get_internal_field(scope, 0).unwrap();
             let value: v8::Local<v8::External> = data.try_into().unwrap();

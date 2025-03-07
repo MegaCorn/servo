@@ -58,6 +58,9 @@ pub(crate) struct CallbackObject {
     /// ["callback context"]: https://heycam.github.io/webidl/#dfn-callback-context
     /// [sometimes]: https://github.com/whatwg/html/issues/2248
     incumbent: Option<Dom<GlobalScope>>,
+
+    #[no_trace]
+    pub v8_func: Option<v8::Global<v8::Function>>,
 }
 
 impl CallbackObject {
@@ -69,6 +72,16 @@ impl CallbackObject {
             callback: Heap::default(),
             permanent_js_root: Heap::default(),
             incumbent: GlobalScope::incumbent().map(|i| Dom::from_ref(&*i)),
+            v8_func: None,
+        }
+    }
+
+    pub fn new_v8(callback: v8::Global<v8::Function>) -> CallbackObject {
+        CallbackObject {
+            callback: Heap::default(),
+            permanent_js_root: Heap::default(),
+            incumbent: GlobalScope::incumbent().map(|i| Dom::from_ref(&*i)),
+            v8_func: Some(callback),
         }
     }
 
@@ -91,6 +104,7 @@ impl CallbackObject {
 impl Drop for CallbackObject {
     #[allow(unsafe_code)]
     fn drop(&mut self) {
+        println!("------------------------------------------ v8_log CallbackObject Drop");
         unsafe {
             if let Some(cx) = Runtime::get() {
                 RemoveRawValueRoot(cx.as_ptr(), self.permanent_js_root.get_unsafe());
@@ -129,10 +143,7 @@ pub(crate) trait CallbackContainer {
 #[derive(JSTraceable, PartialEq)]
 #[cfg_attr(crown, crown::unrooted_must_root_lint::must_root)]
 pub(crate) struct CallbackFunction {
-    object: CallbackObject,
-
-    #[no_trace]
-    pub v8_func: *mut v8::Function,
+    pub object: CallbackObject,
 }
 
 impl CallbackFunction {
@@ -143,7 +154,6 @@ impl CallbackFunction {
     pub(crate) fn new() -> CallbackFunction {
         CallbackFunction {
             object: CallbackObject::new(),
-            v8_func: std::ptr::null_mut(),
         }
     }
 
@@ -158,9 +168,9 @@ impl CallbackFunction {
         self.object.init(cx, callback);
     }
 
-    pub unsafe fn init_v8(&mut self, callback: std::ptr::NonNull<v8::Function>) {
-        self.v8_func = callback.as_ptr();
-        // TODO
+    pub unsafe fn init_v8(&mut self, callback: v8::Global<v8::Function>) {
+        log::error!("v8_log CallbackFunction::init_v8");
+        self.object.v8_func = Some(callback);
     }
 }
 
@@ -168,10 +178,7 @@ impl CallbackFunction {
 #[derive(JSTraceable, PartialEq)]
 #[cfg_attr(crown, crown::unrooted_must_root_lint::must_root)]
 pub(crate) struct CallbackInterface {
-    object: CallbackObject,
-
-    #[no_trace]
-    pub v8_func: *mut v8::Function,
+    pub object: CallbackObject,
 }
 
 impl CallbackInterface {
@@ -181,15 +188,13 @@ impl CallbackInterface {
     pub(crate) fn new() -> CallbackInterface {
         CallbackInterface {
             object: CallbackObject::new(),
-            v8_func: std::ptr::null_mut(),
         }
     }
 
     #[allow(clippy::new_without_default)]
-    pub fn new_v8(callback: std::ptr::NonNull<v8::Function>) -> CallbackInterface {
+    pub fn new_v8(callback: v8::Global<v8::Function>) -> CallbackInterface {
         CallbackInterface {
-            object: CallbackObject::new(),
-            v8_func: callback.as_ptr(),
+            object: CallbackObject::new_v8(callback),
         }
     }
 

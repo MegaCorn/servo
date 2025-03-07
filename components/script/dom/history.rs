@@ -63,11 +63,16 @@ impl History {
     }
 
     pub(crate) fn new(window: &Window) -> DomRoot<History> {
-        reflect_dom_object(
-            Box::new(History::new_inherited(window)),
-            window,
-            CanGc::note(),
-        )
+        let obj = reflect_dom_object(Box::new(History::new_inherited(window)), window, CanGc::note());
+        {
+            let global_scope: &GlobalScope = window.upcast();
+            let scope = &mut global_scope.handle_scope();
+            let context = v8::Local::new(scope, global_scope.context_global());
+            let scope = &mut v8::ContextScope::new(scope, context);
+            let template  = obj.new_template(scope);
+            v8_new_global!(scope, template, context, obj, history);
+        }
+        obj
     }
 }
 

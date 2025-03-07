@@ -15,7 +15,7 @@ use js::jsval::{JSVal, UndefinedValue};
 use js::rust::HandleValue;
 use servo_config::pref;
 use timers::{BoxedTimerCallback, TimerEvent, TimerEventId, TimerEventRequest, TimerSource};
-
+use std::thread;
 use crate::dom::bindings::callback::ExceptionHandling::Report;
 use crate::dom::bindings::cell::DomRefCell;
 use crate::dom::bindings::codegen::Bindings::FunctionBinding::Function;
@@ -181,6 +181,7 @@ impl OneshotTimers {
     }
 
     pub(crate) fn fire_timer(&self, id: TimerEventId, global: &GlobalScope, can_gc: CanGc) {
+        println!("v8_log JsTimerTask fire_timer");
         let expected_id = self.expected_event_id.get();
         if expected_id != id {
             debug!(
@@ -556,9 +557,25 @@ impl JsTimerTask {
                 );
             },
             InternalTimerCallback::FunctionTimerCallback(ref function, ref arguments) => {
+                println!("v8_log JsTimerTask invoke FunctionTimerCallback {:?}", thread::current().id());
                 let arguments = self.collect_heap_args(arguments);
                 rooted!(in(*GlobalScope::get_cx()) let mut value: JSVal);
                 let _ = function.Call_(this, arguments, value.handle_mut(), Report);
+
+                let global_scope = this.global();
+                let context_ = global_scope.context_global().clone().into_raw();
+                let context = unsafe {
+                    std::mem::transmute::<std::ptr::NonNull<v8::Context>, v8::Local<v8::Context>>(
+                        context_,
+                    )
+                };
+                let scope = unsafe { &mut v8::CallbackScope::new(context) };
+
+                let func = function.parent.object.v8_func.clone().unwrap();
+                let func_ = v8::Local::new(scope, &func);
+                let recv = v8::undefined(scope);
+                func_.call(scope, recv.into(), &[]);
+                println!("v8_log JsTimerTask invoke FunctionTimerCallback end {:?}", thread::current().id());
             },
         };
         ScriptThread::set_user_interacting(was_user_interacting);

@@ -170,7 +170,7 @@ pub enum JSEngineError {
     AlreadyShutDown,
     InitFailed,
 }
-
+static mut V8_INITIALIZED: bool = false;
 /// A handle that must be kept alive in order to create new Runtimes.
 /// When this handle is dropped, the engine is shut down and cannot
 /// be reinitialized.
@@ -312,7 +312,7 @@ impl Runtime {
     pub fn my_set_window(window: *mut std::ffi::c_void) {
         WINDOW.with(|win| {
             println!("===== v8 my_set_window =====");
-            assert!(win.get().is_null());
+            // assert!(win.get().is_null());
             win.set(window);
         });
     }
@@ -360,11 +360,12 @@ impl Runtime {
         let js_context = JS_NewContext(default_heapsize + (ChunkSize as u32), parent_runtime);
         // assert!(!js_context.is_null());
 
-        if parent_runtime == ptr::null_mut() {
+        if !V8_INITIALIZED {
             println!("===== v8 initialize =====");
             let platform = v8::new_default_platform(0, false).make_shared();
             v8::V8::initialize_platform(platform);
             v8::V8::initialize();
+            V8_INITIALIZED = true;
         }
 
         // Unconstrain the runtime's threshold on nominal heap size, to avoid

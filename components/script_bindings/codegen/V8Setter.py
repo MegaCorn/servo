@@ -70,11 +70,12 @@ def v8Setter(attr, descriptor, member):
     # callback
     elif argType == "Rc<EventHandlerNonNull>":
         trans = f"""use crate::dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
-            let val_ = v8::Local::<v8::Function>::try_from(value).unwrap();
+            let val_ = v8::Local::<v8::Function>::try_from(value);
+            return_if_err!(val_);
+            let val_ = val_.unwrap();
             let global_ = v8::Global::new(scope, val_);
-            let global_raw = global_.into_raw();
-            log::error!("====================jignuoen setter todo========================");
-            let val = unsafe {{ EventHandlerNonNull::new_v8(global_raw) }};"""
+            let global_scope = unsafe {{ (*raw).global() }};
+            let val = unsafe {{ EventHandlerNonNull::new_v8(global_, global_scope.value.ptr.as_ptr() as *mut js::jsapi::JSObject) }};"""
     # 枚举类型
     elif member.type.isEnum():
         prefix = ""
@@ -99,7 +100,7 @@ def v8Setter(attr, descriptor, member):
         value: v8::Local<v8::Value>,
         args: v8::PropertyCallbackArguments,
         _rv: v8::ReturnValue<()>| {{
-            log::error!("setter {attr}");
+            //log::error!("setter {attr}");
             let this = args.this();
             let data = this.get_internal_field(scope, 0).unwrap();
             let value_: v8::Local<v8::External> = data.try_into().unwrap();

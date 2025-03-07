@@ -70,7 +70,7 @@ use crate::script_runtime::CanGc;
 use crate::dom::bindings::import::module::CallbackInterface;
 
 impl EventListener {
-    pub fn new_v8(callback: std::ptr::NonNull<v8::Function>) -> Rc<EventListener> {
+    pub fn new_v8(callback: v8::Global<v8::Function>, global: *mut js::jsapi::JSObject) -> Rc<EventListener> {
         let mut ret = Rc::new(EventListener {
             parent: CallbackInterface::new_v8(callback)
         });
@@ -78,16 +78,9 @@ impl EventListener {
     }
 
     pub fn handle_event_v8(&self, obj: &EventTarget) -> Fallible<()> {
-        let element = obj.downcast::<Element>();
-        let document = match element {
-            Some(element) => element.owner_document(),
-            None => obj.downcast::<Window>().unwrap().Document(),
-        };
-        let window = document.window();
-        let global_scope: &GlobalScope = window.upcast();
+        let global_scope: &GlobalScope = &obj.global();
         let scope = &mut global_scope.handle_scope();
-        let func = unsafe { v8::Global::from_raw(&mut *global_scope.isolate_ptr(), std::ptr::NonNull::new(self.parent.v8_func).unwrap()) };
-        let func_ = v8::Local::new(scope, &func);
+        let func_ = v8::Local::new(scope, self.parent.object.v8_func.clone().unwrap());
         let recv = scope.get_current_context().global(scope).into();
         func_.call(scope, recv, &[]);
 
@@ -210,7 +203,10 @@ impl CompiledEventListener {
                 handler,
             )) => handler.callback(),
         };
-        unsafe { GlobalScope::from_object(obj) }
+        // unsafe { GlobalScope::from_object(obj) }
+        let ptr = js::rust::Runtime::my_get_window() as *const crate::dom::window::Window;
+        let global_scope = unsafe { (*ptr).as_global_scope() };
+        DomRoot::from_ref(global_scope)
     }
 
     // https://html.spec.whatwg.org/multipage/#the-event-handler-processing-algorithm
@@ -223,12 +219,15 @@ impl CompiledEventListener {
         // Step 3
         match *self {
             CompiledEventListener::Listener(ref listener) => {
+                println!("v8_log handle_event_v8 Listener");
                 // let _ = listener.HandleEvent_(object, event, exception_handle);
                 let _ = listener.handle_event_v8(object);
             },
             CompiledEventListener::Handler(ref handler) => {
+                println!("v8_log handle_event_v8 Handler");
                 match *handler {
                     CommonEventHandler::ErrorEventHandler(ref handler) => {
+                        println!("v8_log handle_event_v8 Handler 1");
                         if let Some(event) = event.downcast::<ErrorEvent>() {
                             if object.is::<Window>() || object.is::<WorkerGlobalScope>() {
                                 let cx = GlobalScope::get_cx();
@@ -271,6 +270,7 @@ impl CompiledEventListener {
                     },
 
                     CommonEventHandler::BeforeUnloadEventHandler(ref handler) => {
+                        println!("v8_log handle_event_v8 Handler 2");
                         if let Some(event) = event.downcast::<BeforeUnloadEvent>() {
                             // Step 5
                             if let Ok(value) =
@@ -292,8 +292,10 @@ impl CompiledEventListener {
                     },
 
                     CommonEventHandler::EventHandler(ref handler) => {
+                        println!("v8_log handle_event_v8 Handler 3");
                         let cx = GlobalScope::get_cx();
                         rooted!(in(*cx) let mut rooted_return_value: JSVal);
+                        handler.Call_v8(object);
                         if let Ok(()) = handler.Call_(
                             object,
                             event,
@@ -662,10 +664,10 @@ impl EventTarget {
         listener: Option<Rc<T>>,
     ) {
         let cx = GlobalScope::get_cx();
-
+        println!("v8_log EventHandlerNonNull set_event_handler_common {}", ty);
         let event_listener = listener.map(|listener| {
             InlineEventListener::Compiled(CommonEventHandler::EventHandler(unsafe {
-                EventHandlerNonNull::new(cx, listener.callback())
+                EventHandlerNonNull::new_v8(listener.callback_holder().v8_func.clone().unwrap(), self.global().value.ptr.as_ptr() as *mut js::jsapi::JSObject) // v8_log 这里
             }))
         });
         self.set_inline_event_listener(Atom::from(ty), event_listener);

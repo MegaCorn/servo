@@ -44,6 +44,66 @@ pub(crate) mod base {
     };
     pub(crate) use crate::dom::globalscope::GlobalScope;
     pub(crate) use crate::script_runtime::JSContext as SafeJSContext;
+
+    use UnionTypes::StringOrUnsignedLong;
+    pub fn v8_to_StringOrUnsignedLong(
+        scope: &mut v8::HandleScope,
+        value: v8::Local<v8::Value>
+    ) -> Option<StringOrUnsignedLong> {
+        if (value.is_string()) {
+            let val = DOMString::from(value.to_rust_string_lossy(scope));
+            Some(StringOrUnsignedLong::String(val))
+        } else if (value.is_number()) {
+            let val = value.uint32_value(scope).unwrap();
+            Some(StringOrUnsignedLong::UnsignedLong(val))
+        } else {
+            None
+        }
+    }
+
+    use UnionTypes::StringOrElementCreationOptions;
+    pub fn v8_to_StringOrElementCreationOptions(
+        scope: &mut v8::HandleScope,
+        value: v8::Local<v8::Value>
+    ) -> Option<StringOrElementCreationOptions> {
+        if (value.is_string()) {
+            let val = DOMString::from(value.to_rust_string_lossy(scope));
+            Some(StringOrElementCreationOptions::String(val))
+        } else {
+            // todo
+            Some(StringOrElementCreationOptions::ElementCreationOptions(crate::dom::bindings::codegen::Bindings::DocumentBinding::ElementCreationOptions::empty()))
+        }
+    }
+
+    use UnionTypes::AddEventListenerOptionsOrBoolean;
+    pub fn v8_to_AddEventListenerOptionsOrBoolean(
+        scope: &mut v8::HandleScope,
+        value: v8::Local<v8::Value>
+    ) -> Option<AddEventListenerOptionsOrBoolean> {
+        if (value.is_boolean()) {
+            let val = value.boolean_value(scope);
+            Some(AddEventListenerOptionsOrBoolean::Boolean(val))
+        } else {
+            // todo
+            Some(AddEventListenerOptionsOrBoolean::AddEventListenerOptions(crate::dom::bindings::codegen::Bindings::EventTargetBinding::AddEventListenerOptions::empty()))
+        }
+    }
+
+    use UnionTypes::UnsignedLongOrBoolean;
+    pub fn v8_to_UnsignedLongOrBoolean(
+        scope: &mut v8::HandleScope,
+        value: v8::Local<v8::Value>
+    ) -> Option<UnsignedLongOrBoolean> {
+        if (value.is_number()) {
+            let val = value.uint32_value(scope).unwrap();
+            Some(UnsignedLongOrBoolean::UnsignedLong(val))
+        } else if (value.is_boolean()) {
+            let val = value.boolean_value(scope);
+            Some(UnsignedLongOrBoolean::Boolean(val))
+        } else {
+            None
+        }
+    }
 }
 
 #[allow(unused_imports)]

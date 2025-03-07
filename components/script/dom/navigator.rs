@@ -23,6 +23,8 @@ use crate::dom::mediadevices::MediaDevices;
 use crate::dom::mediasession::MediaSession;
 use crate::dom::mimetypearray::MimeTypeArray;
 use crate::dom::navigatorinfo;
+use crate::dom::globalscope::GlobalScope;
+use crate::dom::bindings::inheritance::Castable;
 use crate::dom::permissions::Permissions;
 use crate::dom::pluginarray::PluginArray;
 use crate::dom::serviceworkercontainer::ServiceWorkerContainer;
@@ -80,7 +82,16 @@ impl Navigator {
     }
 
     pub(crate) fn new(window: &Window) -> DomRoot<Navigator> {
-        reflect_dom_object(Box::new(Navigator::new_inherited()), window, CanGc::note())
+        let obj = reflect_dom_object(Box::new(Navigator::new_inherited()), window, CanGc::note());
+        {
+            let global_scope: &GlobalScope = window.upcast();
+            let scope = &mut global_scope.handle_scope();
+            let context = v8::Local::new(scope, global_scope.context_global());
+            let scope = &mut v8::ContextScope::new(scope, context);
+            let template  = obj.new_template(scope);
+            v8_new_global!(scope, template, context, obj, navigator);
+        }
+        obj
     }
 
     #[cfg(feature = "webxr")]
@@ -207,7 +218,8 @@ impl NavigatorMethods<crate::DomTypeHolder> for Navigator {
     // https://html.spec.whatwg.org/multipage/#dom-navigator-languages
     #[allow(unsafe_code)]
     fn Languages(&self, cx: JSContext, retval: MutableHandleValue) {
-        to_frozen_array(&[self.Language()], cx, retval)
+        // TODO jd
+        // to_frozen_array(&[self.Language()], cx, retval)
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-navigator-plugins

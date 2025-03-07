@@ -451,6 +451,43 @@ impl crate::unminify::ScriptSource for ModuleSource {
     }
 }
 
+pub fn unexpected_module_resolve_callback<'a>(
+    _context: v8::Local<'a, v8::Context>,
+    _specifier: v8::Local<'a, v8::String>,
+    _import_attributes: v8::Local<'a, v8::FixedArray>,
+    _referrer: v8::Local<'a, v8::Module>,
+) -> Option<v8::Local<'a, v8::Module>> {
+    unreachable!()
+}
+
+pub fn mock_script_origin<'s>(
+    scope: &mut v8::HandleScope<'s>,
+    resource_name_: &str,
+) -> v8::ScriptOrigin<'s> {
+    let resource_name = v8::String::new(scope, resource_name_).unwrap();
+    let resource_line_offset = 0;
+    let resource_column_offset = 0;
+    let resource_is_shared_cross_origin = true;
+    let script_id = 123;
+    let source_map_url = v8::String::new(scope, "source_map_url").unwrap();
+    let resource_is_opaque = true;
+    let is_wasm = false;
+    let is_module = true;
+    v8::ScriptOrigin::new(
+        scope,
+        resource_name.into(),
+        resource_line_offset,
+        resource_column_offset,
+        resource_is_shared_cross_origin,
+        script_id,
+        Some(source_map_url.into()),
+        resource_is_opaque,
+        is_wasm,
+        is_module,
+        None,
+    )
+}
+
 impl ModuleTree {
     #[allow(unsafe_code, clippy::too_many_arguments)]
     /// <https://html.spec.whatwg.org/multipage/#creating-a-module-script>
@@ -468,6 +505,7 @@ impl ModuleTree {
         inline: bool,
         _can_gc: CanGc,
     ) -> Result<(), RethrowError> {
+        println!("v8_log compile_module_script");
         let cx = GlobalScope::get_cx();
         let _ac = JSAutoRealm::new(*cx, *global.reflector().get_jsobject());
 
@@ -481,6 +519,17 @@ impl ModuleTree {
         crate::unminify::unminify_js(&mut module_source);
 
         unsafe {
+
+            let scope = &mut global.handle_scope();
+            let context = v8::Local::new(scope, global.context_global());
+            let scope = &mut v8::ContextScope::new(scope, context);
+            let source_text = v8::String::new(scope, module_source.source.str()).unwrap();
+            let origin = mock_script_origin(scope, url.as_str());
+            let mut source = v8::script_compiler::Source::new(source_text, Some(&origin));
+            let module = v8::script_compiler::compile_module(scope, &mut source).unwrap();
+            module.instantiate_module(scope, unexpected_module_resolve_callback);
+            module.evaluate(scope).unwrap();
+
             module_script.set(CompileModule1(
                 *cx,
                 compile_options.ptr,

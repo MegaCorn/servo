@@ -4943,7 +4943,9 @@ pub mod root {
                 objp: *mut *mut root::JSObject,
                 prev: *mut root::JSObject,
                 next: *mut root::JSObject,
-            ) { println!("HeapObjectWriteBarriers called");}
+            ) {
+                //println!("HeapObjectWriteBarriers called");
+            }
             pub fn HeapStringWriteBarriers(
                 objp: *mut *mut root::JSString,
                 prev: *mut root::JSString,

@@ -18,6 +18,9 @@ pub struct Reflector {
     #[ignore_malloc_size_of = "defined and measured in rust-mozjs"]
     object: Heap<*mut JSObject>,
 
+    #[ignore_malloc_size_of = "defined and measured in rust-mozjs"]
+    pub object1: Heap<*mut JSObject>,
+
     #[ignore_malloc_size_of = "v8"]
     my_type_id: *mut TopTypeId,
 
@@ -53,9 +56,9 @@ impl Reflector {
     ///
     /// The provided [`JSObject`] pointer must point to a valid [`JSObject`].
     pub unsafe fn set_jsobject(&self, object: *mut JSObject) {
-        assert!(self.object.get().is_null());
-        assert!(!object.is_null());
-        self.object.set(object);
+        // assert!(self.object.get().is_null());
+        // assert!(!object.is_null());
+        self.object1.set(object);
     }
 
     /// Return a pointer to the memory location at which the JS reflector
@@ -71,6 +74,7 @@ impl Reflector {
     pub fn new() -> Reflector {
         Reflector {
             object: Heap::default(),
+            object1: Heap::default(),
             my_object: Box::new(0),
             my_type_id: Box::into_raw(Box::new(TopTypeId { abstract_: () })),
             my_interface_chain: Box::into_raw(Box::new([PrototypeList::ID::Last; MAX_PROTO_CHAIN_LENGTH])),
@@ -118,6 +122,6 @@ pub trait MutDomObject: DomObject {
 
 impl MutDomObject for Reflector {
     unsafe fn init_reflector(&self, obj: *mut JSObject) {
-        // self.set_jsobject(obj)
+        self.set_jsobject(obj)
     }
 }

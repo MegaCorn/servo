@@ -43,6 +43,7 @@ impl URLSearchParams {
         url: Option<&URL>,
         can_gc: CanGc,
     ) -> DomRoot<URLSearchParams> {
+        println!("v8_log URLSearchParams new");
         Self::new_with_proto(global, None, url, can_gc)
     }
 
@@ -72,7 +73,7 @@ impl URLSearchParamsMethods<crate::DomTypeHolder> for URLSearchParams {
         proto: Option<HandleObject>,
         can_gc: CanGc,
         init: USVStringSequenceSequenceOrUSVStringUSVStringRecordOrUSVString,
-    ) -> Fallible<DomRoot<URLSearchParams>> {
+    ) -> Fallible<DomRoot<URLSearchParams>> { // v8_log
         // Step 1.
         let query = URLSearchParams::new_with_proto(global, proto, None, can_gc);
         match init {
@@ -140,9 +141,15 @@ impl URLSearchParamsMethods<crate::DomTypeHolder> for URLSearchParams {
     /// <https://url.spec.whatwg.org/#dom-urlsearchparams-get>
     fn Get(&self, name: USVString) -> Option<USVString> {
         let list = self.list.borrow();
-        list.iter()
+        let ret = list.iter()
             .find(|&kv| kv.0 == name.0)
-            .map(|kv| USVString(kv.1.clone()))
+            .map(|kv| USVString(kv.1.clone()));
+        if ret.is_none() {
+            println!("v8_log urlsearchparams get fail");
+        } else {
+            println!("v8_log urlsearchparams get success");
+        }
+        ret
     }
 
     /// <https://url.spec.whatwg.org/#dom-urlsearchparams-getall>

@@ -31,7 +31,7 @@ def makeFuncCall(descriptor, member):
         funcCall = funcCall[0:-2]
     funcCall += ")"
 
-    return funcCall
+    return funcCall, nativeName
 
 
 def makeUnwrapCode(returnType):
@@ -62,7 +62,7 @@ def makeUnwrapCode(returnType):
 
 def v8Getter(attr, descriptor, member):
     # mozjs独有, 用于构造servo函数调用入参, 切引擎后删掉
-    funcCall = makeFuncCall(descriptor, member)
+    funcCall, nativeName = makeFuncCall(descriptor, member)
 
     # 检查函数返回值是否需要unwrap
     infallible = 'infallible' in descriptor.getExtendedAttributes(member, getter=True)
@@ -72,11 +72,13 @@ def v8Getter(attr, descriptor, member):
     # 将函数返回值转换为v8对象
     match = True
     # 基本类型
-    # USVString, DOMString, bool, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, Finite<f32>, Finite<f64>
+    # USVString, DOMString, ByteString, bool, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, Finite<f32>, Finite<f64>
     if returnType == "USVString":
         trans = f"""let ret = v8::String::new(scope, ret.as_ref()).unwrap();"""
     elif returnType == "DOMString":
         trans = f"""let ret = v8::String::new(scope, ret.str()).unwrap();"""
+    elif returnType == "ByteString":
+        trans = f"""let ret = v8::String::new(scope, ret.as_str().unwrap()).unwrap();"""
     elif returnType == "bool":
         trans = f"""let ret = v8::Boolean::new(scope, ret);"""
     elif returnType == "i8":
@@ -125,16 +127,31 @@ def v8Getter(attr, descriptor, member):
     # callback
     elif returnType == "Rc<crate::dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull>":
         trans = f"""let func_ = ret.get_v8();
-            let global_ = unsafe {{ v8::Global::from_raw(&mut *((*raw).global()).isolate_ptr(), func_) }};
-            let ret = v8::Local::new(scope, global_);
-            log::error!("====================jignuoen getter todo========================");"""
+            return_if_none!(func_);
+            let func_ = func_.unwrap();
+            let ret = v8::Local::new(scope, func_);"""
     else:
         match = False
         trans = ""
 
-    tmp = ""
+    tmp = f"""log::error!("============== unsupported getter api {nativeName} ================");"""
     if match:
         tmp = "rv.set(ret.into());"
+
+    aa = CGSpecializedGetter.makeNativeName(descriptor, member)
+    if aa == "Languages" and descriptor.name == "Navigator":
+        tmp = f"""
+            let array = v8::Array::new(scope, 1);
+            let s1 = v8::String::new(scope, "zh-CN").unwrap();
+            array.set_index(scope, 0, s1.into());
+            rv.set(array.into());
+        """
+    elif aa == "Response" and descriptor.name == "XMLHttpRequest":
+        tmp = f"""
+            let ret_ = unsafe {{ (*raw).Response1(crate::script_runtime::JSContext::from_ptr(std::ptr::null_mut()), crate::script_runtime::CanGc::note(), js::rust::MutableHandleValue::from_marked_location(std::ptr::null_mut())) }};
+            let ret = v8::String::new(scope, ret_.as_str()).unwrap();
+            rv.set(ret.into());
+        """
 
     # 构造代码段
     getterCode = CGGeneric(f"""
@@ -143,7 +160,7 @@ def v8Getter(attr, descriptor, member):
         key: v8::Local<v8::Name>,
         args: v8::PropertyCallbackArguments,
         mut rv: v8::ReturnValue<v8::Value>| {{
-            log::error!("getter {attr}");
+            //log::error!("getter {attr}");
             let this = args.this();
             let data = this.get_internal_field(scope, 0).unwrap();
             let value: v8::Local<v8::External> = data.try_into().unwrap();

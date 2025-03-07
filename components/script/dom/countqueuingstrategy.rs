@@ -124,7 +124,8 @@ pub(crate) fn extract_high_water_mark(
 pub(crate) fn extract_size_algorithm(strategy: &QueuingStrategy) -> Rc<QueuingStrategySize> {
     if strategy.size.is_none() {
         let cx = GlobalScope::get_cx();
-        let fun_obj = native_raw_obj_fn!(cx, count_queuing_strategy_size, c"size", 0, 0);
+        // let fun_obj = native_raw_obj_fn!(cx, count_queuing_strategy_size, c"size", 0, 0);
+        let fun_obj = std::ptr::null_mut();
         #[allow(unsafe_code)]
         unsafe {
             return QueuingStrategySize::new(cx, fun_obj);

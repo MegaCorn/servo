@@ -28,6 +28,7 @@ use net_traits::http_status::HttpStatus;
 use net_traits::request::{
     CredentialsMode, Destination, Referrer, RequestBuilder, RequestId, RequestMode,
 };
+use std::thread;
 use net_traits::{
     trim_http_whitespace, FetchMetadata, FetchResponseListener, FilteredMetadata, NetworkError,
     ReferrerPolicy, ResourceFetchTiming, ResourceTimingType,
@@ -236,6 +237,17 @@ pub(crate) struct XMLHttpRequest {
     canceller: DomRefCell<FetchCanceller>,
 }
 
+fn replace_first(original: &str, target: &str, replacement: &str) -> String {
+    if let Some(pos) = original.find(target) {
+        let mut result = String::from(&original[..pos]); // 取匹配前部分
+        result.push_str(replacement); // 替换部分
+        result.push_str(&original[pos + target.len()..]); // 拼接剩余部分
+        result
+    } else {
+        original.to_string() // 如果找不到匹配，返回原字符串
+    }
+}
+
 impl XMLHttpRequest {
     fn new_inherited(global: &GlobalScope) -> XMLHttpRequest {
         XMLHttpRequest {
@@ -274,11 +286,52 @@ impl XMLHttpRequest {
         }
     }
 
-    fn new(
+    pub fn Response1(&self, cx: JSContext, can_gc: CanGc, mut rval: MutableHandleValue) -> String {
+        println!("XMLHttpRequest v8_log response");
+        match self.response_type.get() {
+            XMLHttpRequestResponseType::_empty | XMLHttpRequestResponseType::Text => unsafe {
+                let ready_state = self.ready_state.get();
+                // Step 2
+                if ready_state == XMLHttpRequestState::Done ||
+                    ready_state == XMLHttpRequestState::Loading
+                {
+                    println!("XMLHttpRequest v8_log response 1 {}", self.text_response());
+                    self.text_response().to_jsval(*cx, rval);
+                    return self.text_response();
+                } else {
+                    println!("XMLHttpRequest v8_log response 2");
+                    // Step 1
+                    "".to_jsval(*cx, rval);
+                    return String::new();
+                }
+            },
+            // Step 1
+            _ if self.ready_state.get() != XMLHttpRequestState::Done => {
+                rval.set(NullValue());
+            },
+            // Step 2
+            XMLHttpRequestResponseType::Document => unsafe {
+                self.document_response(can_gc).to_jsval(*cx, rval);
+            },
+            XMLHttpRequestResponseType::Json => self.json_response(cx, rval),
+            XMLHttpRequestResponseType::Blob => unsafe {
+                self.blob_response(can_gc).to_jsval(*cx, rval);
+            },
+            XMLHttpRequestResponseType::Arraybuffer => match self.arraybuffer_response(cx) {
+                Some(array_buffer) => unsafe { array_buffer.to_jsval(*cx, rval) },
+                None => rval.set(NullValue()),
+            },
+        };
+        panic!("XMLHttpRequest v8_log response panic");
+        return String::new();
+    }
+
+    pub fn new(
         global: &GlobalScope,
         proto: Option<HandleObject>,
         can_gc: CanGc,
     ) -> DomRoot<XMLHttpRequest> {
+        println!("XMLHttpRequest v8_log new");
         reflect_dom_object_with_proto(
             Box::new(XMLHttpRequest::new_inherited(global)),
             global,
@@ -329,6 +382,7 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
         username: Option<USVString>,
         password: Option<USVString>,
     ) -> ErrorResult {
+        println!("v8_log XMLHttpRequest Open {} {} {}", method.as_str().unwrap(), url.as_ref(), asynch);
         // Step 1
         if let Some(window) = DomRoot::downcast::<Window>(self.global()) {
             if !window.Document().is_fully_active() {
@@ -532,6 +586,7 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
 
     /// <https://xhr.spec.whatwg.org/#the-send()-method>
     fn Send(&self, data: Option<DocumentOrXMLHttpRequestBodyInit>, can_gc: CanGc) -> ErrorResult {
+        println!("XMLHttpRequest v8_log send");
         // Step 1, 2
         if self.ready_state.get() != XMLHttpRequestState::Opened || self.send_flag.get() {
             return Err(Error::InvalidState);
@@ -572,21 +627,33 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
                     Some(extracted_body)
                 }
             },
-            Some(DocumentOrXMLHttpRequestBodyInit::FormData(ref formdata)) => Some(
+            Some(DocumentOrXMLHttpRequestBodyInit::FormData(ref formdata)) => {
+                println!("XMLHttpRequest v8_log send 3");
+                Some(
                 formdata
                     .extract(&self.global(), can_gc)
                     .expect("Couldn't extract body."),
-            ),
-            Some(DocumentOrXMLHttpRequestBodyInit::String(ref str)) => Some(
+            )},
+            Some(DocumentOrXMLHttpRequestBodyInit::String(ref str)) => {
+                // let copy = String::from(str.str());
+                // let target = "\"mba_finger\":\"error :TypeError: e.getContext is not a function\"";
+                // let replacement = "\"mba_finger\":\"v001eyJhIjpudWxsLCJiIjoiIiwiYyI6IiIsImQiOiJXaW4zMiIsImciOjAsImgiOiIiLCJpIjowLCJsIjoiYTNiYTdhMDA4Yjg0MDljNDk0M2RkMzZmMTEzNGJiMzEiLCJtIjoiIiwibiI6IiIsIm8iOjAsInEiOiJBc2lhL1NoYW5naGFpIiwiciI6ZmFsc2UsInMiOmZhbHNlLCJ0IjpmYWxzZSwidSI6ZmFsc2UsInYiOiIxOTIwOzEwODAiLCJwX3dyciI6MCwicF9wbCI6MCwicF9sbiI6MSwicF9vaCI6Nzc5LCJwX293IjoxMDQwLCJwX2VsIjozNywicF9hdm4iOiI0LjAiLCJwX2NlZCI6MSwicF9oYmEiOm51bGwsInBfaWFlIjpudWxsLCJwX3ZkciI6IiIsInBfaGN5Ijo4LCJwX25lIjoiMCIsImFyIjoyNTUsInZjIjpudWxsLCJiYV9zdCI6MSwiYmFfbGUiOiIifQ==\"";
+                // let new_string = replace_first(copy.as_str(), target, replacement);
+                // let copy1 = DOMString::from_string(new_string);
+                println!("XMLHttpRequest v8_log send 4 {}", str.str());
+                Some(
                 str.extract(&self.global(), can_gc)
                     .expect("Couldn't extract body."),
-            ),
-            Some(DocumentOrXMLHttpRequestBodyInit::URLSearchParams(ref urlsp)) => Some(
+            )},
+            Some(DocumentOrXMLHttpRequestBodyInit::URLSearchParams(ref urlsp)) => {
+                println!("XMLHttpRequest v8_log send 5");
+                Some(
                 urlsp
                     .extract(&self.global(), can_gc)
                     .expect("Couldn't extract body."),
-            ),
+            )},
             Some(DocumentOrXMLHttpRequestBodyInit::ArrayBuffer(ref typedarray)) => {
+                println!("XMLHttpRequest v8_log send 6");
                 let bytes = typedarray.to_vec();
                 let total_bytes = bytes.len();
                 let global = self.global();
@@ -599,6 +666,7 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
                 })
             },
             Some(DocumentOrXMLHttpRequestBodyInit::ArrayBufferView(ref typedarray)) => {
+                println!("XMLHttpRequest v8_log send 7");
                 let bytes = typedarray.to_vec();
                 let total_bytes = bytes.len();
                 let global = self.global();
@@ -915,6 +983,8 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
     #[allow(unsafe_code)]
     /// <https://xhr.spec.whatwg.org/#the-response-attribute>
     fn Response(&self, cx: JSContext, can_gc: CanGc, mut rval: MutableHandleValue) {
+        return;
+        println!("XMLHttpRequest v8_log response");
         match self.response_type.get() {
             XMLHttpRequestResponseType::_empty | XMLHttpRequestResponseType::Text => unsafe {
                 let ready_state = self.ready_state.get();
@@ -922,8 +992,10 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
                 if ready_state == XMLHttpRequestState::Done ||
                     ready_state == XMLHttpRequestState::Loading
                 {
+                    println!("XMLHttpRequest v8_log response 1 {}", self.text_response());
                     self.text_response().to_jsval(*cx, rval);
                 } else {
+                    println!("XMLHttpRequest v8_log response 2");
                     // Step 1
                     "".to_jsval(*cx, rval);
                 }
@@ -954,6 +1026,7 @@ impl XMLHttpRequestMethods<crate::DomTypeHolder> for XMLHttpRequest {
                 Ok(USVString(match self.ready_state.get() {
                     // Step 3
                     XMLHttpRequestState::Loading | XMLHttpRequestState::Done => {
+                        println!("v8_log GetResponseText {}", self.text_response());
                         self.text_response()
                     },
                     // Step 2
@@ -987,6 +1060,7 @@ pub(crate) type TrustedXHRAddress = Trusted<XMLHttpRequest>;
 
 impl XMLHttpRequest {
     fn change_ready_state(&self, rs: XMLHttpRequestState, can_gc: CanGc) {
+        println!("v8_log XMLHttpRequest change_ready_state {:?}", rs);
         assert_ne!(self.ready_state.get(), rs);
         self.ready_state.set(rs);
         if rs != XMLHttpRequestState::Unsent {

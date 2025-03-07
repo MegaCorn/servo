@@ -246,35 +246,35 @@ impl WindowProxy {
             // Create a new dissimilar-origin window.
             let window = DissimilarOriginWindow::new(global_to_clone_from, &window_proxy);
             let window_jsobject = window.reflector().get_jsobject();
-            assert!(!window_jsobject.get().is_null());
-            assert_ne!(
-                ((*get_object_class(window_jsobject.get())).flags & JSCLASS_IS_GLOBAL),
-                0
-            );
+            // assert!(!window_jsobject.get().is_null());
+            // assert_ne!(
+            //     ((*get_object_class(window_jsobject.get())).flags & JSCLASS_IS_GLOBAL),
+            //     0
+            // );
             let _ac = JSAutoRealm::new(*cx, window_jsobject.get());
 
             // Create a new window proxy.
             rooted!(in(*cx) let js_proxy = handler.new_window_proxy(&cx, window_jsobject));
-            assert!(!js_proxy.is_null());
+            //assert!(!js_proxy.is_null());
 
             // The window proxy owns the browsing context.
             // When we finalize the window proxy, it drops the browsing context it owns.
-            SetProxyReservedSlot(
-                js_proxy.get(),
-                0,
-                &PrivateValue((*window_proxy).as_void_ptr()),
-            );
+            // SetProxyReservedSlot(
+            //     js_proxy.get(),
+            //     0,
+            //     &PrivateValue((*window_proxy).as_void_ptr()),
+            // );
 
             // Notify the JS engine about the new window proxy binding.
-            SetWindowProxy(*cx, window_jsobject, js_proxy.handle());
+            // SetWindowProxy(*cx, window_jsobject, js_proxy.handle());
 
-            // Set the reflector.
-            debug!(
-                "Initializing reflector of {:p} to {:p}.",
-                window_proxy,
-                js_proxy.get()
-            );
-            window_proxy.reflector.set_jsobject(js_proxy.get());
+            // // Set the reflector.
+            // debug!(
+            //     "Initializing reflector of {:p} to {:p}.",
+            //     window_proxy,
+            //     js_proxy.get()
+            // );
+            // window_proxy.reflector.set_jsobject(js_proxy.get());
             DomRoot::from_ref(&*Box::into_raw(window_proxy))
         }
     }
@@ -632,46 +632,46 @@ impl WindowProxy {
             let cx = GlobalScope::get_cx();
             let window_jsobject = window.reflector().get_jsobject();
             let old_js_proxy = self.reflector.get_jsobject();
-            assert!(!window_jsobject.get().is_null());
-            assert_ne!(
-                ((*get_object_class(window_jsobject.get())).flags & JSCLASS_IS_GLOBAL),
-                0
-            );
-            let _ac = enter_realm(window);
+            // assert!(!window_jsobject.get().is_null());
+            // assert_ne!(
+            //     ((*get_object_class(window_jsobject.get())).flags & JSCLASS_IS_GLOBAL),
+            //     0
+            // );
+            // let _ac = enter_realm(window);
 
-            // The old window proxy no longer owns this browsing context.
-            SetProxyReservedSlot(old_js_proxy.get(), 0, &PrivateValue(ptr::null_mut()));
+            // // The old window proxy no longer owns this browsing context.
+            // SetProxyReservedSlot(old_js_proxy.get(), 0, &PrivateValue(ptr::null_mut()));
 
-            // Brain transplant the window proxy. Brain transplantation is
-            // usually done to move a window proxy between compartments, but
-            // that's not what we are doing here. We need to do this just
-            // because we want to replace the wrapper's `ProxyTraps`, but we
-            // don't want to update its identity.
-            rooted!(in(*cx) let new_js_proxy = handler.new_window_proxy(&cx, window_jsobject));
-            // Explicitly set this slot to a null pointer in case a GC occurs before we
-            // are ready to set it to a real value.
-            SetProxyReservedSlot(new_js_proxy.get(), 0, &PrivateValue(ptr::null_mut()));
-            debug!(
-                "Transplanting proxy from {:p} to {:p}.",
-                old_js_proxy.get(),
-                new_js_proxy.get()
-            );
-            rooted!(in(*cx) let new_js_proxy = JS_TransplantObject(*cx, old_js_proxy, new_js_proxy.handle()));
-            debug!("Transplanted proxy is {:p}.", new_js_proxy.get());
+            // // Brain transplant the window proxy. Brain transplantation is
+            // // usually done to move a window proxy between compartments, but
+            // // that's not what we are doing here. We need to do this just
+            // // because we want to replace the wrapper's `ProxyTraps`, but we
+            // // don't want to update its identity.
+            // rooted!(in(*cx) let new_js_proxy = handler.new_window_proxy(&cx, window_jsobject));
+            // // Explicitly set this slot to a null pointer in case a GC occurs before we
+            // // are ready to set it to a real value.
+            // SetProxyReservedSlot(new_js_proxy.get(), 0, &PrivateValue(ptr::null_mut()));
+            // debug!(
+            //     "Transplanting proxy from {:p} to {:p}.",
+            //     old_js_proxy.get(),
+            //     new_js_proxy.get()
+            // );
+            // rooted!(in(*cx) let new_js_proxy = JS_TransplantObject(*cx, old_js_proxy, new_js_proxy.handle()));
+            // debug!("Transplanted proxy is {:p}.", new_js_proxy.get());
 
-            // Transfer ownership of this browsing context from the old window proxy to the new one.
-            SetProxyReservedSlot(new_js_proxy.get(), 0, &PrivateValue(self.as_void_ptr()));
+            // // Transfer ownership of this browsing context from the old window proxy to the new one.
+            // SetProxyReservedSlot(new_js_proxy.get(), 0, &PrivateValue(self.as_void_ptr()));
 
-            // Notify the JS engine about the new window proxy binding.
-            SetWindowProxy(*cx, window_jsobject, new_js_proxy.handle());
+            // // Notify the JS engine about the new window proxy binding.
+            // SetWindowProxy(*cx, window_jsobject, new_js_proxy.handle());
 
-            // Update the reflector.
-            debug!(
-                "Setting reflector of {:p} to {:p}.",
-                self,
-                new_js_proxy.get()
-            );
-            self.reflector.rootable().set(new_js_proxy.get());
+            // // Update the reflector.
+            // debug!(
+            //     "Setting reflector of {:p} to {:p}.",
+            //     self,
+            //     new_js_proxy.get()
+            // );
+            // self.reflector.rootable().set(new_js_proxy.get());
         }
     }
 
