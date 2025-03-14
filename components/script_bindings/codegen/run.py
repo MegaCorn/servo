@@ -78,7 +78,6 @@ def main():
     #             if not webidl.startswith("Test"):
     #                 module_v8 = CGBindingRootV8(config, prefix, filename).define()
     #                 f.write(module_v8.encode("utf-8"))
-# todo htmlcanvaselement  NodeBinding
 
 def make_dir(path):
     if not os.path.exists(path):

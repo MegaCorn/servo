@@ -73,7 +73,7 @@ impl RecordKey for ByteString {
 #[derive(Clone, JSTraceable)]
 pub(crate) struct Record<K: RecordKey, V> {
     #[custom_trace]
-    map: IndexMap<K, V>,
+    pub map: IndexMap<K, V>,
 }
 
 impl<K: RecordKey, V> Record<K, V> {

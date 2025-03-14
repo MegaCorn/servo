@@ -512,6 +512,7 @@ impl Runtime {
     /// This, like many calls to SpiderMoney API, is unsafe.
     #[allow(unsafe_code)]
     pub(crate) fn new(networking_task_source: Option<SendableTaskSource>) -> Runtime {
+        println!("jinguoen ctor new Runtime");
         unsafe { Self::new_with_parent(None, networking_task_source) }
     }
 
@@ -532,6 +533,7 @@ impl Runtime {
         parent: Option<ParentRuntime>,
         networking_task_source: Option<SendableTaskSource>,
     ) -> Runtime {
+        println!("jinguoen ctor new_with_parent Runtime");
         LiveDOMReferences::initialize();
         let (cx, runtime) = if let Some(parent) = parent {
             let runtime = RustRuntime::create_with_parent(parent);

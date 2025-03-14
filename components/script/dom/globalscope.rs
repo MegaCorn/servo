@@ -133,7 +133,7 @@ use crate::messaging::{CommonScriptMsg, ScriptEventLoopReceiver, ScriptEventLoop
 use crate::microtask::{Microtask, MicrotaskQueue, UserMicrotask};
 use crate::network_listener::{NetworkListener, PreInvoke};
 use crate::realms::{enter_realm, AlreadyInRealm, InRealm};
-use crate::script_module::{DynamicModuleList, ModuleScript, ModuleTree, ScriptFetchOptions};
+use crate::script_module::{DynamicModuleList, ModuleScript, ModuleTree, ScriptFetchOptions, fetch_an_import_module_script_graph};
 use crate::script_runtime::{CanGc, JSContext as SafeJSContext, ThreadSafeJSContext};
 use crate::script_thread::{with_script_thread, ScriptThread};
 use crate::security_manager::CSPViolationReporter;
@@ -387,6 +387,10 @@ pub(crate) struct GlobalScope {
     context_global: Rc<v8::Global<v8::Context>>,
 
     my_id: u64,
+
+    #[ignore_malloc_size_of = "mozjs"]
+    #[no_trace]
+    v8_promise: DomRefCell<Option<v8::Global<v8::PromiseResolver>>>,
 }
 
 /// A wrapper for glue-code between the ipc router and the event-loop.
@@ -739,6 +743,52 @@ impl GlobalScope {
         unminify_js: bool,
     ) -> Self {
         let mut isolate = v8::Isolate::new(v8::CreateParams::default());
+
+        fn dynamic_import_cb<'s>(
+            scope: &mut v8::HandleScope<'s>,
+            host_defined_options: v8::Local<'s, v8::Data>,
+            resource_name: v8::Local<'s, v8::Value>,
+            specifier: v8::Local<'s, v8::String>,
+            import_attributes: v8::Local<'s, v8::FixedArray>,
+        ) -> Option<v8::Local<'s, v8::Promise>> {
+            let specifier_str = specifier.to_string(scope).unwrap().to_rust_string_lossy(scope);
+            let referrer_name_str = resource_name.to_string(scope).unwrap().to_rust_string_lossy(scope);
+            println!("jinguoen dynamic_import_cb {} {}", specifier_str, referrer_name_str);
+            let resolver = v8::PromiseResolver::new(scope).unwrap();
+            let promise = resolver.get_promise(scope);
+
+            let context = scope.get_current_context();
+            let global = context.global(scope);
+            let key = v8::String::new(scope, "window").unwrap();
+            let obj = global.get(scope, key.into()).unwrap().to_object(scope).unwrap();
+            let data = obj.get_internal_field(scope, 0).unwrap();
+            let value: v8::Local<v8::External> = data.try_into().unwrap();
+            let raw = value.value() as *const crate::dom::types::Window;
+            let global_scope = unsafe { &(*raw).as_global_scope() };
+
+            let g_resolver = v8::Global::new(scope, resolver);
+            *global_scope.v8_promise.borrow_mut() = Some(g_resolver);
+
+            let mut base_url1 = global_scope.api_base_url();
+            let specifier_str1 = DOMString::from_string(String::from("./assets/index-C16cjIcT.js"));
+            let base_url = ServoUrl::parse_with_base(Some(&base_url1), &specifier_str1).unwrap();
+            let mut options = ScriptFetchOptions::default_classic_script(global_scope);
+            let mock_promise = Promise::new(global_scope, CanGc::note());
+            let handle = unsafe { js::jsapi::Handle::from_marked_location(std::ptr::null()) };
+            fetch_an_import_module_script_graph(
+                global_scope,
+                handle,
+                js::jsapi::HandleValue::undefined(),
+                base_url,
+                options,
+                mock_promise,
+                &specifier_str,
+                CanGc::note(),
+            );
+            Some(promise)
+        }
+
+        isolate.set_host_import_module_dynamically_callback(dynamic_import_cb);
         let isolate_ptr = isolate.as_mut() as *mut v8::Isolate;
         let context_global = {
             let scope = &mut v8::HandleScope::new(&mut isolate);
@@ -766,6 +816,15 @@ impl GlobalScope {
                         println!("===== console info: {} =====", message);
                     },
                 );
+                let fn_warn = v8::FunctionTemplate::new(
+                    scope,
+                    |scope: &mut v8::HandleScope,
+                    args: v8::FunctionCallbackArguments,
+                    mut rv: v8::ReturnValue<v8::Value>| {
+                        let message = args.get(0).to_string(scope).unwrap().to_rust_string_lossy(scope);
+                        println!("===== console warn: {} =====", message);
+                    },
+                );
                 let fn_error = v8::FunctionTemplate::new(
                     scope,
                     |scope: &mut v8::HandleScope,
@@ -786,6 +845,7 @@ impl GlobalScope {
                 );
                 v8_template_add_fn!(scope, template, fn_log, log);
                 v8_template_add_fn!(scope, template, fn_info, info);
+                v8_template_add_fn!(scope, template, fn_warn, warn);
                 v8_template_add_fn!(scope, template, fn_error, error);
                 let object = template.new_instance(scope).unwrap();
                 let key = v8::String::new(scope, "console").unwrap();
@@ -844,6 +904,7 @@ impl GlobalScope {
             isolate_ptr,
             context_global: context_global.into(),
             my_id: COUNTER.fetch_add(1, Ordering::Relaxed),
+            v8_promise: DomRefCell::new(None),
         }
     }
 
@@ -1103,6 +1164,10 @@ impl GlobalScope {
         } else {
             panic!("mark_port_as_transferred called on a global not managing any ports.");
         }
+    }
+
+    pub(crate) fn resolver(&self) -> std::cell::Ref<Option<v8::Global<v8::PromiseResolver>>> {
+        self.v8_promise.borrow()
     }
 
     /// <https://html.spec.whatwg.org/multipage/#dom-messageport-start>
@@ -2637,7 +2702,6 @@ impl GlobalScope {
         script_base_url: ServoUrl,
         can_gc: CanGc,
     ) -> bool {
-        println!("evaluate_script_on_global_with_result {:?}", thread::current().id());
         let cx = GlobalScope::get_cx();
 
         let ar = enter_realm(self);
@@ -2648,8 +2712,8 @@ impl GlobalScope {
             rooted!(in(*cx) let mut compiled_script = std::ptr::null_mut::<JSScript>());
             match code {
                 SourceCode::Text(text_code) => {
+                    println!("!!!!!!!!!!!!!!!!!!! evaluate_script_on_global_with_result {}", text_code.str().len());
                     self.exeute_script_on_v8(text_code.str());
-                    println!("evaluate_script_on_global_with_result end {:?}", thread::current().id());
                     return true;
 
                     let options = CompileOptionsWrapper::new(*cx, filename, line_number);

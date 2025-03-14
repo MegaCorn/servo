@@ -24,7 +24,7 @@ impl EventHandlerNonNull {
             Some(ref mut callback) => callback.parent.init_v8(v8_callback),
             None => unreachable!(),
         };
-        log::error!("v8_log EventHandlerNonNull::new_v8 {:?}", thread::current().id());
+        log::error!("jinguoen EventHandlerNonNull::new_v8 {:?}", thread::current().id());
         ret
     }
 
@@ -40,9 +40,9 @@ impl EventHandlerNonNull {
     }
 
     pub fn Call_v8(&self, obj: &EventTarget) {
-        log::error!("v8_log EventHandlerNonNull::Call_v8 {:?}", thread::current().id());
+        log::error!("jinguoen EventHandlerNonNull::Call_v8 {:?}", thread::current().id());
         if (self.parent.object.v8_func.is_none()) {
-            log::error!("v8_log EventHandlerNonNull::Call_v8 fail");
+            log::error!("jinguoen EventHandlerNonNull::Call_v8 fail");
             return;
         }
         let global_scope: &GlobalScope = &obj.global();
@@ -57,7 +57,7 @@ impl EventHandlerNonNull {
         let func =  self.parent.object.v8_func.clone().unwrap();
         let func_ = v8::Local::new(scope, &func);
         let recv = v8::undefined(scope);
-        log::error!("v8_log EventHandlerNonNull::Call_v8 success");
+        log::error!("jinguoen EventHandlerNonNull::Call_v8 success");
         func_.call(scope, recv.into(), &[]);
     }
 }
@@ -86,7 +86,7 @@ impl Function {
 macro_rules! return_if_none {
     ($option:expr) => {
         if $option.is_none() {
-            //println!("v8_log return_if_err is_none");
+            //println!("jinguoen return_if_err is_none");
             return;
         }
     };
@@ -96,7 +96,7 @@ macro_rules! return_if_none {
 macro_rules! return_if_err {
     ($option:expr) => {
         if $option.is_err() {
-            //println!("v8_log return_if_err is_err");
+            //println!("jinguoen return_if_err is_err");
             return;
         }
     };
@@ -106,7 +106,7 @@ macro_rules! return_if_err {
 // macro_rules! return_if_none {
 //     ($option:expr) => {
 //         if $option.is_none() {
-//             log::error!("v8_log return_if_none is_none {}", line!());
+//             log::error!("jinguoen return_if_none is_none {}", line!());
 //             return;
 //         }
 //     };
@@ -116,7 +116,7 @@ macro_rules! return_if_err {
 // macro_rules! return_if_err {
 //     ($option:expr) => {
 //         if $option.is_err() {
-//             log::error!("v8_log return_if_err is_err {}", line!());
+//             log::error!("jinguoen return_if_err is_err {}", line!());
 //             return;
 //         }
 //     };

@@ -104,7 +104,7 @@ impl CallbackObject {
 impl Drop for CallbackObject {
     #[allow(unsafe_code)]
     fn drop(&mut self) {
-        println!("------------------------------------------ v8_log CallbackObject Drop");
+        println!("------------------------------------------ jinguoen CallbackObject Drop");
         unsafe {
             if let Some(cx) = Runtime::get() {
                 RemoveRawValueRoot(cx.as_ptr(), self.permanent_js_root.get_unsafe());
@@ -169,7 +169,7 @@ impl CallbackFunction {
     }
 
     pub unsafe fn init_v8(&mut self, callback: v8::Global<v8::Function>) {
-        log::error!("v8_log CallbackFunction::init_v8");
+        log::error!("jinguoen CallbackFunction::init_v8");
         self.object.v8_func = Some(callback);
     }
 }

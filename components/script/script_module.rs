@@ -193,6 +193,9 @@ pub(crate) struct ModuleTree {
     // is finished
     promise: DomRefCell<Option<Rc<Promise>>>,
     external: bool,
+
+    #[no_trace]
+    pub v8_module: DomRefCell<Option<v8::Global<v8::Module>>>,
 }
 
 impl ModuleTree {
@@ -210,6 +213,7 @@ impl ModuleTree {
             network_error: DomRefCell::new(None),
             promise: DomRefCell::new(None),
             external,
+            v8_module: DomRefCell::new(None),
         }
     }
 
@@ -345,7 +349,7 @@ impl ModuleTree {
         fetch_options: ScriptFetchOptions,
         can_gc: CanGc,
     ) {
-        println!("v8_log append_handler");
+        println!("jinguoen append_handler");
         let this = owner.clone();
         let identity = module_identity.clone();
         let options = fetch_options.clone();
@@ -354,7 +358,7 @@ impl ModuleTree {
             &owner.global(),
             Some(ModuleHandler::new_boxed(Box::new(
                 task!(fetched_resolve: move || {
-                    println!("v8_log append_handler prmoise called");
+                    println!("jinguoen append_handler prmoise called");
                     this.notify_owner_to_finish(identity, options);
                 }),
             ))),
@@ -383,7 +387,7 @@ impl ModuleTree {
         dynamic_module: RootedTraceableBox<DynamicModule>,
         can_gc: CanGc,
     ) {
-        println!("v8_log append_dynamic_module_handler");
+        println!("jinguoen append_dynamic_module_handler");
         let this = owner.clone();
         let identity = module_identity.clone();
 
@@ -393,6 +397,7 @@ impl ModuleTree {
             &owner.global(),
             Some(ModuleHandler::new_boxed(Box::new(
                 task!(fetched_resolve: move || {
+                    println!("jinguoen append_dynamic_module_handler called");
                     this.finish_dynamic_module(identity, module_id, CanGc::note());
                 }),
             ))),
@@ -401,15 +406,16 @@ impl ModuleTree {
 
         let realm = enter_realm(&*owner.global());
         let comp = InRealm::Entered(&realm);
-        let _ais = AutoIncumbentScript::new(&owner.global());
+        // let _ais = AutoIncumbentScript::new(&owner.global());
 
         if let Some(promise) = self.promise.borrow().as_ref() {
             promise.append_native_handler(&handler, comp, can_gc);
             return;
         }
 
-        let new_promise = Promise::new_in_current_realm(comp, can_gc);
-        new_promise.append_native_handler(&handler, comp, can_gc);
+        // let new_promise = Promise::new_in_current_realm(comp, can_gc);
+        // new_promise.append_native_handler(&handler, comp, can_gc);
+        let new_promise = Promise::my_new(handler);
         *self.promise.borrow_mut() = Some(new_promise);
     }
 }
@@ -451,13 +457,32 @@ impl crate::unminify::ScriptSource for ModuleSource {
     }
 }
 
-pub fn unexpected_module_resolve_callback<'a>(
-    _context: v8::Local<'a, v8::Context>,
-    _specifier: v8::Local<'a, v8::String>,
-    _import_attributes: v8::Local<'a, v8::FixedArray>,
-    _referrer: v8::Local<'a, v8::Module>,
+pub fn module_resolve_callback<'a>(
+    context: v8::Local<'a, v8::Context>,
+    specifier: v8::Local<'a, v8::String>,
+    import_attributes: v8::Local<'a, v8::FixedArray>,
+    referrer: v8::Local<'a, v8::Module>,
 ) -> Option<v8::Local<'a, v8::Module>> {
-    unreachable!()
+    let scope = &mut unsafe { v8::CallbackScope::new(context) };
+    let global = context.global(scope);
+    let key = v8::String::new(scope, "window").unwrap();
+    let obj = global.get(scope, key.into()).unwrap().to_object(scope).unwrap();
+    let data = obj.get_internal_field(scope, 0).unwrap();
+    let value: v8::Local<v8::External> = data.try_into().unwrap();
+    let raw = value.value() as *const crate::dom::types::Window;
+    let specifier_str = specifier.to_rust_string_lossy(scope);
+    println!("jinguoen module_resolve_callback {}", specifier_str);
+
+    let global_scope = unsafe { (*raw).as_global_scope() };
+    let base = global_scope.api_base_url();
+    let mut tmp = String::from("./assets");
+    tmp.push_str(&specifier_str[1..specifier_str.len()]);
+    let base_url = ServoUrl::parse_with_base(Some(&base), &tmp).unwrap();
+    let module_map = global_scope.get_module_map().borrow();
+    let module_tree = module_map.get(&base_url).unwrap();
+    let v8_module = module_tree.v8_module.borrow().clone().unwrap();
+    let module = v8::Local::new(scope, v8_module);
+    module.into()
 }
 
 pub fn mock_script_origin<'s>(
@@ -505,7 +530,8 @@ impl ModuleTree {
         inline: bool,
         _can_gc: CanGc,
     ) -> Result<(), RethrowError> {
-        println!("v8_log compile_module_script");
+        // println!("jinguoen compile_module_script {}", module_script_text.str());
+        println!("jinguoen compile_module_script {} {}", url.as_str(), module_script_text.str().len());
         let cx = GlobalScope::get_cx();
         let _ac = JSAutoRealm::new(*cx, *global.reflector().get_jsobject());
 
@@ -519,17 +545,19 @@ impl ModuleTree {
         crate::unminify::unminify_js(&mut module_source);
 
         unsafe {
+            {
+                let scope = &mut global.handle_scope();
+                let context = v8::Local::new(scope, global.context_global());
+                let scope = &mut v8::ContextScope::new(scope, context);
+                let source_text = v8::String::new(scope, module_source.source.str()).unwrap();
+                let origin = mock_script_origin(scope, url.as_str());
+                let mut source = v8::script_compiler::Source::new(source_text, Some(&origin));
+                let module = v8::script_compiler::compile_module(scope, &mut source).unwrap();
+                let g_module = v8::Global::new(scope, module);
+                *self.v8_module.borrow_mut() = Some(g_module);
+            }
 
-            let scope = &mut global.handle_scope();
-            let context = v8::Local::new(scope, global.context_global());
-            let scope = &mut v8::ContextScope::new(scope, context);
-            let source_text = v8::String::new(scope, module_source.source.str()).unwrap();
-            let origin = mock_script_origin(scope, url.as_str());
-            let mut source = v8::script_compiler::Source::new(source_text, Some(&origin));
-            let module = v8::script_compiler::compile_module(scope, &mut source).unwrap();
-            module.instantiate_module(scope, unexpected_module_resolve_callback);
-            module.evaluate(scope).unwrap();
-
+            // js::rust::Runtime::my_set_module(g_module);
             module_script.set(CompileModule1(
                 *cx,
                 compile_options.ptr,
@@ -607,11 +635,35 @@ impl ModuleTree {
         eval_result: MutableHandleValue,
         _can_gc: CanGc,
     ) -> Result<(), RethrowError> {
-        println!("v8_log execute_module");
+        println!("jinguoen execute_module");
         let cx = GlobalScope::get_cx();
         let _ac = JSAutoRealm::new(*cx, *global.reflector().get_jsobject());
 
         unsafe {
+            let scope = &mut global.handle_scope();
+            let context = v8::Local::new(scope, global.context_global());
+            let scope = &mut v8::ContextScope::new(scope, context);
+            let v8_module = self.v8_module.borrow().clone().unwrap();
+            let module = v8::Local::new(scope, v8_module);
+            println!("jinguoen instantiate_module begin");
+            let result = module.instantiate_module(scope, module_resolve_callback).unwrap();
+            let module_namespace = module.get_module_namespace();
+            println!("jinguoen instantiate_module result {}", result);
+            println!("jinguoen instantiate_module end");
+
+            let resolver_handle = global.resolver();
+            if (resolver_handle.is_some()) {
+                println!("jinguoen g_resolver is_some");
+                let resolver = v8::Local::new(scope, resolver_handle.clone().unwrap());
+                let module_namespace = module.get_module_namespace();
+                resolver.resolve(scope, module_namespace);
+            } else {
+                println!("jinguoen g_resolver is_none");
+                println!("jinguoen evaluate begin");
+                module.evaluate(scope).unwrap();
+                println!("jinguoen evaluate end");
+            }
+
             let ok = ModuleEvaluate(*cx, module_record, eval_result);
             assert!(ok, "module evaluation failed");
 
@@ -671,35 +723,59 @@ impl ModuleTree {
         module_object: HandleObject,
         base_url: &ServoUrl,
     ) -> Result<IndexSet<ServoUrl>, RethrowError> {
+        println!("jinguoen resolve_requested_module_specifiers");
         let cx = GlobalScope::get_cx();
         let _ac = JSAutoRealm::new(*cx, *global.reflector().get_jsobject());
 
         let mut specifier_urls = IndexSet::new();
 
         unsafe {
-            let length = GetRequestedModulesCount(*cx, module_object);
-
-            for index in 0..length {
+            let scope = &mut global.handle_scope();
+            let context = v8::Local::new(scope, global.context_global());
+            let scope = &mut v8::ContextScope::new(scope, context);
+            let v8_module = self.v8_module.borrow().clone().unwrap();
+            let module = v8::Local::new(scope, v8_module);
+            let module_requests = module.get_module_requests();
+            for index in 0..module_requests.length() {
+                let module_request = v8::Local::<v8::ModuleRequest>::try_from(module_requests.get(scope, index).unwrap()).unwrap();
+                let import_specifier = module_request.get_specifier().to_rust_string_lossy(scope);
                 rooted!(in(*cx) let specifier = GetRequestedModuleSpecifier(
-                    *cx, module_object, index
+                    *cx, module_object, index as u32
                 ));
-
                 let url = ModuleTree::resolve_module_specifier(
                     *cx,
                     base_url,
                     specifier.handle().into_handle(),
+                    &import_specifier,
                 );
-
-                if url.is_err() {
-                    let specifier_error =
-                        gen_type_error(global, "Wrong module specifier".to_owned());
-
-                    return Err(specifier_error);
-                }
-
                 specifier_urls.insert(url.unwrap());
             }
         }
+
+        // unsafe {
+        //     let length = GetRequestedModulesCount(*cx, module_object);
+
+        //     for index in 0..length {
+        //         rooted!(in(*cx) let specifier = GetRequestedModuleSpecifier(
+        //             *cx, module_object, index
+        //         ));
+
+        //         let url = ModuleTree::resolve_module_specifier(
+        //             *cx,
+        //             base_url,
+        //             specifier.handle().into_handle(),
+        //         );
+
+        //         if url.is_err() {
+        //             let specifier_error =
+        //                 gen_type_error(global, "Wrong module specifier".to_owned());
+
+        //             return Err(specifier_error);
+        //         }
+
+        //         specifier_urls.insert(url.unwrap());
+        //     }
+        // }
 
         Ok(specifier_urls)
     }
@@ -716,8 +792,11 @@ impl ModuleTree {
         cx: *mut JSContext,
         url: &ServoUrl,
         specifier: RawHandle<*mut JSString>,
+        v8_specifier: &str
     ) -> Result<ServoUrl, UrlParseError> {
-        let specifier_str = unsafe { jsstring_to_str(cx, ptr::NonNull::new(*specifier).unwrap()) };
+        //let specifier_str = unsafe { jsstring_to_str(cx, ptr::NonNull::new(*specifier).unwrap()) };
+        let specifier_str = DOMString::from_string(String::from(v8_specifier));
+        println!("jinguoen resolve_module_specifier {}", specifier_str.str());
 
         // Step 1.
         if let Ok(specifier_url) = ServoUrl::parse(&specifier_str) {
@@ -803,7 +882,7 @@ impl ModuleTree {
         parent_identity: ModuleIdentity,
         can_gc: CanGc,
     ) {
-        println!("v8_log fetch_module_descendants");
+        println!("jinguoen fetch_module_descendants {}", self.url);
         debug!("Start to load dependencies of {}", self.url);
 
         let global = owner.global();
@@ -904,7 +983,7 @@ impl ModuleTree {
     /// <https://html.spec.whatwg.org/multipage/#fetch-the-descendants-of-and-link-a-module-script>
     /// step 4-7.
     fn advance_finished_and_link(&self, global: &GlobalScope) {
-        println!("v8_log advance_finished_and_link");
+        println!("jinguoen advance_finished_and_link");
         {
             if !self.has_all_ready_descendants(global) {
                 return;
@@ -982,8 +1061,10 @@ impl ModuleHandler {
 
 impl Callback for ModuleHandler {
     fn callback(&self, _cx: SafeJSContext, _v: HandleValue, _realm: InRealm, _can_gc: CanGc) {
-        let task = self.task.borrow_mut().take().unwrap();
-        task.run_box();
+        let task = self.task.borrow_mut().take();
+        if task.is_some() {
+            task.unwrap().run_box();
+        }
     }
 }
 
@@ -1011,7 +1092,7 @@ impl ModuleOwner {
         module_identity: ModuleIdentity,
         fetch_options: ScriptFetchOptions,
     ) {
-        println!("v8_log notify_owner_to_finish");
+        println!("jinguoen notify_owner_to_finish");
         match &self {
             ModuleOwner::Worker(_) => unimplemented!(),
             ModuleOwner::DynamicModule(_) => unimplemented!(),
@@ -1069,7 +1150,7 @@ impl ModuleOwner {
         dynamic_module_id: DynamicModuleId,
         can_gc: CanGc,
     ) {
-        println!("v8_log finish_dynamic_module");
+        println!("jinguoen finish_dynamic_module");
         let global = self.global();
 
         let module = global.dynamic_module_list().remove(dynamic_module_id);
@@ -1136,7 +1217,7 @@ impl ModuleOwner {
                 module.promise.reflector().get_jsobject().into_handle(),
             );
             if ok {
-                assert!(!JS_IsExceptionPending(*cx));
+                // assert!(!JS_IsExceptionPending(*cx));
             } else {
                 warn!("failed to finish dynamic module import");
             }
@@ -1213,7 +1294,7 @@ impl FetchResponseListener for ModuleContext {
         _: RequestId,
         response: Result<ResourceFetchTiming, NetworkError>,
     ) {
-        println!("v8_log process_response_eof");
+        println!("jinguoen process_response_eof {}", &self.url);
         let global = self.owner.global();
 
         if let Some(window) = global.downcast::<Window>() {
@@ -1407,18 +1488,18 @@ pub(crate) unsafe extern "C" fn host_import_module_dynamically(
     let promise = Promise::new_with_js_promise(Handle::from_raw(promise), cx);
 
     //Step 5 & 6.
-    if let Err(e) = fetch_an_import_module_script_graph(
-        &global_scope,
-        specifier,
-        reference_private,
-        base_url,
-        options,
-        promise,
-        CanGc::note(),
-    ) {
-        JS_SetPendingException(*cx, e.handle(), ExceptionStackBehavior::Capture);
-        return false;
-    }
+    // if let Err(e) = fetch_an_import_module_script_graph(
+    //     &global_scope,
+    //     specifier,
+    //     reference_private,
+    //     base_url,
+    //     options,
+    //     promise,
+    //     CanGc::note(),
+    // ) {
+    //     JS_SetPendingException(*cx, e.handle(), ExceptionStackBehavior::Capture);
+    //     return false;
+    // }
 
     true
 }
@@ -1476,20 +1557,21 @@ unsafe fn module_script_from_reference_private(
 
 /// <https://html.spec.whatwg.org/multipage/#fetch-an-import()-module-script-graph>
 #[allow(unsafe_code)]
-fn fetch_an_import_module_script_graph(
+pub fn fetch_an_import_module_script_graph(
     global: &GlobalScope,
     module_request: RawHandle<*mut JSObject>,
     reference_private: RawHandleValue,
     base_url: ServoUrl,
     options: ScriptFetchOptions,
     promise: Rc<Promise>,
+    specifier_str: &str,
     can_gc: CanGc,
 ) -> Result<(), RethrowError> {
-    println!("v8_log fetch_an_import_module_script_graph");
+    println!("jinguoen fetch_an_import_module_script_graph {}", base_url.as_str());
     // Step 1.
     let cx = GlobalScope::get_cx();
     rooted!(in(*cx) let specifier = unsafe { GetModuleRequestSpecifier(*cx, module_request) });
-    let url = ModuleTree::resolve_module_specifier(*cx, &base_url, specifier.handle().into());
+    let url = ModuleTree::resolve_module_specifier(*cx, &base_url, specifier.handle().into(), specifier_str);
 
     // Step 2.
     if url.is_err() {
@@ -1501,14 +1583,19 @@ fn fetch_an_import_module_script_graph(
     let dynamic_module_id = DynamicModuleId(Uuid::new_v4());
 
     // Step 3.
-    let owner = match unsafe { module_script_from_reference_private(&reference_private) } {
-        Some(module_data) if module_data.owner.is_some() => module_data.owner.clone().unwrap(),
-        _ => ModuleOwner::DynamicModule(Trusted::new(&DynamicModuleOwner::new(
-            global,
-            promise.clone(),
-            dynamic_module_id,
-        ))),
-    };
+    // let owner = match unsafe { module_script_from_reference_private(&reference_private) } {
+    //     Some(module_data) if module_data.owner.is_some() => module_data.owner.clone().unwrap(),
+    //     _ => ModuleOwner::DynamicModule(Trusted::new(&DynamicModuleOwner::new(
+    //         global,
+    //         promise.clone(),
+    //         dynamic_module_id,
+    //     ))),
+    // };
+    let owner = ModuleOwner::DynamicModule(Trusted::new(&DynamicModuleOwner::new(
+        global,
+        promise.clone(),
+        dynamic_module_id,
+    )));
 
     let dynamic_module = RootedTraceableBox::new(DynamicModule {
         promise,
@@ -1516,10 +1603,10 @@ fn fetch_an_import_module_script_graph(
         referencing_private: Heap::default(),
         id: dynamic_module_id,
     });
-    dynamic_module.specifier.set(module_request.get());
-    dynamic_module
-        .referencing_private
-        .set(reference_private.get());
+    // dynamic_module.specifier.set(module_request.get());
+    // dynamic_module
+    //     .referencing_private
+    //     .set(reference_private.get());
 
     let url = url.unwrap();
 
@@ -1548,50 +1635,51 @@ unsafe extern "C" fn HostResolveImportedModule(
     reference_private: RawHandleValue,
     specifier: RawHandle<*mut JSObject>,
 ) -> *mut JSObject {
-    let in_realm_proof = AlreadyInRealm::assert_for_cx(SafeJSContext::from_ptr(cx));
-    let global_scope = GlobalScope::from_context(cx, InRealm::Already(&in_realm_proof));
+    ptr::null_mut()
+    // let in_realm_proof = AlreadyInRealm::assert_for_cx(SafeJSContext::from_ptr(cx));
+    // let global_scope = GlobalScope::from_context(cx, InRealm::Already(&in_realm_proof));
 
-    // Step 2.
-    let mut base_url = global_scope.api_base_url();
+    // // Step 2.
+    // let mut base_url = global_scope.api_base_url();
 
-    // Step 3.
-    let module_data = module_script_from_reference_private(&reference_private);
-    if let Some(data) = module_data {
-        base_url = data.base_url.clone();
-    }
+    // // Step 3.
+    // let module_data = module_script_from_reference_private(&reference_private);
+    // if let Some(data) = module_data {
+    //     base_url = data.base_url.clone();
+    // }
 
-    // Step 5.
-    rooted!(in(*GlobalScope::get_cx()) let specifier = GetModuleRequestSpecifier(cx, specifier));
-    let url = ModuleTree::resolve_module_specifier(
-        *GlobalScope::get_cx(),
-        &base_url,
-        specifier.handle().into(),
-    );
+    // // Step 5.
+    // rooted!(in(*GlobalScope::get_cx()) let specifier = GetModuleRequestSpecifier(cx, specifier));
+    // let url = ModuleTree::resolve_module_specifier(
+    //     *GlobalScope::get_cx(),
+    //     &base_url,
+    //     specifier.handle().into(),
+    // );
 
-    // Step 6.
-    assert!(url.is_ok());
+    // // Step 6.
+    // assert!(url.is_ok());
 
-    let parsed_url = url.unwrap();
+    // let parsed_url = url.unwrap();
 
-    // Step 4 & 7.
-    let module_map = global_scope.get_module_map().borrow();
+    // // Step 4 & 7.
+    // let module_map = global_scope.get_module_map().borrow();
 
-    let module_tree = module_map.get(&parsed_url);
+    // let module_tree = module_map.get(&parsed_url);
 
-    // Step 9.
-    assert!(module_tree.is_some());
+    // // Step 9.
+    // assert!(module_tree.is_some());
 
-    let fetched_module_object = module_tree.unwrap().get_record().borrow();
+    // let fetched_module_object = module_tree.unwrap().get_record().borrow();
 
-    // Step 8.
-    assert!(fetched_module_object.is_some());
+    // // Step 8.
+    // assert!(fetched_module_object.is_some());
 
-    // Step 10.
-    if let Some(record) = &*fetched_module_object {
-        return record.handle().get();
-    }
+    // // Step 10.
+    // if let Some(record) = &*fetched_module_object {
+    //     return record.handle().get();
+    // }
 
-    unreachable!()
+    // unreachable!()
 }
 
 #[allow(unsafe_code, non_snake_case)]
@@ -1635,7 +1723,7 @@ pub(crate) fn fetch_external_module_script(
     options: ScriptFetchOptions,
     can_gc: CanGc,
 ) {
-    println!("v8_log fetch_external_module_script");
+    println!("jinguoen fetch_external_module_script");
     let mut visited_urls = HashSet::new();
     visited_urls.insert(url.clone());
 
@@ -1714,7 +1802,7 @@ fn fetch_single_module_script(
     dynamic_module: Option<RootedTraceableBox<DynamicModule>>,
     can_gc: CanGc,
 ) {
-    println!("v8_log fetch_single_module_script");
+    println!("jinguoen fetch_single_module_script {} {}", url.as_str(), top_level_module_fetch);
     {
         // Step 1.
         let global = owner.global();
@@ -1857,7 +1945,7 @@ pub(crate) fn fetch_inline_module_script(
     options: ScriptFetchOptions,
     can_gc: CanGc,
 ) {
-    println!("v8_log fetch_inline_module_script");
+    println!("jinguoen fetch_inline_module_script");
     let global = owner.global();
     let is_external = false;
     let module_tree = ModuleTree::new(url.clone(), is_external, HashSet::new());

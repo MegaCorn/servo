@@ -100,7 +100,7 @@ def v8Setter(attr, descriptor, member):
         value: v8::Local<v8::Value>,
         args: v8::PropertyCallbackArguments,
         _rv: v8::ReturnValue<()>| {{
-            //log::error!("setter {attr}");
+            log::error!("setter {attr}");
             let this = args.this();
             let data = this.get_internal_field(scope, 0).unwrap();
             let value_: v8::Local<v8::External> = data.try_into().unwrap();

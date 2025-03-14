@@ -107,7 +107,7 @@ impl StorageMethods<crate::DomTypeHolder> for Storage {
 
     // https://html.spec.whatwg.org/multipage/#dom-storage-setitem
     fn SetItem(&self, name: DOMString, value: DOMString) -> ErrorResult {
-        println!("v8_log SetItem {} {}", name.str(),value.str());
+        println!("jinguoen SetItem {} {}", name.str(),value.str());
         let (sender, receiver) = ipc::channel(self.global().time_profiler_chan().clone()).unwrap();
         let name = String::from(name);
         let value = String::from(value);

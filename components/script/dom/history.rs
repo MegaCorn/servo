@@ -314,7 +314,7 @@ impl HistoryMethods<crate::DomTypeHolder> for History {
         if !self.window.Document().is_fully_active() {
             return Err(Error::Security);
         }
-        retval.set(self.state.get());
+        // retval.set(self.state.get());
         Ok(())
     }
 

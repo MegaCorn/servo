@@ -14,9 +14,11 @@ use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use indexmap::IndexMap;
+use crate::dom::svgelement::SVGElement;
 use crate::dom::bindings::codegen::UnionTypes::USVStringSequenceSequenceOrUSVStringUSVStringRecordOrUSVString;
 use crate::dom::htmlimageelement::HTMLImageElement;
 use crate::dom::url::URL;
+use crate::dom::bindings::record::Record;
 use crate::dom::xmlhttprequest::XMLHttpRequest;
 use crate::dom::bindings::codegen::Bindings::URLSearchParamsBinding::URLSearchParams_Binding::URLSearchParamsMethods;
 use crate::dom::urlsearchparams::URLSearchParams;
@@ -784,7 +786,7 @@ impl WindowMethods<crate::DomTypeHolder> for Window {
         features: DOMString,
         can_gc: CanGc,
     ) -> Fallible<Option<DomRoot<WindowProxy>>> {
-        println!("v8_log Open");
+        println!("jinguoen Open");
         self.window_proxy().open(url, target, features, can_gc)
     }
 
@@ -985,11 +987,11 @@ impl WindowMethods<crate::DomTypeHolder> for Window {
     ) -> i32 {
         let callback = match callback {
             StringOrFunction::String(i) => {
-                println!("v8_log SetTimeout {}", i.str());
+                println!("jinguoen SetTimeout {}", i.str());
                 TimerCallback::StringTimerCallback(i)
             },
             StringOrFunction::Function(i) => {
-                println!("v8_log SetTimeout Function timeout:{}", timeout);
+                println!("jinguoen SetTimeout Function timeout:{}", timeout);
                 TimerCallback::FunctionTimerCallback(i)
             },
         };
@@ -1003,7 +1005,7 @@ impl WindowMethods<crate::DomTypeHolder> for Window {
 
     // https://html.spec.whatwg.org/multipage/#dom-windowtimers-cleartimeout
     fn ClearTimeout(&self, handle: i32) {
-        println!("v8_log ClearTimeout {}", handle);
+        println!("jinguoen ClearTimeout {}", handle);
         self.as_global_scope().clear_timeout_or_interval(handle);
     }
 
@@ -2765,6 +2767,10 @@ impl Window {
         XMLHttpRequest::new(self.upcast(), None, CanGc::note())
     }
 
+    pub fn Event1(&self) -> DomRoot<Event> {
+        Event::new_uninitialized(self.upcast(), CanGc::note())
+    }
+
     #[allow(unsafe_code)]
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
@@ -2927,9 +2933,6 @@ impl Window {
                     args: v8::PropertyCallbackArguments,
                     mut rv: v8::ReturnValue<v8::Value>| {
                         log::error!("getter getter_Intl");
-                        // let templ = v8::FunctionTemplate::new(scope, XMLHttpRequest_callback);
-                        // let value = templ.get_function(scope).unwrap();
-                        // rv.set(value.into());
                     };
 
                 v8_template_add_getter!(scope, template, getter_Intl, Intl);
@@ -2946,6 +2949,31 @@ impl Window {
 
                 v8_template_add_getter!(scope, template, getter_XMLHttpRequest, XMLHttpRequest);
 
+                // let getter_indexedDB =
+                //     |scope: &mut v8::HandleScope,
+                //     key: v8::Local<v8::Name>,
+                //     args: v8::PropertyCallbackArguments,
+                //     mut rv: v8::ReturnValue<v8::Value>| {
+                //         println!("jinguoen indexedDB");
+                //         let template = v8::ObjectTemplate::new(scope);
+                //         let fn_open = v8::FunctionTemplate::new(
+                //             scope,
+                //             |scope: &mut v8::HandleScope,
+                //             args: v8::FunctionCallbackArguments,
+                //             mut rv: v8::ReturnValue<v8::Value>| {
+                //                 log::error!("fn indexedDB.open");
+                //                 let value = v8::Object::new(scope);
+                //                 rv.set(value.into());
+                //             },
+                //         );
+                //         v8_template_add_fn!(scope, template, fn_open, open);
+
+                //         let value = template.new_instance(scope).unwrap();
+                //         rv.set(value.into());
+                //     };
+
+                // v8_template_add_getter!(scope, template, getter_indexedDB, indexedDB);
+
                 let intercept_getter =
                         |scope: &mut v8::HandleScope,
                         key: v8::Local<v8::Name>,
@@ -2957,9 +2985,9 @@ impl Window {
                                 return v8::Intercepted::Yes;
                             }
                             let arg0 = arg0.unwrap().to_rust_string_lossy(scope);
-                            //log::error!("window intercepted getter {}", arg0);
+                            log::error!("window intercepted getter {}", arg0);
                             if (arg0 == "Intl") {
-                                //log::error!("window intercepted getter {} fail, try accessor", arg0);
+                                log::error!("window intercepted getter {} fail, try accessor", arg0);
                                 return v8::Intercepted::No;
                             }
 
@@ -2973,7 +3001,7 @@ impl Window {
                             let key_ = v8::String::new(scope, arg0.as_str()).unwrap();
                             let ret = global.get(scope, key_.into()).unwrap();
                             if ret.is_undefined() {
-                                //log::error!("window intercepted getter {} fail, try accessor", arg0);
+                                log::error!("window intercepted getter {} fail, try accessor", arg0);
                                 return v8::Intercepted::No;
                             }
 
@@ -3018,10 +3046,44 @@ impl Window {
                     global.set(scope, name.into(), value.into());
                 }
 
-                let global = context.global(scope);
+                {
+                    let templ = v8::FunctionTemplate::new(scope, SVGElement_callback);
+                    let name = v8::String::new(scope, "SVGElement").unwrap();
+                    let value = templ.get_function(scope).unwrap();
+                    global.set(scope, name.into(), value.into());
+                }
+
+                {
+                    let templ = v8::FunctionTemplate::new(scope, Event_callback);
+                    let name = v8::String::new(scope, "Event").unwrap();
+                    let value = templ.get_function(scope).unwrap();
+                    global.set(scope, name.into(), value.into());
+                }
+
+                {
+                    let templ = v8::FunctionTemplate::new(scope, HTMLElement_callback);
+                    let name = v8::String::new(scope, "HTMLElement").unwrap();
+                    let value = templ.get_function(scope).unwrap();
+                    global.set(scope, name.into(), value.into());
+                }
+
+                // {
+                //     let templ = v8::FunctionTemplate::new(scope, fetch_callback);
+                //     let name = v8::String::new(scope, "fetch").unwrap();
+                //     let value = templ.get_function(scope).unwrap();
+                //     global.set(scope, name.into(), value.into());
+                // }
+
                 {
                     let templ = v8::FunctionTemplate::new(scope, FormData_callback);
                     let name = v8::String::new(scope, "FormData").unwrap();
+                    let value = templ.get_function(scope).unwrap();
+                    global.set(scope, name.into(), value.into());
+                }
+
+                {
+                    let templ = v8::FunctionTemplate::new(scope, XMLHttpRequest_callback);
+                    let name = v8::String::new(scope, "XMLHttpRequest").unwrap();
                     let value = templ.get_function(scope).unwrap();
                     global.set(scope, name.into(), value.into());
                 }
@@ -3097,7 +3159,7 @@ impl Window {
                     args: v8::FunctionCallbackArguments,
                     mut rv: v8::ReturnValue<v8::Value>| {
 
-                        println!("v8_log getComputedStyle");
+                        println!("jinguoen getComputedStyle");
                         return;
                         // let context = scope.get_current_context();
                         // let global = context.global(scope);
@@ -3152,9 +3214,18 @@ impl Window {
             USVStringSequenceSequenceOrUSVStringUSVStringRecordOrUSVString::USVString(USVString::from(url))).expect("REASON")
     }
 
+    pub(crate) fn new_URLSearchParams1(&self, url: Record<USVString, USVString>) -> DomRoot<URLSearchParams> {
+        URLSearchParams::Constructor(self.as_global_scope(), None, CanGc::note(),
+            USVStringSequenceSequenceOrUSVStringUSVStringRecordOrUSVString::USVStringUSVStringRecord(url)).expect("REASON")
+    }
+
     pub(crate) fn new_FormData(&self, url: DOMString) -> DomRoot<FormData> {
         FormData::new(None, self.as_global_scope(), CanGc::note())
     }
+
+    // pub(crate) fn new_SVGElement(&self) -> DomRoot<SVGElement> {
+    //     SVGElement::new(None, self.as_global_scope(), CanGc::note())
+    // }
 
     pub(crate) fn new_URL(&self, url: DOMString) -> DomRoot<URL> {
         URL::new(self.as_global_scope(), None, self.get_url(), CanGc::note())
@@ -3170,6 +3241,7 @@ pub fn XMLHttpRequest_callback(
     args: v8::FunctionCallbackArguments,
     mut rv: v8::ReturnValue<v8::Value>,
   ) {
+    println!("jinguoen XMLHttpRequest");
     let context = scope.get_current_context();
     let global = context.global(scope);
     let key = v8::String::new(scope, "window").unwrap();
@@ -3188,12 +3260,81 @@ pub fn XMLHttpRequest_callback(
     rv.set(object.into());
   }
 
+//   pub fn fetch_callback(
+//     scope: &mut v8::HandleScope,
+//     args: v8::FunctionCallbackArguments,
+//     mut rv: v8::ReturnValue<v8::Value>,
+//   ) {
+//     println!("jinguoen fetch");
+//   }
+
+  pub fn HTMLElement_callback(
+    scope: &mut v8::HandleScope,
+    args: v8::FunctionCallbackArguments,
+    mut rv: v8::ReturnValue<v8::Value>,
+  ) {
+    println!("jinguoen HTMLElement new");
+    let object = v8::Object::new(scope);
+    rv.set(object.into());
+  }
+
+  pub fn Event_callback(
+    scope: &mut v8::HandleScope,
+    args: v8::FunctionCallbackArguments,
+    mut rv: v8::ReturnValue<v8::Value>,
+  ) {
+    println!("jinguoen Event new");
+    let context = scope.get_current_context();
+    let global = context.global(scope);
+    let key = v8::String::new(scope, "window").unwrap();
+    let obj = global.get(scope, key.into()).unwrap().to_object(scope).unwrap();
+    let data = obj.get_internal_field(scope, 0).unwrap();
+    let value: v8::Local<v8::External> = data.try_into().unwrap();
+    let raw = value.value() as *const crate::dom::types::Window;
+
+    let ret = unsafe { (*raw).Event1() };
+
+    let template = ret.new_template(scope);
+    template.set_internal_field_count(1);
+    let object = template.new_instance(scope).unwrap();
+    let raw_ = ret.value.ptr.as_ptr() as *mut std::ffi::c_void;
+    object.set_internal_field(0, v8::External::new(scope, raw_).into());
+    rv.set(object.into());
+  }
+
+
+pub fn SVGElement_callback(
+    scope: &mut v8::HandleScope,
+    args: v8::FunctionCallbackArguments,
+    mut rv: v8::ReturnValue<v8::Value>,
+  ) {
+    println!("jinguoen SVGElement new");
+    // let context = scope.get_current_context();
+    // let global = context.global(scope);
+    // let key = v8::String::new(scope, "window").unwrap();
+    // let obj = global.get(scope, key.into()).unwrap().to_object(scope).unwrap();
+    // let data = obj.get_internal_field(scope, 0).unwrap();
+    // let value: v8::Local<v8::External> = data.try_into().unwrap();
+    // let raw = value.value() as *const crate::dom::types::Window;
+
+    // let this = args.this();
+    // let arg0 = DOMString::from(args.get(0).to_rust_string_lossy(scope));
+    // let ret = unsafe { (*raw).new_FormData(arg0) };
+
+    // let template = ret.new_template(scope);
+    // template.set_internal_field_count(1);
+    // let object = template.new_instance(scope).unwrap();
+    // let raw_ = ret.value.ptr.as_ptr() as *mut std::ffi::c_void;
+    // object.set_internal_field(0, v8::External::new(scope, raw_).into());
+    // rv.set(object.into());
+  }
+
 pub fn URLSearchParams_callback(
     scope: &mut v8::HandleScope,
     args: v8::FunctionCallbackArguments,
     mut rv: v8::ReturnValue<v8::Value>,
   ) {
-    println!("v8_log URLSearchParams_callback");
+    println!("jinguoen URLSearchParams new");
 
     let context = scope.get_current_context();
     let global = context.global(scope);
@@ -3206,14 +3347,33 @@ pub fn URLSearchParams_callback(
     if (args.length() > 0) {
         let value = args.get(0);
 
+        let maybe_stringified = v8::json::stringify(scope, value).unwrap();
+        let debug_maybe_stringified = maybe_stringified.to_rust_string_lossy(scope);
+        println!("jinguoen URLSearchParams_callback json stringify:{}", debug_maybe_stringified);
 
-
-        // let mut map = IndexMap::new();
-
-
-        let maybe_stringified = v8::json::stringify(scope, value).unwrap().to_rust_string_lossy(scope);
-        println!("v8_log URLSearchParams_callback json:{}", maybe_stringified);
-        let ret = unsafe { (*raw).new_URLSearchParams(maybe_stringified) };
+        let parse = v8::json::parse(scope, maybe_stringified);
+        if (parse.is_some()) {
+            let new_object = parse.unwrap().to_object(scope).unwrap();
+            let property_names = new_object.get_own_property_names(scope, Default::default()).unwrap();
+            let mut map: IndexMap<USVString, USVString> = IndexMap::new();
+            for i in 0..property_names.length() {
+                let key = property_names.get_index(scope, i).unwrap();
+                let value = new_object.get(scope, key).unwrap().to_string(scope).unwrap();
+                let key_str = key.to_string(scope).unwrap().to_rust_string_lossy(scope);
+                let value_str = value.to_rust_string_lossy(scope);
+                println!("jinguoen URLSearchParams_callback json parse:{}, {}", key_str, value_str);
+                map.insert(USVString(key_str), USVString(value_str));
+            }
+            let ret = unsafe { (*raw).new_URLSearchParams1(Record { map }) };
+            let template = ret.new_template(scope);
+            template.set_internal_field_count(1);
+            let object = template.new_instance(scope).unwrap();
+            let raw_ = ret.value.ptr.as_ptr() as *mut std::ffi::c_void;
+            object.set_internal_field(0, v8::External::new(scope, raw_).into());
+            rv.set(object.into());
+            return;
+        }
+        let ret = unsafe { (*raw).new_URLSearchParams(debug_maybe_stringified) };
         let template = ret.new_template(scope);
         template.set_internal_field_count(1);
         let object = template.new_instance(scope).unwrap();
@@ -3237,7 +3397,7 @@ pub fn URLSearchParams_callback(
     args: v8::FunctionCallbackArguments,
     mut rv: v8::ReturnValue<v8::Value>,
   ) {
-    println!("v8_log FormData_callback");
+    println!("jinguoen FormData_callback");
     let context = scope.get_current_context();
     let global = context.global(scope);
     let key = v8::String::new(scope, "window").unwrap();
@@ -3263,7 +3423,7 @@ pub fn URLSearchParams_callback(
     args: v8::FunctionCallbackArguments,
     mut rv: v8::ReturnValue<v8::Value>,
   ) {
-    println!("v8_log URL_callback");
+    println!("jinguoen URL_callback");
     let context = scope.get_current_context();
     let global = context.global(scope);
     let key = v8::String::new(scope, "window").unwrap();
@@ -3289,7 +3449,7 @@ pub fn URLSearchParams_callback(
     args: v8::FunctionCallbackArguments,
     mut rv: v8::ReturnValue<v8::Value>,
   ) {
-    println!("v8_log IMAGE_callback");
+    println!("jinguoen IMAGE_callback");
     let context = scope.get_current_context();
     let global = context.global(scope);
     let key = v8::String::new(scope, "window").unwrap();

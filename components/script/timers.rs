@@ -181,7 +181,7 @@ impl OneshotTimers {
     }
 
     pub(crate) fn fire_timer(&self, id: TimerEventId, global: &GlobalScope, can_gc: CanGc) {
-        println!("v8_log JsTimerTask fire_timer");
+        println!("jinguoen JsTimerTask fire_timer");
         let expected_id = self.expected_event_id.get();
         if expected_id != id {
             debug!(
@@ -557,7 +557,7 @@ impl JsTimerTask {
                 );
             },
             InternalTimerCallback::FunctionTimerCallback(ref function, ref arguments) => {
-                println!("v8_log JsTimerTask invoke FunctionTimerCallback {:?}", thread::current().id());
+                println!("jinguoen JsTimerTask invoke FunctionTimerCallback {:?}", thread::current().id());
                 let arguments = self.collect_heap_args(arguments);
                 rooted!(in(*GlobalScope::get_cx()) let mut value: JSVal);
                 let _ = function.Call_(this, arguments, value.handle_mut(), Report);
@@ -575,7 +575,7 @@ impl JsTimerTask {
                 let func_ = v8::Local::new(scope, &func);
                 let recv = v8::undefined(scope);
                 func_.call(scope, recv.into(), &[]);
-                println!("v8_log JsTimerTask invoke FunctionTimerCallback end {:?}", thread::current().id());
+                println!("jinguoen JsTimerTask invoke FunctionTimerCallback end {:?}", thread::current().id());
             },
         };
         ScriptThread::set_user_interacting(was_user_interacting);

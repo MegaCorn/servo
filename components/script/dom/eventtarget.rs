@@ -219,15 +219,15 @@ impl CompiledEventListener {
         // Step 3
         match *self {
             CompiledEventListener::Listener(ref listener) => {
-                println!("v8_log handle_event_v8 Listener");
+                println!("jinguoen handle_event_v8 Listener");
                 // let _ = listener.HandleEvent_(object, event, exception_handle);
                 let _ = listener.handle_event_v8(object);
             },
             CompiledEventListener::Handler(ref handler) => {
-                println!("v8_log handle_event_v8 Handler");
+                println!("jinguoen handle_event_v8 Handler");
                 match *handler {
                     CommonEventHandler::ErrorEventHandler(ref handler) => {
-                        println!("v8_log handle_event_v8 Handler 1");
+                        println!("jinguoen handle_event_v8 Handler 1");
                         if let Some(event) = event.downcast::<ErrorEvent>() {
                             if object.is::<Window>() || object.is::<WorkerGlobalScope>() {
                                 let cx = GlobalScope::get_cx();
@@ -270,7 +270,7 @@ impl CompiledEventListener {
                     },
 
                     CommonEventHandler::BeforeUnloadEventHandler(ref handler) => {
-                        println!("v8_log handle_event_v8 Handler 2");
+                        println!("jinguoen handle_event_v8 Handler 2");
                         if let Some(event) = event.downcast::<BeforeUnloadEvent>() {
                             // Step 5
                             if let Ok(value) =
@@ -292,7 +292,7 @@ impl CompiledEventListener {
                     },
 
                     CommonEventHandler::EventHandler(ref handler) => {
-                        println!("v8_log handle_event_v8 Handler 3");
+                        println!("jinguoen handle_event_v8 Handler 3");
                         let cx = GlobalScope::get_cx();
                         rooted!(in(*cx) let mut rooted_return_value: JSVal);
                         handler.Call_v8(object);
@@ -664,10 +664,10 @@ impl EventTarget {
         listener: Option<Rc<T>>,
     ) {
         let cx = GlobalScope::get_cx();
-        println!("v8_log EventHandlerNonNull set_event_handler_common {}", ty);
+        println!("jinguoen EventHandlerNonNull set_event_handler_common {}", ty);
         let event_listener = listener.map(|listener| {
             InlineEventListener::Compiled(CommonEventHandler::EventHandler(unsafe {
-                EventHandlerNonNull::new_v8(listener.callback_holder().v8_func.clone().unwrap(), self.global().value.ptr.as_ptr() as *mut js::jsapi::JSObject) // v8_log 这里
+                EventHandlerNonNull::new_v8(listener.callback_holder().v8_func.clone().unwrap(), self.global().value.ptr.as_ptr() as *mut js::jsapi::JSObject) // jinguoen 这里
             }))
         });
         self.set_inline_event_listener(Atom::from(ty), event_listener);

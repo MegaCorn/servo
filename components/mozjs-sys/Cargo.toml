@@ -1,6 +1,5 @@
 [package]
 name = "mozjs_sys"
-build = "build.rs"
 version.workspace = true
 authors.workspace = true
 license.workspace = true
@@ -13,8 +12,8 @@ doctest = false
 
 [features]
 debugmozjs = []
-profilemozjs = []
 jitspew = []
+profilemozjs = []
 streams = []
 crown = []
 

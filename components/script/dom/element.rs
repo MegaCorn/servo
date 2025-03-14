@@ -2473,6 +2473,7 @@ impl ElementMethods<crate::DomTypeHolder> for Element {
 
     // https://dom.spec.whatwg.org/#dom-element-removeattribute
     fn RemoveAttribute(&self, name: DOMString) {
+        println!("jinguoen RemoveAttribute {}", name.str());
         let name = self.parsed_name(name);
         self.remove_attribute_by_name(&name);
     }

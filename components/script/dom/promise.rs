@@ -200,7 +200,7 @@ impl Promise {
     where
         T: ToJSValConvertible,
     {
-        println!("v8_log resolve_native");
+        println!("jinguoen resolve_native");
         let cx = GlobalScope::get_cx();
         let _ac = enter_realm(self);
         rooted!(in(*cx) let mut v = UndefinedValue());
@@ -293,7 +293,7 @@ impl Promise {
         _comp: InRealm,
         can_gc: CanGc,
     ) {
-        println!("v8_log append_native_handler");
+        println!("jinguoen append_native_handler");
         let _ais = AutoEntryScript::new(&handler.global());
         let cx = GlobalScope::get_cx();
         rooted!(in(*cx) let resolve_func =

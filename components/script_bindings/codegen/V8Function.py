@@ -291,14 +291,14 @@ def v8Function(descriptor, cgthings):
 
             if nativeName == "Open" and descriptor.name == "XMLHttpRequest":
                 trans_ = f"""
-            //log::error!("fn open {{}} {{}}", args.get(0).to_rust_string_lossy(scope), args.get(1).to_rust_string_lossy(scope));
+            log::error!("fn open {{}} {{}}", args.get(0).to_rust_string_lossy(scope), args.get(1).to_rust_string_lossy(scope));
             let arg0 = ByteString::new(args.get(0).to_rust_string_lossy(scope).into());
             let arg1 = USVString::from(args.get(1).to_rust_string_lossy(scope));
             let ret = unsafe {{ (*raw).Open(arg0, arg1)}};
                 """
             if nativeName == "Send" and descriptor.name == "XMLHttpRequest":
                 trans_ = f"""
-            //log::error!("fn send {{}}", args.get(0).to_rust_string_lossy(scope));
+            log::error!("fn send {{}}", args.get(0).to_rust_string_lossy(scope));
             let ret = unsafe {{ (*raw).Send(Some(crate::dom::bindings::codegen::UnionTypes::DocumentOrBlobOrArrayBufferViewOrArrayBufferOrFormDataOrStringOrURLSearchParams::String(DOMString::from(args.get(0).to_rust_string_lossy(scope)))), crate::script_runtime::CanGc::note())}};
                 """
 
@@ -308,7 +308,7 @@ def v8Function(descriptor, cgthings):
         |scope: &mut v8::HandleScope,
         args: v8::FunctionCallbackArguments,
         mut rv: v8::ReturnValue<v8::Value>| {{
-            //log::error!("fn {method}");
+            log::error!("fn {method}");
             let this = args.this();
             let data = this.get_internal_field(scope, 0).unwrap();
             let value: v8::Local<v8::External> = data.try_into().unwrap();

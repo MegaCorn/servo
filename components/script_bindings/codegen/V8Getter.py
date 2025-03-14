@@ -160,7 +160,7 @@ def v8Getter(attr, descriptor, member):
         key: v8::Local<v8::Name>,
         args: v8::PropertyCallbackArguments,
         mut rv: v8::ReturnValue<v8::Value>| {{
-            //log::error!("getter {attr}");
+            log::error!("getter {attr}");
             let this = args.this();
             let data = this.get_internal_field(scope, 0).unwrap();
             let value: v8::Local<v8::External> = data.try_into().unwrap();

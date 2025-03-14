@@ -610,7 +610,7 @@ fn fetch_a_classic_script(
 impl HTMLScriptElement {
     /// <https://html.spec.whatwg.org/multipage/#prepare-a-script>
     pub(crate) fn prepare(&self, can_gc: CanGc) {
-        println!("v8_log prepare");
+        println!("jinguoen prepare");
         // Step 1.
         if self.already_started.get() {
             return;
@@ -919,7 +919,7 @@ impl HTMLScriptElement {
 
     /// <https://html.spec.whatwg.org/multipage/#execute-the-script-block>
     pub(crate) fn execute(&self, result: ScriptResult) {
-        println!("v8_log execute");
+        println!("jinguoen execute");
         // Step 1.
         let doc = self.owner_document();
         if self.parser_inserted.get() && *doc != *self.parser_document {
@@ -1027,7 +1027,7 @@ impl HTMLScriptElement {
         _rethrow_errors: bool,
         can_gc: CanGc,
     ) {
-        println!("v8_log run_a_module_script");
+        println!("jinguoen run_a_module_script");
         // TODO use a settings object rather than this element's document/window
         // Step 2
         let document = self.owner_document();
