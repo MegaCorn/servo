@@ -301,6 +301,34 @@ def v8Function(descriptor, cgthings):
             log::error!("fn send {{}}", args.get(0).to_rust_string_lossy(scope));
             let ret = unsafe {{ (*raw).Send(Some(crate::dom::bindings::codegen::UnionTypes::DocumentOrBlobOrArrayBufferViewOrArrayBufferOrFormDataOrStringOrURLSearchParams::String(DOMString::from(args.get(0).to_rust_string_lossy(scope)))), crate::script_runtime::CanGc::note())}};
                 """
+            if nativeName == "InsertBefore" and descriptor.name == "Node":
+                trans_ = f"""
+            let jsobj0 = args.get(0).to_object(scope).unwrap();
+            let data0 = jsobj0.get_internal_field(scope, 0).unwrap();
+            let value0: v8::Local<v8::External> = data0.try_into().unwrap();
+            let arg0 = value0.value() as *const crate::dom::types::Node;
+            let arg0 = unsafe {{&*arg0}};
+            let jsobj1 = args.get(1).to_object(scope);
+            if (jsobj1.is_none()) {{
+                let ret = unsafe {{ (*raw).InsertBefore(arg0, None)}};
+                return_if_err!(ret);
+                let ret = ret.unwrap();
+
+                let template = crate::dom::virtualmethods::node_downcast_template1(unsafe {{ ret.value.ptr.as_ref() }}, scope);
+                template.set_internal_field_count(1);
+                let object = template.new_instance(scope).unwrap();
+                let raw_ = ret.value.ptr.as_ptr() as *mut std::ffi::c_void;
+                object.set_internal_field(0, v8::External::new(scope, raw_).into());
+                rv.set(object.into());
+                return;
+            }}
+            let jsobj1 = jsobj1.unwrap();
+            let data1 = jsobj1.get_internal_field(scope, 0).unwrap();
+            let value1: v8::Local<v8::External> = data1.try_into().unwrap();
+            let arg1 = value1.value() as *const crate::dom::types::Node;
+            let arg1 = unsafe {{Some(&*arg1)}};
+            let ret = unsafe {{ (*raw).InsertBefore(arg0, arg1)}};
+                """
 
             code = CGGeneric(f"""
     let fn_{method} = v8::FunctionTemplate::new(
@@ -310,7 +338,11 @@ def v8Function(descriptor, cgthings):
         mut rv: v8::ReturnValue<v8::Value>| {{
             log::error!("fn {method}");
             let this = args.this();
-            let data = this.get_internal_field(scope, 0).unwrap();
+            let data = this.get_internal_field(scope, 0);
+            if data.is_none() {{
+                return;
+            }}
+            let data = data.unwrap();
             let value: v8::Local<v8::External> = data.try_into().unwrap();
             let raw = value.value() as {mut} {cratePrefix}{descriptor.name};
             {trans_}
@@ -325,3 +357,33 @@ def v8Function(descriptor, cgthings):
     v8_template_add_fn!(scope, template, fn_{method}, {method});
 """)
             cgthings.append(code)
+
+            if nativeName == "ToDataURL" and descriptor.name == "HTMLCanvasElement":
+                code = CGGeneric(f"""
+    let fn_getContext = v8::FunctionTemplate::new(
+        scope,
+        |scope: &mut v8::HandleScope,
+        args: v8::FunctionCallbackArguments,
+        mut rv: v8::ReturnValue<v8::Value>| {{
+            let this = args.this();
+            let data = this.get_internal_field(scope, 0).unwrap();
+            let value: v8::Local<v8::External> = data.try_into().unwrap();
+            let raw = value.value() as *const crate::dom::types::HTMLCanvasElement;
+
+            log::error!("fn getContext {{}}", args.get(0).to_rust_string_lossy(scope));
+            let arg0 = DOMString::from(args.get(0).to_rust_string_lossy(scope));
+            let ret = unsafe {{ (*raw).GetContext(crate::script_runtime::JSContext::from_ptr(std::ptr::null_mut()), arg0, HandleValue::null(), crate::script_runtime::CanGc::note())}};
+
+            return_if_err!(ret);
+            let ret = ret.unwrap();
+
+            return_if_none!(ret);
+            let ret = ret.unwrap();
+
+            let ret = v8::Object::new(scope);
+            rv.set(ret.into());
+        }},
+    );
+    v8_template_add_fn!(scope, template, fn_getContext, getContext);
+""")
+                cgthings.append(code)

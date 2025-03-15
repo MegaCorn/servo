@@ -651,6 +651,10 @@ impl ModuleTree {
             println!("jinguoen instantiate_module result {}", result);
             println!("jinguoen instantiate_module end");
 
+            println!("jinguoen evaluate begin");
+            module.evaluate(scope).unwrap();
+            println!("jinguoen evaluate end");
+
             let resolver_handle = global.resolver();
             if (resolver_handle.is_some()) {
                 println!("jinguoen g_resolver is_some");
@@ -659,9 +663,6 @@ impl ModuleTree {
                 resolver.resolve(scope, module_namespace);
             } else {
                 println!("jinguoen g_resolver is_none");
-                println!("jinguoen evaluate begin");
-                module.evaluate(scope).unwrap();
-                println!("jinguoen evaluate end");
             }
 
             let ok = ModuleEvaluate(*cx, module_record, eval_result);

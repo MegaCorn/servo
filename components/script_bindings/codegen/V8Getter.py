@@ -152,6 +152,17 @@ def v8Getter(attr, descriptor, member):
             let ret = v8::String::new(scope, ret_.as_str()).unwrap();
             rv.set(ret.into());
         """
+    elif aa == "GetDocumentElement" and descriptor.name == "Document":
+        trans = f"""
+            let template = crate::dom::virtualmethods::node_downcast_template(unsafe {{ ret.value.ptr.as_ref() }}, scope);
+            let raw = ret.value.ptr.as_ptr() as *mut std::ffi::c_void;
+            template.set_internal_field_count(1);
+            let ret = template.new_instance(scope).unwrap();
+            ret.set_internal_field(0, v8::External::new(scope, raw).into());
+            rv.set(ret.into());
+            log::error!("getter documentElement success");
+        """
+        tmp = ""
 
     # 构造代码段
     getterCode = CGGeneric(f"""
